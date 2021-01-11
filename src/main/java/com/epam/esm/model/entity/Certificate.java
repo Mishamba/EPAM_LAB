@@ -5,7 +5,7 @@ import com.epam.esm.model.constant.Constants;
 import java.util.Date;
 import java.util.List;
 
-public class Certificate extends IdEntity {
+public class Certificate {
     private int id;
     private String name;
     private String description;
@@ -17,8 +17,7 @@ public class Certificate extends IdEntity {
 
     public Certificate(String name, String description, double price, int duration, Date createDate,
                        Date lastUpdateDate, List<Tag> tags) {
-        // id will be set in database
-        super(Constants.NOT_SET_ID);
+        id = Constants.NOT_SET_ID;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -30,7 +29,6 @@ public class Certificate extends IdEntity {
 
     public Certificate(int id, String name, String description, double price, int duration, Date createDate,
                        Date lastUpdateDate, List<Tag> tags) {
-        super(id);
         this.id = id;
         this.name = name;
         this.description = description;
