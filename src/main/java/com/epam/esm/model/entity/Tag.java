@@ -3,7 +3,6 @@ package com.epam.esm.model.entity;
 import com.epam.esm.model.constant.Constants;
 
 public class Tag {
-    private int primeForHashCode = 123;
     private int id;
     private String name;
 
@@ -49,6 +48,7 @@ public class Tag {
 
     @Override
     public int hashCode() {
+        int primeForHashCode = 123;
         return name.hashCode() * primeForHashCode;
     }
 }
