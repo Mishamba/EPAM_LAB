@@ -6,9 +6,7 @@ import com.epam.esm.model.service.CertificateService;
 import com.epam.esm.model.service.impl.CertificateServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/certificate")

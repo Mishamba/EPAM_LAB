@@ -1,0 +1,10 @@
+<Resource name="jdbc/module2"
+          auth="Container"
+          type="javax.sql.DataSource"
+          maxActive="100"
+          maxIdle="30"
+          maxWait="10000"
+          username="mishamba"
+          password="mishamba"
+          driverClassName="org.postgresql"
+          url="jdbc:mysql://localhost:3306/module2"/>
