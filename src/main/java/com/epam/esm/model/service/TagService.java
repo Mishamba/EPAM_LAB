@@ -11,6 +11,5 @@ public interface TagService {
     List<Tag> findAllTags() throws ServiceException;
     Tag findTagById(int id) throws ServiceException;
     boolean createTag(Tag tag) throws ServiceException;
-    boolean updateTag(Tag tag) throws ServiceException;
     boolean deleteTag(int id) throws ServiceException;
 }
