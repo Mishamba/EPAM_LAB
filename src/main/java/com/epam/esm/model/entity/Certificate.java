@@ -2,6 +2,7 @@ package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.Constants;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,13 +10,13 @@ public class Certificate {
     private int id;
     private String name;
     private String description;
-    private double price;
+    private int price;
     private int duration;
     private Date createDate;
     private Date lastUpdateDate;
     private List<Tag> tags;
 
-    public Certificate(String name, String description, double price, int duration, Date createDate,
+    public Certificate(String name, String description, int price, int duration, Date createDate,
                        Date lastUpdateDate, List<Tag> tags) {
         id = Constants.NOT_SET_ID;
         this.name = name;
@@ -27,7 +28,7 @@ public class Certificate {
         this.tags = tags;
     }
 
-    public Certificate(int id, String name, String description, double price, int duration, Date createDate,
+    public Certificate(int id, String name, String description, int price, int duration, Date createDate,
                        Date lastUpdateDate, List<Tag> tags) {
         this.id = id;
         this.name = name;
@@ -36,7 +37,11 @@ public class Certificate {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-        this.tags = tags;
+        if (tags == null) {
+            this.tags = new ArrayList<>();
+        } else {
+            this.tags = tags;
+        }
     }
 
     public int getId() {
@@ -67,11 +72,11 @@ public class Certificate {
         this.description = description;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
@@ -105,6 +110,10 @@ public class Certificate {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        tags.add(tag);
     }
 
     @Override
