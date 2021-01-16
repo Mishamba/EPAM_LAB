@@ -6,7 +6,7 @@ import com.epam.esm.model.exception.DaoException;
 import java.util.List;
 
 public interface TagDao {
-    List<Tag> findAddTags() throws DaoException;
+    List<Tag> findAllTags() throws DaoException;
     Tag findTagById(int id) throws DaoException;
     boolean createTag(Tag tag) throws DaoException;
     boolean deleteTag(int id) throws DaoException;

@@ -12,7 +12,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/tag")
 public class TagController {
-    TagService tagService = new TagServiceImpl();
+    TagService tagService;
 
     @GetMapping
     public List<Tag> index() {

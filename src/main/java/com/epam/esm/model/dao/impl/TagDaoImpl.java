@@ -15,10 +15,10 @@ import java.util.List;
 @Repository
 public class TagDaoImpl implements TagDao {
     private JdbcTemplate jdbcTemplate;
-    private String ALL_TAGS_QUEUE = "SELECT id, _name FROM tag";
-    private String TAG_BY_ID_QUEUE = "SELECT id, _name FROM tag WHERE id = ?";
-    private String CREATE_TAG_QUEUE = "INSERT INTO tag (_name) VALUE (?)";
-    private String DELETE_TAG_FROM_TAG_TABLE = "DELETE FROM tag WHERE id = ?; " +
+    private final String ALL_TAGS_QUEUE = "SELECT id, _name FROM tag";
+    private final String TAG_BY_ID_QUEUE = "SELECT id, _name FROM tag WHERE id = ?";
+    private final String CREATE_TAG_QUEUE = "INSERT INTO tag (_name) VALUE (?)";
+    private final String DELETE_TAG_FROM_TAG_TABLE = "DELETE FROM tag WHERE id = ?; " +
             "DELETE FROM certificate_tags WHERE id = ?";
 
     @Autowired
@@ -27,7 +27,7 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public List<Tag> findAddTags() throws DaoException {
+    public List<Tag> findAllTags() throws DaoException {
         try {
             return jdbcTemplate.query(ALL_TAGS_QUEUE, new TagMapper());
         } catch (DataAccessException exception) {

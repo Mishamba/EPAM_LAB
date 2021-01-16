@@ -8,7 +8,7 @@ import java.util.List;
 public interface CertificateDao {
     List<Certificate> findAllCertificates() throws DaoException;
     Certificate findCertificateById(int id) throws DaoException;
-    void createCertificate(Certificate certificate) throws DaoException;
-    void updateCertificate(Certificate certificate) throws DaoException;
-    void deleteCertificate(int id) throws DaoException;
+    boolean createCertificate(Certificate certificate) throws DaoException;
+    boolean updateCertificate(Certificate certificate) throws DaoException;
+    boolean deleteCertificate(int id) throws DaoException;
 }

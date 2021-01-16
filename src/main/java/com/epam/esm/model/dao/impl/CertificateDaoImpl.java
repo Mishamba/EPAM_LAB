@@ -26,17 +26,17 @@ public class CertificateDaoImpl implements CertificateDao {
     private JdbcTemplate jdbcTemplate;
     private TagDao tagDao;
     private IsoDateParser isoDateParser;
-    private String ALL_CERTIFICATES_QUEUE = "SELECT id, _name, _description, price, duration, " +
+    private final String ALL_CERTIFICATES_QUEUE = "SELECT id, _name, _description, price, duration, " +
             "create_date, last_update_date FROM gift_certificate";
-    private String CERTIFICATE_TAGS_ID_QUEUE = "SELECT tag_id FROM tag_tags WHERE certificate_id = ?";
-    private String CERTIFICATE_BY_ID_QUEUE = "SELECT id, _name, _description, price, duration, " +
+    private final String CERTIFICATE_TAGS_ID_QUEUE = "SELECT tag_id FROM tag_tags WHERE certificate_id = ?";
+    private final String CERTIFICATE_BY_ID_QUEUE = "SELECT id, _name, _description, price, duration, " +
             "create_date, last_update_date FROM gift_certificate WHERE id = ?";
-    private String CREATE_CERTIFICATE_QUEUE = "INSERT INTO gift_certificate (_name, _description, price, duration, " +
+    private final String CREATE_CERTIFICATE_QUEUE = "INSERT INTO gift_certificate (_name, _description, price, duration, " +
             "create_date, last_update_date) value (?,?,?,?,?,?)";
-    private String CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE = "INSERT INTO certificate_tags (certificate_id, tag_id) " +
+    private final String CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE = "INSERT INTO certificate_tags (certificate_id, tag_id) " +
             "value (?,?)";
-    private String DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE = "DELETE FROM certificate_tags WHERE certificate_id = ?";
-    private String DELETE_CERTIFICATE_BY_ID_QUEUE = "DELETE FROM gift_certificate WHERE id = ?";
+    private final String DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE = "DELETE FROM certificate_tags WHERE certificate_id = ?";
+    private final String DELETE_CERTIFICATE_BY_ID_QUEUE = "DELETE FROM gift_certificate WHERE id = ?";
 
     @Autowired
     public CertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao, IsoDateParser isoDateParser) {
@@ -94,14 +94,17 @@ public class CertificateDaoImpl implements CertificateDao {
 
     @Transactional
     @Override
-    public void createCertificate(Certificate certificate) throws DaoException {
-        int generatedId = createCertificateInDB(certificate);
-        certificate.setId(generatedId);
-        createCertificateTagsReferences(certificate);
+    public boolean createCertificate(Certificate certificate) throws DaoException {
+        Integer generatedId = createCertificateInDB(certificate);
+        if (generatedId == null) {
+            throw new DaoException("can't create certificate");
+        }
+            certificate.setId(generatedId);
+        return createCertificateTagsReferences(certificate);
     }
 
     // This method returns generated id in case of success creation
-    private int createCertificateInDB(Certificate certificate) throws DaoException {
+    private Integer createCertificateInDB(Certificate certificate) throws DaoException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -120,26 +123,29 @@ public class CertificateDaoImpl implements CertificateDao {
             return ps;
         }, keyHolder);
 
-        return (int) keyHolder.getKey();
+        return keyHolder.getKeyAs(Integer.TYPE);
     }
 
-    private void createCertificateTagsReferences(Certificate certificate) throws DaoException {
+    private boolean createCertificateTagsReferences(Certificate certificate) throws DaoException {
+        int affectedRows = 0;
         for (Tag tag : certificate.getTags()) {
-            jdbcTemplate.update(CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE, certificate.getId(), tag.getId());
+            affectedRows += jdbcTemplate.update(CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE, certificate.getId(), tag.getId());
         }
+
+        return affectedRows == certificate.getTags().size();
     }
 
     @Transactional
     @Override
-    public void updateCertificate(Certificate certificate) throws DaoException {
+    public boolean updateCertificate(Certificate certificate) throws DaoException {
         deleteCertificate(certificate.getId());
-        createCertificate(certificate);
+        return createCertificate(certificate);
     }
 
     @Transactional
     @Override
-    public void deleteCertificate(int id) throws DaoException {
-        jdbcTemplate.update(DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, id);
-        jdbcTemplate.update(DELETE_CERTIFICATE_BY_ID_QUEUE, id);
+    public boolean deleteCertificate(int id) throws DaoException {
+        return jdbcTemplate.update(DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, id) == 1 &&
+                jdbcTemplate.update(DELETE_CERTIFICATE_BY_ID_QUEUE, id) >= 0;
     }
 }

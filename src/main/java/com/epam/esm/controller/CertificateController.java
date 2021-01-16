@@ -3,7 +3,6 @@ package com.epam.esm.controller;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.exception.ServiceException;
 import com.epam.esm.model.service.CertificateService;
-import com.epam.esm.model.service.impl.CertificateServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/certificate")
 public class CertificateController {
-    private CertificateService certificateService = new CertificateServiceImpl();
+    private CertificateService certificateService;
 
     @GetMapping
     public List<Certificate> index() {
