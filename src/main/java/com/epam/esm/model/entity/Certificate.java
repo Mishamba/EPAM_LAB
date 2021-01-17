@@ -1,6 +1,6 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.Constants;
+import com.epam.esm.model.constant.ModelConstant;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +18,7 @@ public class Certificate {
 
     public Certificate(String name, String description, int price, int duration, Date createDate,
                        Date lastUpdateDate, List<Tag> tags) {
-        id = Constants.NOT_SET_ID;
+        id = ModelConstant.NOT_SET_ID;
         this.name = name;
         this.description = description;
         this.price = price;

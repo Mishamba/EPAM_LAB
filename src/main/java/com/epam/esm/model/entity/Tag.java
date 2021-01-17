@@ -1,13 +1,13 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.Constants;
+import com.epam.esm.model.constant.ModelConstant;
 
 public class Tag {
     private int id;
     private String name;
 
     public Tag(String name) {
-        id = Constants.NOT_SET_ID;
+        id = ModelConstant.NOT_SET_ID;
         this.name = name;
     }
 

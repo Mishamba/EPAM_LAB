@@ -42,6 +42,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public boolean createCertificate(Certificate certificate) throws ServiceException {
         try {
+            // TODO: 1/17/21 add validation
             return certificateDao.createCertificate(certificate);
         } catch (DaoException e) {
             logger.error("can't create certificate");
@@ -52,6 +53,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public boolean updateCertificate(Certificate certificate) throws ServiceException {
         try {
+            // TODO: 1/17/21 add validation
             return certificateDao.updateCertificate(certificate);
         } catch (DaoException e) {
             logger.error("can't update certificate");

@@ -1,10 +1,14 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.controller.constant.ErrorCodes;
+import com.epam.esm.json.entity.JsonAnswer;
+import com.epam.esm.json.entity.JsonError;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.exception.ServiceException;
 import com.epam.esm.model.service.TagService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,35 +30,54 @@ public class TagController {
         try {
             return tagService.findAllTags();
         } catch (ServiceException exception) {
+            logger.error("unsuccessful tags selection. exit with exception");
             // TODO: 1/13/21 send error code and log
         }
     }
 
     @GetMapping("/{id}")
-    public Tag getTag(@PathVariable("id") int id) {
-        Tag tag;
+    public Tag getTagById(@PathVariable("id") int id) {
         try {
             return tagService.findTagById(id);
         } catch (ServiceException exception) {
+            logger.error("unsuccessful tag search. exit with exception");
             // TODO: 1/13/21 send error code and log
         }
     }
 
     @PostMapping
-    public Boolean createTag(@ModelAttribute("tag") Tag tag) {
+    public JsonAnswer createTag(@ModelAttribute("tag") Tag tag) {
         try {
-            // TODO: 1/13/21 send code 200
+            if (tagService.createTag(tag)) {
+                logger.info("successfully created new tag");
+                return new JsonAnswer(HttpStatus.OK, "successfully created new tag");
+            } else {
+                logger.warn("unsuccessful tag creation");
+                return new JsonError(HttpStatus.BAD_REQUEST, "can't create tag. bad request",
+                        ErrorCodes.USER_BAD_REQUEST);
+            }
         } catch (ServiceException serviceException) {
-            // TODO: 1/13/21 send error code and log
+            logger.error("unsuccessful tag deletion. exit with exception");
+            return new JsonError(HttpStatus.INTERNAL_SERVER_ERROR, "can't create tag. server error",
+                    ErrorCodes.SERVER_ERROR_CODE);
         }
     }
 
     @DeleteMapping("/{id}")
-    public Boolean deleteTag(@PathVariable("id") int id) {
+    public JsonAnswer deleteTag(@PathVariable("id") int id) {
         try {
-            // TODO: 1/13/21 send code 200
+            if (tagService.deleteTag(id)) {
+                logger.info("successfully deleted tag");
+                return new JsonAnswer(HttpStatus.OK, "successfully deleted tag");
+            } else {
+                logger.warn("unsuccessful tag deletion");
+                return new JsonError(HttpStatus.BAD_REQUEST, "can't delete tag. bad request",
+                        ErrorCodes.USER_BAD_REQUEST);
+            }
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code and log
+            logger.error("unsuccessful tag deletion");
+            return new JsonError(HttpStatus.INTERNAL_SERVER_ERROR, "can't delete tag. server error",
+                    ErrorCodes.SERVER_ERROR_CODE);
         }
     }
 }

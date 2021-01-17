@@ -42,6 +42,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public boolean createTag(Tag tag) throws ServiceException {
         try {
+            // TODO: 1/17/21 add validation
             return tagDao.createTag(tag);
         } catch (DaoException e) {
             logger.error("can't create tag");
