@@ -9,6 +9,7 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.exception.DaoException;
 import com.epam.esm.model.exception.UtilException;
 import com.epam.esm.util.parser.IsoDateParser;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Repository
 public class CertificateDaoImpl implements CertificateDao {
+    private Logger logger = Logger.getLogger(CertificateDaoImpl.class);
     private JdbcTemplate jdbcTemplate;
     private TagDao tagDao;
     private IsoDateParser isoDateParser;
@@ -117,7 +119,7 @@ public class CertificateDaoImpl implements CertificateDao {
                 ps.setString(5, isoDateParser.parseToIso(certificate.getCreateDate()));
                 ps.setString(6, isoDateParser.parseToIso(certificate.getLastUpdateDate()));
             } catch (UtilException e) {
-                // TODO: 1/16/21 add logg
+                logger.error("can't parse date to iso format");
             }
 
             return ps;

@@ -3,7 +3,8 @@ package com.epam.esm.controller;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.exception.ServiceException;
 import com.epam.esm.model.service.TagService;
-import com.epam.esm.model.service.impl.TagServiceImpl;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,14 +13,20 @@ import java.util.List;
 @Controller
 @RequestMapping("/tag")
 public class TagController {
-    TagService tagService;
+    private final TagService tagService;
+    private final Logger logger = Logger.getLogger(TagController.class);
+
+    @Autowired
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping
     public List<Tag> index() {
         try {
             return tagService.findAllTags();
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code
+            // TODO: 1/13/21 send error code and log
         }
     }
 
@@ -29,7 +36,7 @@ public class TagController {
         try {
             return tagService.findTagById(id);
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code
+            // TODO: 1/13/21 send error code and log
         }
     }
 
@@ -38,7 +45,7 @@ public class TagController {
         try {
             // TODO: 1/13/21 send code 200
         } catch (ServiceException serviceException) {
-            // TODO: 1/13/21 send error code
+            // TODO: 1/13/21 send error code and log
         }
     }
 
@@ -47,7 +54,7 @@ public class TagController {
         try {
             // TODO: 1/13/21 send code 200
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code
+            // TODO: 1/13/21 send error code and log
         }
     }
 }
