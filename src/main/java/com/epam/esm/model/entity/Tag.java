@@ -1,9 +1,15 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 
 public class Tag {
+
+    @Positive
     private int id;
+
+    @NotEmpty
     private String name;
 
     public Tag(String name) {

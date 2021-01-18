@@ -31,7 +31,7 @@ public class TagController {
             return tagService.findAllTags();
         } catch (ServiceException exception) {
             logger.error("unsuccessful tags selection. exit with exception");
-            // TODO: 1/13/21 send error code and log
+            // TODO: 1/13/21 send error code
         }
     }
 
@@ -41,7 +41,7 @@ public class TagController {
             return tagService.findTagById(id);
         } catch (ServiceException exception) {
             logger.error("unsuccessful tag search. exit with exception");
-            // TODO: 1/13/21 send error code and log
+            // TODO: 1/13/21 send error code
         }
     }
 

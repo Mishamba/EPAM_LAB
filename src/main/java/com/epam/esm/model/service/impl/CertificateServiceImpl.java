@@ -8,11 +8,13 @@ import com.epam.esm.model.service.CertificateService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CertificateServiceImpl implements CertificateService {
-    private CertificateDao certificateDao;
-    private Logger logger = Logger.getLogger(CertificateServiceImpl.class);
+    private final CertificateDao certificateDao;
+    private final Logger logger = Logger.getLogger(CertificateServiceImpl.class);
 
     @Autowired
     public CertificateServiceImpl(CertificateDao certificateDao) {
@@ -42,7 +44,6 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public boolean createCertificate(Certificate certificate) throws ServiceException {
         try {
-            // TODO: 1/17/21 add validation
             return certificateDao.createCertificate(certificate);
         } catch (DaoException e) {
             logger.error("can't create certificate");
@@ -53,7 +54,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public boolean updateCertificate(Certificate certificate) throws ServiceException {
         try {
-            // TODO: 1/17/21 add validation
+            certificate.setLastUpdateDate(LocalDateTime.now());
             return certificateDao.updateCertificate(certificate);
         } catch (DaoException e) {
             logger.error("can't update certificate");

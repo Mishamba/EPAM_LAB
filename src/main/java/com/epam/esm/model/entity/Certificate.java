@@ -1,23 +1,45 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.UniqueElements;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Certificate {
+
+    @Positive
     private int id;
+
+    @NotEmpty
     private String name;
+
+    @NotEmpty
     private String description;
+
+    @Positive
+    @NotEmpty
     private int price;
+
+    @Positive
+    @NotEmpty
     private int duration;
-    private Date createDate;
-    private Date lastUpdateDate;
+
+    @NotEmpty
+    @PastOrPresent
+    private LocalDateTime createDate;
+
+    @NotEmpty
+    @PastOrPresent
+    private LocalDateTime lastUpdateDate;
+
+    @UniqueElements
     private List<Tag> tags;
 
-    public Certificate(String name, String description, int price, int duration, Date createDate,
-                       Date lastUpdateDate, List<Tag> tags) {
+    public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
+                       LocalDateTime lastUpdateDate, List<Tag> tags) {
         id = ModelConstant.NOT_SET_ID;
         this.name = name;
         this.description = description;
@@ -28,8 +50,8 @@ public class Certificate {
         this.tags = tags;
     }
 
-    public Certificate(int id, String name, String description, int price, int duration, Date createDate,
-                       Date lastUpdateDate, List<Tag> tags) {
+    public Certificate(int id, String name, String description, int price, int duration, LocalDateTime createDate,
+                       LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -88,19 +110,19 @@ public class Certificate {
         this.duration = duration;
     }
 
-    public Date getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public Date getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

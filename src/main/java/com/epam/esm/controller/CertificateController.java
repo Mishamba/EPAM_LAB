@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -30,7 +31,7 @@ public class CertificateController {
         try {
             return certificateService.findAllCertificates();
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code and log
+            // TODO: 1/13/21 send error code
         }
     }
 
@@ -39,15 +40,19 @@ public class CertificateController {
         try {
             return certificateService.findCertificateById(id);
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code and log
+            // TODO: 1/13/21 send error code
         }
     }
 
-    // TODO: 1/17/21 we can't get certificate create date. refactor parameters
+    // TODO: 1/18/21 transfer tags id list
     @PostMapping
-    public JsonAnswer createCertificate(@ModelAttribute("certificate") Certificate certificate) {
+    public JsonAnswer createCertificate(@RequestParam("name") String name,
+                                        @RequestParam("description") String description,
+                                        @RequestParam("price") int price, @RequestParam("duration") int duration,
+                                        @RequestParam("tags") List<Integer> tags) {
         try {
-            if (certificateService.createCertificate(certificate)) {
+            if (certificateService.createCertificate(new Certificate(name, description, price, duration,
+                    LocalDateTime.now(), LocalDateTime.now(), null))) {
                 logger.info("successfully created new certificate");
                 return new JsonAnswer(HttpStatus.OK, "created new certificate");
             } else {
@@ -62,10 +67,14 @@ public class CertificateController {
         }
     }
 
+    // TODO: 1/18/21 transfer tags id list
     @PatchMapping("/{id}")
-    public JsonAnswer updateCertificate(@ModelAttribute("certificate") Certificate certificate) {
+    public JsonAnswer updateCertificate(@PathVariable("id") int id, @RequestParam("name") String name,
+                                        @RequestParam("description") String description,
+                                        @RequestParam("price") int price, @RequestParam("duration") int duration, @RequestParam("tags") List<Integer> tags) {
         try {
-            if (certificateService.updateCertificate(certificate)) {
+            if (certificateService.updateCertificate(new Certificate(id, name, description, price, duration, null,
+                    LocalDateTime.now(), null))) {
                 logger.info("successfully updated certificate");
                 return new JsonAnswer(HttpStatus.OK, "updated certificate");
             } else {
