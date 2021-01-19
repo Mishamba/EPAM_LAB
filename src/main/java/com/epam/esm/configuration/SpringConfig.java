@@ -1,5 +1,6 @@
 package com.epam.esm.configuration;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +30,7 @@ public class SpringConfig implements WebMvcConfigurer {
 
     @Bean
     public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
+        return new JdbcTemplate();
     }
 
     @Bean

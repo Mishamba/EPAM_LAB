@@ -1,10 +1,11 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.controller.constant.ErrorCodes;
 import com.epam.esm.json.entity.JsonAnswer;
 import com.epam.esm.json.entity.JsonError;
 import com.epam.esm.model.dao.impl.CertificateDaoImpl;
 import com.epam.esm.model.entity.Certificate;
+import com.epam.esm.model.entity.Tag;
+import com.epam.esm.model.exception.ControllerException;
 import com.epam.esm.model.exception.ServiceException;
 import com.epam.esm.model.service.CertificateService;
 import org.apache.log4j.Logger;
@@ -27,65 +28,64 @@ public class CertificateController {
     }
 
     @GetMapping
-    public List<Certificate> index() {
+    public List<Certificate> index() throws ControllerException {
         try {
             return certificateService.findAllCertificates();
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code
+            throw new ControllerException("can't get certificates", exception);
         }
     }
 
     @GetMapping("/{id}")
-    public Certificate getCertificate(@PathVariable("id") int id) {
+    public Certificate getCertificate(@PathVariable("id") int id) throws ControllerException {
         try {
             return certificateService.findCertificateById(id);
         } catch (ServiceException exception) {
-            // TODO: 1/13/21 send error code
+            throw new ControllerException("can't get certfiicate", exception);
         }
     }
 
-    // TODO: 1/18/21 transfer tags id list
     @PostMapping
     public JsonAnswer createCertificate(@RequestParam("name") String name,
                                         @RequestParam("description") String description,
                                         @RequestParam("price") int price, @RequestParam("duration") int duration,
-                                        @RequestParam("tags") List<Integer> tags) {
+                                        @RequestParam("tags") List<Tag> tags) {
         try {
             if (certificateService.createCertificate(new Certificate(name, description, price, duration,
-                    LocalDateTime.now(), LocalDateTime.now(), null))) {
+                    LocalDateTime.now(), LocalDateTime.now(), tags))) {
                 logger.info("successfully created new certificate");
                 return new JsonAnswer(HttpStatus.OK, "created new certificate");
             } else {
                 logger.warn("unsuccessful certificate creation");
                 return new JsonError(HttpStatus.BAD_REQUEST, "can't create new create new certificate. " +
-                        "bad request", ErrorCodes.USER_BAD_REQUEST);
+                        "bad request", HttpStatus.BAD_REQUEST.value());
             }
         } catch (ServiceException serviceException) {
             logger.error("unsuccessful certificate creation. exit with exception");
             return new JsonError(HttpStatus.INTERNAL_SERVER_ERROR, "can't create new certificate. server error",
-                    ErrorCodes.SERVER_ERROR_CODE);
+                    HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
-    // TODO: 1/18/21 transfer tags id list
     @PatchMapping("/{id}")
     public JsonAnswer updateCertificate(@PathVariable("id") int id, @RequestParam("name") String name,
                                         @RequestParam("description") String description,
-                                        @RequestParam("price") int price, @RequestParam("duration") int duration, @RequestParam("tags") List<Integer> tags) {
+                                        @RequestParam("price") int price, @RequestParam("duration") int duration,
+                                        @RequestParam("tags") List<Tag> tags) {
         try {
             if (certificateService.updateCertificate(new Certificate(id, name, description, price, duration, null,
-                    LocalDateTime.now(), null))) {
+                    LocalDateTime.now(), tags))) {
                 logger.info("successfully updated certificate");
                 return new JsonAnswer(HttpStatus.OK, "updated certificate");
             } else {
                 logger.warn("unsuccessful try to update certificate");
                 return new JsonError(HttpStatus.BAD_REQUEST, "can't update certificate. bad request",
-                        ErrorCodes.USER_BAD_REQUEST);
+                        HttpStatus.BAD_REQUEST.value());
             }
         } catch (ServiceException exception) {
             logger.error("unsuccessful try to update certificate. exit with exception");
             return new JsonError(HttpStatus.INTERNAL_SERVER_ERROR, "can't update certificate. server error",
-                    ErrorCodes.SERVER_ERROR_CODE);
+                    HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -98,12 +98,12 @@ public class CertificateController {
             } else {
                 logger.warn("unsuccessful certificate deletion");
                 return new JsonError(HttpStatus.BAD_REQUEST, "can't delete certificate. bad request",
-                        ErrorCodes.SERVER_ERROR_CODE);
+                        HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
         } catch (ServiceException exception) {
             logger.warn("unsuccessful certificate deletion. exit with exception");
             return new JsonError(HttpStatus.INTERNAL_SERVER_ERROR, "can't delete certificate. server error",
-                    ErrorCodes.SERVER_ERROR_CODE);
+                    HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 }

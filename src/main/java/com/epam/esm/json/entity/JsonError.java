@@ -1,6 +1,5 @@
 package com.epam.esm.json.entity;
 
-import com.epam.esm.json.entity.JsonAnswer;
 import org.springframework.http.HttpStatus;
 
 public class JsonError extends JsonAnswer {
