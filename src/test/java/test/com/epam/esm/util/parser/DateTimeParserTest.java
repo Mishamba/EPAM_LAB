@@ -1,5 +1,6 @@
-package com.epam.esm.util.parser;
+package test.com.epam.esm.util.parser;
 
+import com.epam.esm.util.parser.DateTimeParser;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ class DateTimeParserTest {
         String actualParsedLocalDateTime = dateTimeParser.parseFrom(localDateTimeToParse);
         String expectedLocalDateTime  = "2018-08-29T06:12:15.156";
 
-        assertEquals(actualParsedLocalDateTime, expectedLocalDateTime);
+        assertEquals(expectedLocalDateTime, actualParsedLocalDateTime);
     }
 
     @Test
@@ -29,6 +30,6 @@ class DateTimeParserTest {
         LocalDateTime actualLocalDateTime = dateTimeParser.parseTo(dateTimeToParse);
         LocalDateTime expectedLocalDateTime = LocalDateTime.of(2018, Month.AUGUST, 29, 6, 12, 15,
                 156 * nanosecondsMultiplier);
-        assertEquals(actualLocalDateTime, expectedLocalDateTime);
+        assertEquals(expectedLocalDateTime, actualLocalDateTime);
     }
 }
