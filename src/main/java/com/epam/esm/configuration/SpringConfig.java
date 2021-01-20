@@ -1,6 +1,5 @@
 package com.epam.esm.configuration;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +15,12 @@ import javax.sql.DataSource;
 @ComponentScan("com.epam.esm")
 @EnableWebMvc
 public class SpringConfig implements WebMvcConfigurer {
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        dataSource.setDriverClassName("mysql-connector-java");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/module2");
         dataSource.setUsername("mishamba");
         dataSource.setPassword("mishamba");
@@ -30,7 +30,7 @@ public class SpringConfig implements WebMvcConfigurer {
 
     @Bean
     public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate();
+        return new JdbcTemplate(dataSource());
     }
 
     @Bean

@@ -7,11 +7,12 @@ import com.epam.esm.model.exception.ServiceException;
 import com.epam.esm.model.service.CertificateService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public class CertificateServiceImpl implements CertificateService {
     private final CertificateDao certificateDao;
     private final Logger logger = Logger.getLogger(CertificateServiceImpl.class);

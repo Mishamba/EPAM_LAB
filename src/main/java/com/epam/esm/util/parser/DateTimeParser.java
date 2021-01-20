@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class DateTimeParser {
-    private final String parseFormat = "yyyy-mm-dd'T'HH:mm:ss.SSS";
+    private final String parseFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(parseFormat);
 
     public String parseFrom(LocalDateTime dateTime) {

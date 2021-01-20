@@ -7,9 +7,11 @@ import com.epam.esm.model.exception.ServiceException;
 import com.epam.esm.model.service.TagService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class TagServiceImpl implements TagService {
     private TagDao tagDao;
     private final static Logger logger = Logger.getLogger(TagServiceImpl.class);
