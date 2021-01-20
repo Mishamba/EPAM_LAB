@@ -7,6 +7,7 @@ import com.epam.esm.model.dao.mapper.IntegerMapper;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.exception.DaoException;
+import com.epam.esm.util.parser.DateTimeParser;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -25,6 +26,7 @@ public class CertificateDaoImpl implements CertificateDao {
     private Logger logger = Logger.getLogger(CertificateDaoImpl.class);
     private JdbcTemplate jdbcTemplate;
     private TagDao tagDao;
+    private DateTimeParser dateTimeParser;
     private final String ALL_CERTIFICATES_QUEUE = "SELECT id, _name, _description, price, duration, " +
             "create_date, last_update_date FROM gift_certificate";
     private final String CERTIFICATE_TAGS_ID_QUEUE = "SELECT tag_id FROM tag_tags WHERE certificate_id = ?";
@@ -41,9 +43,10 @@ public class CertificateDaoImpl implements CertificateDao {
             "price = ? , duration = ? , last_update_date = ? WHERE id = ?";
 
     @Autowired
-    public CertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao) {
+    public CertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao, DateTimeParser dateTimeParser) {
         this.jdbcTemplate = jdbcTemplate;
         this.tagDao = tagDao;
+        this.dateTimeParser = dateTimeParser;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
     private List<Certificate> findAllCertificatesFromDB() throws DaoException {
         try {
-            return jdbcTemplate.query(ALL_CERTIFICATES_QUEUE, new CertificateWithoutTagsMapper());
+            return jdbcTemplate.query(ALL_CERTIFICATES_QUEUE, new CertificateWithoutTagsMapper(dateTimeParser));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);
@@ -80,7 +83,7 @@ public class CertificateDaoImpl implements CertificateDao {
     // TODO: 1/16/21 check this code
     private Optional<Certificate> findCertificateByIdFromDB(int id) throws DaoException {
         try {
-            return jdbcTemplate.query(CERTIFICATE_BY_ID_QUEUE, new CertificateWithoutTagsMapper(), id).
+            return jdbcTemplate.query(CERTIFICATE_BY_ID_QUEUE, new CertificateWithoutTagsMapper(dateTimeParser), id).
                     stream().findAny();
         } catch (DataAccessException exception) {
             logger.error("can't get data");
@@ -118,8 +121,8 @@ public class CertificateDaoImpl implements CertificateDao {
             ps.setString(2, certificate.getDescription());
             ps.setInt(3, certificate.getPrice());
             ps.setInt(4, certificate.getDuration());
-            ps.setString(5, certificate.getCreateDate().toString());
-            ps.setString(6, certificate.getLastUpdateDate().toString());
+            ps.setString(5, dateTimeParser.parseFrom(certificate.getCreateDate()));
+            ps.setString(6, dateTimeParser.parseFrom(certificate.getLastUpdateDate()));
 
             return ps;
         }, keyHolder);
