@@ -51,7 +51,6 @@ class CertificateDaoImplTest {
         );
     }
 
-    // TODO: 1/20/21 fix test
     @ParameterizedTest
     @MethodSource("providerCertificateList")
     void findAllCertificates(List<Certificate> certificateList) {
@@ -59,7 +58,7 @@ class CertificateDaoImplTest {
         DateTimeParser dateTimeParser = new DateTimeParser();
         TagDao tagDao = new TagDaoImpl(jdbcTemplateMock);
 
-        Mockito.when(jdbcTemplateMock.query(QueryRepository.ALL_CERTIFICATES_QUEUE, (RowMapper<Certificate>) Mockito.any())).
+        Mockito.when(jdbcTemplateMock.query(Mockito.same(QueryRepository.ALL_CERTIFICATES_QUEUE), (RowMapper<Certificate>) Mockito.any())).
                 thenReturn(certificateList);
 
         CertificateDao certificateDao = new CertificateDaoImpl(jdbcTemplateMock, tagDao, dateTimeParser);
