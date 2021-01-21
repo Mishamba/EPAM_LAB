@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 
+// TODO: 1/21/21 javadoc
 @Configuration
 @ComponentScan("com.epam.esm")
 @EnableWebMvc

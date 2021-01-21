@@ -8,6 +8,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entity class. Contains fields that stores Certificate data.
+ *
+ * @version 1.0
+ * @author mishamba
+ *
+ * @see com.epam.esm.model.entity.Tag
+ */
 public class Certificate {
 
     @Positive
@@ -38,6 +46,26 @@ public class Certificate {
     @UniqueElements
     private List<Tag> tags;
 
+    /**
+     * Class constructor. This constructor don't get id parameter.
+     * It used when certificate is going to be stored in database. Id will be generated in database.
+     * @param name Certificate name.
+     *             Need to be not empty because of hibernate validation annotation.
+     * @param description Certificate description.
+     *             Need to be not empty because of hibernate validation annotation.
+     * @param price Conventional units.
+     *              Need to be not empty and positive because of hibernate validation annotations.
+     * @param duration Certificate shelf life duration in days.
+     *                 Need to be not empty and positive because of hibernate validation annotations.
+     * @param createDate Certificate create date.
+     *                   Can't be future date and can't be empty because of hibernate validation annotations.
+     * @param lastUpdateDate Date of last update time.
+     *                       Can't be future date and can't be empty because of hibernate validation annotations.
+     * @param tags Certificate tags list.
+     *             Must contain only unique elements because of hibernate validation annotations.
+     *
+     * @see com.epam.esm.model.entity.Tag
+     */
     public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
         id = ModelConstant.NOT_SET_ID;
@@ -50,6 +78,28 @@ public class Certificate {
         this.tags = tags;
     }
 
+    /**
+     * Class constructor. This constructor gets id parameter.
+     * It used when certificate is going to be updated in database.
+     * @param id Identification number. Generated in database.
+     *           Need to be not null because of hibernate validation annotation.
+     * @param name Certificate name.
+     *             Need to be not empty because of hibernate validation annotation.
+     * @param description Certificate description.
+     *             Need to be not empty because of hibernate validation annotation.
+     * @param price Conventional units.
+     *              Need to be not empty and positive because of hibernate validation annotations.
+     * @param duration Certificate shelf life duration in days.
+     *                 Need to be not empty and positive because of hibernate validation annotations.
+     * @param createDate Certificate create date.
+     *                   Can't be future date and can't be empty because of hibernate validation annotations.
+     * @param lastUpdateDate Date of last update time.
+     *                       Can't be future date and can't be empty because of hibernate validation annotations.
+     * @param tags Certificate tags list.
+     *             Must contain only unique elements because of hibernate validation annotations.
+     *
+     * @see com.epam.esm.model.entity.Tag
+     */
     public Certificate(int id, String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.id = id;
@@ -66,10 +116,19 @@ public class Certificate {
         }
     }
 
+    /**
+     * Id getter method.
+     * @return int
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Id setter method. If given id is null throws NullPointerException.
+     * @param id Identification number. Generated in database.
+     *           Need to be not null because of hibernate validation annotations.
+     */
     public void setId(Integer id) {
         if (id == null) {
             throw new NullPointerException("id can't be null");
@@ -78,62 +137,135 @@ public class Certificate {
         this.id = id;
     }
 
+    /**
+     * Name getter method.
+     * @return String
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Name setter method.
+     * @param name Given certificate name. Need to be not null because of hibernate validation annotations.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Description getter method.
+     * @return String
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Description setter method.
+     * @param description Certificate description.
+     *             Need to be not empty because of hibernate validation annotation.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Price getter method.
+     * @return int
+     */
     public int getPrice() {
         return price;
     }
 
+    /**
+     * Price setter method.
+     * @param price Conventional units.
+     *              Need to be not empty and positive because of hibernate validation annotations.
+     */
     public void setPrice(int price) {
         this.price = price;
     }
 
+    /**
+     * Duration getter method.
+     * @return int
+     */
     public int getDuration() {
         return duration;
     }
 
+    /**
+     * Duration setter method.
+     * @param duration Certificate shelf life duration in days.
+     *                 Need to be not empty and positive because of hibernate validation annotations.
+     */
     public void setDuration(int duration) {
         this.duration = duration;
     }
 
+    /**
+     * Create date getter method.
+     * @return LocalDateTime
+     *
+     * @see java.time.LocalDateTime
+     */
     public LocalDateTime getCreateDate() {
         return createDate;
     }
 
+    /**
+     * Create date setter method.
+     * @param createDate Certificate create date.
+     *                   Can't be future date and can't be empty because of hibernate validation annotations.
+     */
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
+    /**
+     * Last update date getter method.
+     * @return LocalDateTime
+     *
+     * @see java.time.LocalDateTime
+     */
     public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
+    /**
+     * Last update date setter method.
+     * @param lastUpdateDate Date of last update time.
+     *                       Can't be future date and can't be empty because of hibernate validation annotations.
+     */
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
+    /**
+     * Certificate Tag List getter method.
+     * @return List with Tag generic
+     *
+     * @see java.util.List
+     * @see com.epam.esm.model.entity.Tag
+     */
     public List<Tag> getTags() {
         return tags;
     }
 
+    /**
+     * Certificate Tag List setter method.
+     * @param tags Certificate tags list.
+     *             Must contain only unique elements because of hibernate validation annotations.
+     */
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 
+    /**
+     * Method to add Tag to Certificate Tag List.
+     * @param tag Tag that will be added to tag list.
+     */
     public void addTag(Tag tag) {
         tags.add(tag);
     }

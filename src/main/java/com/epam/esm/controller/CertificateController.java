@@ -16,6 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * This is controller layer class. Class used everytime when url pattern starts with "/certificate/*" part
+ * Each method call depends on used http method and url path.
+ *
+ * @version 1.0
+ * @author mishamba
+ */
+
 @RestController
 @RequestMapping("/certificate")
 public class CertificateController {
