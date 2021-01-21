@@ -53,10 +53,10 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public boolean updateCertificate(Certificate certificate) throws ServiceException {
+    public boolean updateCertificate(Certificate newCertificate) throws ServiceException {
         try {
-            certificate.setLastUpdateDate(LocalDateTime.now());
-            return certificateDao.updateCertificate(certificate);
+            newCertificate.setLastUpdateDate(LocalDateTime.now());
+            return certificateDao.updateCertificate(newCertificate);
         } catch (DaoException e) {
             logger.error("can't update certificate");
             throw new ServiceException("can't update certificate", e);
