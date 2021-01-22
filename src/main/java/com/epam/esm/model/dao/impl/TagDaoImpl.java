@@ -2,6 +2,7 @@ package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.mapper.TagMapper;
+import com.epam.esm.model.dao.queue.TagQueryRepository;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.exception.DaoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,7 @@ import java.util.List;
 
 @Repository
 public class TagDaoImpl implements TagDao {
-    private JdbcTemplate jdbcTemplate;
-    private final String ALL_TAGS_QUEUE = "SELECT id, _name FROM tag";
-    private final String TAG_BY_ID_QUEUE = "SELECT id, _name FROM tag WHERE id = ?";
-    private final String CREATE_TAG_QUEUE = "INSERT INTO tag (_name) VALUE (?)";
-    private final String DELETE_TAG_FROM_TAG_TABLE = "DELETE FROM tag WHERE id = ?; " +
-            "DELETE FROM certificate_tags WHERE id = ?";
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public TagDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -29,7 +25,7 @@ public class TagDaoImpl implements TagDao {
     @Override
     public List<Tag> findAllTags() throws DaoException {
         try {
-            return jdbcTemplate.query(ALL_TAGS_QUEUE, new TagMapper());
+            return jdbcTemplate.query(TagQueryRepository.ALL_TAGS_QUEUE, new TagMapper());
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
         }
@@ -38,7 +34,7 @@ public class TagDaoImpl implements TagDao {
     @Override
     public Tag findTagById(int id) throws DaoException {
         try {
-            return jdbcTemplate.query(TAG_BY_ID_QUEUE, new TagMapper(), new Object[]{id}).
+            return jdbcTemplate.query(TagQueryRepository.TAG_BY_ID_QUEUE, new TagMapper(), new Object[]{id}).
                     stream().findAny().orElse(null);
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
@@ -47,12 +43,20 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public boolean createTag(Tag tag) throws DaoException {
-        return jdbcTemplate.update(CREATE_TAG_QUEUE, tag.getName()) == 1;
+        try {
+            return jdbcTemplate.update(TagQueryRepository.CREATE_TAG_QUEUE, tag.getName()) == 1;
+        } catch (DataAccessException exception) {
+            throw new DaoException("data insert error", exception);
+        }
     }
 
     @Override
     @Transactional
     public boolean deleteTag(int id) throws DaoException {
-        return jdbcTemplate.update(DELETE_TAG_FROM_TAG_TABLE, id, id) == 2;
+        try {
+            return jdbcTemplate.update(TagQueryRepository.DELETE_TAG_FROM_TAG_TABLE, id, id) >= 1;
+        } catch (DataAccessException exception) {
+            throw new DaoException("data deletion error", exception);
+        }
     }
 }

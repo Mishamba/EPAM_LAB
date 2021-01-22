@@ -4,10 +4,11 @@ import com.epam.esm.model.dao.CertificateDao;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.mapper.CertificateWithoutTagsMapper;
 import com.epam.esm.model.dao.mapper.IntegerMapper;
-import com.epam.esm.model.dao.queue.QueryRepository;
+import com.epam.esm.model.dao.queue.CertificateQueryRepository;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.exception.DaoException;
+import com.epam.esm.model.exception.UtilException;
 import com.epam.esm.util.parser.DateTimeParser;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
     private List<Certificate> findAllCertificatesFromDB() throws DaoException {
         try {
-            return jdbcTemplate.query(QueryRepository.ALL_CERTIFICATES_QUEUE,
+            return jdbcTemplate.query(CertificateQueryRepository.ALL_CERTIFICATES_QUEUE,
                     new CertificateWithoutTagsMapper(dateTimeParser));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
@@ -71,7 +72,7 @@ public class CertificateDaoImpl implements CertificateDao {
     // TODO: 1/16/21 check this code
     private Optional<Certificate> findCertificateByIdFromDB(int id) throws DaoException {
         try {
-            return jdbcTemplate.query(QueryRepository.CERTIFICATE_BY_ID_QUEUE,
+            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_BY_ID_QUEUE,
                     new CertificateWithoutTagsMapper(dateTimeParser), id).
                     stream().findAny();
         } catch (DataAccessException exception) {
@@ -81,7 +82,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private void setCertificateTag(Certificate certificate) throws DaoException {
-        List<Integer> tagIdList = jdbcTemplate.query(QueryRepository.CERTIFICATE_TAGS_ID_QUEUE, new IntegerMapper(),
+        List<Integer> tagIdList = jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_TAGS_ID_QUEUE, new IntegerMapper(),
                 certificate.getId());
         for (int tagId : tagIdList) {
             certificate.addTag(tagDao.findTagById(tagId));
@@ -100,18 +101,21 @@ public class CertificateDaoImpl implements CertificateDao {
         return createCertificateTagsReferences(certificate);
     }
 
-    // This method returns generated id in case of success creation
     private Integer createCertificateInDB(Certificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(QueryRepository.CERTIFICATE_BY_ID_QUEUE);
+            PreparedStatement ps = connection.prepareStatement(CertificateQueryRepository.CREATE_CERTIFICATE_QUEUE);
             ps.setString(1, certificate.getName());
             ps.setString(2, certificate.getDescription());
             ps.setInt(3, certificate.getPrice());
             ps.setInt(4, certificate.getDuration());
-            ps.setString(5, dateTimeParser.parseFrom(certificate.getCreateDate()));
-            ps.setString(6, dateTimeParser.parseFrom(certificate.getLastUpdateDate()));
+            try {
+                ps.setString(5, dateTimeParser.parseFrom(certificate.getCreateDate()));
+                ps.setString(6, dateTimeParser.parseFrom(certificate.getLastUpdateDate()));
+            } catch (UtilException exception) {
+                logger.error("can't parse certificate dateTime");
+            }
 
             return ps;
         }, keyHolder);
@@ -122,7 +126,7 @@ public class CertificateDaoImpl implements CertificateDao {
     private boolean createCertificateTagsReferences(Certificate certificate) {
         int affectedRows = 0;
         for (Tag tag : certificate.getTags()) {
-            affectedRows += jdbcTemplate.update(QueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+            affectedRows += jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
                     certificate.getId(), tag.getId());
         }
 
@@ -142,15 +146,15 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private boolean updateCertificateInDB(Certificate certificate) {
-        return jdbcTemplate.update(QueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE, certificate.getName(), certificate.getDescription(),
+        return jdbcTemplate.update(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE, certificate.getName(), certificate.getDescription(),
                 certificate.getPrice(), certificate.getDuration(), certificate.getLastUpdateDate(),
                 certificate.getId()) == 1;
     }
 
     private void updateCertificateTagsInDB(Certificate certificate) {
-        jdbcTemplate.update(QueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, certificate.getId());
+        jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, certificate.getId());
         for (Tag tag : certificate.getTags()) {
-            jdbcTemplate.update(QueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+            jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
                     certificate.getId(), tag.getId());
         }
     }
@@ -159,8 +163,8 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public boolean deleteCertificate(int id) throws DaoException {
         try {
-            return jdbcTemplate.update(QueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, id) == 1 &&
-                    jdbcTemplate.update(QueryRepository.DELETE_CERTIFICATE_BY_ID_QUEUE, id) >= 0;
+            return jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, id) == 1 &&
+                    jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_BY_ID_QUEUE, id) >= 0;
         } catch (DataAccessException exception) {
             logger.error("couldn't delete certificate");
             throw new DaoException("can't delete certificate");

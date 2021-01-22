@@ -4,7 +4,7 @@ import com.epam.esm.model.dao.CertificateDao;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.impl.CertificateDaoImpl;
 import com.epam.esm.model.dao.impl.TagDaoImpl;
-import com.epam.esm.model.dao.queue.QueryRepository;
+import com.epam.esm.model.dao.queue.CertificateQueryRepository;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.exception.DaoException;
@@ -58,7 +58,7 @@ class CertificateDaoImplTest {
         DateTimeParser dateTimeParser = new DateTimeParser();
         TagDao tagDao = new TagDaoImpl(jdbcTemplateMock);
 
-        Mockito.when(jdbcTemplateMock.query(Mockito.same(QueryRepository.ALL_CERTIFICATES_QUEUE), (RowMapper<Certificate>) Mockito.any())).
+        Mockito.when(jdbcTemplateMock.query(Mockito.same(CertificateQueryRepository.ALL_CERTIFICATES_QUEUE), (RowMapper<Certificate>) Mockito.any())).
                 thenReturn(certificateList);
 
         CertificateDao certificateDao = new CertificateDaoImpl(jdbcTemplateMock, tagDao, dateTimeParser);

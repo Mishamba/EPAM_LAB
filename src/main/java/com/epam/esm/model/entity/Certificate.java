@@ -304,6 +304,13 @@ public class Certificate {
         return hash;
     }
 
+    /**
+     * Default toString() method. Returns certificate in format:
+     * Certificate{name='${name}, description='${description}, price=${price}, duration=${duration},
+     * createDate=${createDate}, lastUpdateDate=${lastUpdateDate}, tags=${tags}}
+     *
+     * @return String
+     */
     @Override
     public String toString() {
         return "Certificate{" +

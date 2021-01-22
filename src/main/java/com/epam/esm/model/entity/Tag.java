@@ -96,4 +96,18 @@ public class Tag {
         int primeForHashCode = 123;
         return name.hashCode() * primeForHashCode;
     }
+
+    /**
+     * Default toString() method. Returns tag in format:
+     * Tag{id=${id}, name='${name}'}
+     *
+     * @return String
+     */
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
