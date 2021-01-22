@@ -8,5 +8,8 @@ package com.epam.esm.model.constant;
  */
 
 public class ModelConstant {
+    /**
+     * Used to set id for entity which has no generated id.
+     */
     public final static int NOT_SET_ID = 0;
 }

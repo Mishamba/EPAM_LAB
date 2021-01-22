@@ -13,17 +13,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * This is controller layer class. Class used everytime when url pattern starts with "/tag/*" part
+ * Each method call depends on used http method and url path.
+ *
+ * @version 1.0
+ * @author mishamba
+ */
 @RestController
 @RequestMapping("/tag")
 public class TagController {
     private final TagService tagService;
     private final Logger logger = Logger.getLogger(TagController.class);
 
+    /**
+     * Constructor. Gets parameters from Spring using @Autowired.
+     *
+     * @param tagService Service layer component.
+     */
     @Autowired
     public TagController(TagService tagService) {
         this.tagService = tagService;
     }
 
+    /**
+     * This method returns all Tags stored in database.
+     *
+     * @return All stored Tags.
+     * @throws ControllerException
+     */
     @GetMapping
     public List<Tag> index() throws ControllerException {
         try {
@@ -34,6 +52,13 @@ public class TagController {
         }
     }
 
+    /**
+     * This method returns Tag with given id.
+     *
+     * @param id Tag id.
+     * @return Tag with given id.
+     * @throws ControllerException
+     */
     @GetMapping("/{id}")
     public Tag getTagById(@PathVariable("id") int id) throws ControllerException {
         try {
@@ -44,6 +69,15 @@ public class TagController {
         }
     }
 
+    /**
+     * This method creates and stores Tag in database.
+     *
+     * @param name New tag name.
+     * @return JsonError of JsonAnswer with operation result status.
+     *
+     * @see com.epam.esm.json.entity.JsonAnswer
+     * @see com.epam.esm.json.entity.JsonError
+     */
     @PostMapping
     public JsonAnswer createTag(@RequestParam("name") String name) {
         try {
@@ -62,6 +96,15 @@ public class TagController {
         }
     }
 
+    /**
+     * This method deletes tag from database using tag id.
+     *
+     * @param id Delete tag id.
+     * @return JsonError of JsonAnswer with operation result status.
+     *
+     * @see com.epam.esm.json.entity.JsonAnswer
+     * @see com.epam.esm.json.entity.JsonError
+     */
     @DeleteMapping("/{id}")
     public JsonAnswer deleteTag(@PathVariable("id") int id) {
         try {

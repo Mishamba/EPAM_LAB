@@ -23,18 +23,30 @@ import java.util.List;
  * @version 1.0
  * @author mishamba
  */
-
 @RestController
 @RequestMapping("/certificate")
 public class CertificateController {
     private final CertificateService certificateService;
     private final Logger logger = Logger.getLogger(CertificateDaoImpl.class);
 
+    /**
+     * Constructor. Gets parameters from Spring using @Autowired.
+     *
+     * @param certificateService Service layer component
+     *
+     * @see com.epam.esm.model.service.impl.CertificateServiceImpl
+     */
     @Autowired
     public CertificateController(CertificateService certificateService) {
         this.certificateService = certificateService;
     }
 
+    /**
+     * This method returns all Certificates stored in database.
+     *
+     * @return All certificates
+     * @throws ControllerException
+     */
     @GetMapping
     public List<Certificate> index() throws ControllerException {
         try {
@@ -44,6 +56,13 @@ public class CertificateController {
         }
     }
 
+    /**
+     * This method returns Certificate with given id.
+     *
+     * @param id Certificate id.
+     * @return Certificate with given id.
+     * @throws ControllerException
+     */
     @GetMapping("/{id}")
     public Certificate getCertificate(@PathVariable("id") int id) throws ControllerException {
         try {
@@ -53,6 +72,19 @@ public class CertificateController {
         }
     }
 
+    /**
+     * This method creates certificate using given parameters.
+     *
+     * @param name New certificate name.
+     * @param description New certificate description.
+     * @param price New certificate price.
+     * @param duration New certificate duration.
+     * @param tags New certificate tags.
+     * @return JsonError of JsonAnswer with operation result status.
+     *
+     * @see com.epam.esm.json.entity.JsonAnswer
+     * @see com.epam.esm.json.entity.JsonError
+     */
     @PostMapping
     public JsonAnswer createCertificate(@RequestParam("name") String name,
                                         @RequestParam("description") String description,
@@ -75,6 +107,20 @@ public class CertificateController {
         }
     }
 
+    /**
+     * This method updates Certificate data.
+     *
+     * @param id Updated certificate id.
+     * @param name Updated certificate name.
+     * @param description Update certificate description.
+     * @param price Updated certificate price.
+     * @param duration Updated certificate duration.
+     * @param tags Updated certificate tags.
+     * @return JsonError of JsonAnswer with operation result status.
+     *
+     * @see com.epam.esm.json.entity.JsonAnswer
+     * @see com.epam.esm.json.entity.JsonError
+     */
     @PatchMapping("/{id}")
     public JsonAnswer updateCertificate(@PathVariable("id") int id, @RequestParam("name") String name,
                                         @RequestParam("description") String description,
@@ -97,6 +143,15 @@ public class CertificateController {
         }
     }
 
+    /**
+     * This method deletes certificate with given id.
+     *
+     * @param id Certificate id to delete.
+     * @return JsonError of JsonAnswer with operation result status.
+     *
+     * @see com.epam.esm.json.entity.JsonAnswer
+     * @see com.epam.esm.json.entity.JsonError
+     */
     @DeleteMapping("/{id}")
     public JsonAnswer deleteCertificate(@PathVariable("id") int id) {
         try {
