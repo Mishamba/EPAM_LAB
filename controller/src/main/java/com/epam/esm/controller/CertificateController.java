@@ -17,14 +17,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * This is controller layer class. Class used everytime when url pattern starts with "/certificate/*" part
- * Each method call depends on used http method and url path.
- *
  * @version 1.0
  * @author mishamba
  */
 @RestController
-@RequestMapping("/certificate")
+@RequestMapping("/certificates")
 public class CertificateController {
     private final CertificateService certificateService;
     private final Logger logger = Logger.getLogger(CertificateDaoImpl.class);
@@ -42,7 +39,7 @@ public class CertificateController {
     }
 
     /**
-     * This method returns all Certificates stored in database.
+     * Returns all Certificates stored in database.
      *
      * @return All certificates
      * @throws ControllerException
@@ -57,7 +54,7 @@ public class CertificateController {
     }
 
     /**
-     * This method returns Certificate with given id.
+     * Returns Certificate with given id.
      *
      * @param id Certificate id.
      * @return Certificate with given id.
@@ -68,7 +65,7 @@ public class CertificateController {
         try {
             return certificateService.findCertificateById(id);
         } catch (ServiceException exception) {
-            throw new ControllerException("can't get certfiicate", exception);
+            throw new ControllerException("can't get certificate", exception);
         }
     }
 
@@ -91,8 +88,9 @@ public class CertificateController {
                                         @RequestParam("price") int price, @RequestParam("duration") int duration,
                                         @RequestParam("tags") List<Tag> tags) {
         try {
-            if (certificateService.createCertificate(new Certificate(name, description, price, duration,
-                    LocalDateTime.now(), LocalDateTime.now(), tags))) {
+            LocalDateTime now = LocalDateTime.now();
+            if (certificateService.createCertificate(
+                    new Certificate(name, description, price, duration, now, now, tags))) {
                 logger.info("successfully created new certificate");
                 return new JsonAnswer(HttpStatus.OK, "created new certificate");
             } else {

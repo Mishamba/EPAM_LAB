@@ -14,21 +14,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * This is controller layer class. Class used everytime when url pattern starts with "/tag/*" part
- * Each method call depends on used http method and url path.
- *
  * @version 1.0
  * @author mishamba
  */
 @RestController
-@RequestMapping("/tag")
+@RequestMapping("/tags")
 public class TagController {
     private final TagService tagService;
     private final Logger logger = Logger.getLogger(TagController.class);
 
     /**
-     * Constructor. Gets parameters from Spring using @Autowired.
-     *
      * @param tagService Service layer component.
      */
     @Autowired
