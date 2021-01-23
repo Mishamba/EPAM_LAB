@@ -70,7 +70,7 @@ public class CertificateController {
     }
 
     /**
-     * This method creates certificate using given parameters.
+     * Creates certificate using given parameters.
      *
      * @param name New certificate name.
      * @param description New certificate description.
@@ -106,7 +106,7 @@ public class CertificateController {
     }
 
     /**
-     * This method updates Certificate data.
+     * Updates Certificate data.
      *
      * @param id Updated certificate id.
      * @param name Updated certificate name.
@@ -142,7 +142,7 @@ public class CertificateController {
     }
 
     /**
-     * This method deletes certificate with given id.
+     * Deletes certificate with given id.
      *
      * @param id Certificate id to delete.
      * @return JsonError of JsonAnswer with operation result status.

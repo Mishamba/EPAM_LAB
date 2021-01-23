@@ -1,34 +1,21 @@
 package com.epam.esm.model.configuration;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import javax.sql.DataSource;
+public class WebConfiguration extends AbstractAnnotationConfigDispatcherServletInitializer {
 
-@Configuration
-@EnableWebMvc
-public class WebConfiguration implements WebMvcConfigurer {
-    private DataSource dataSource;
-
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Drive");
-        dataSource.setUsername("mishamba");
-        dataSource.setPassword("mishamba");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/module2");
-
-        this.dataSource = dataSource;
-
-        return dataSource;
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[0];
     }
 
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource);
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[] {SpringConfiguration.class};
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[] {"/*"};
     }
 }
