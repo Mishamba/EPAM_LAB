@@ -146,9 +146,9 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private boolean updateCertificateInDB(Certificate certificate) {
-        return jdbcTemplate.update(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE, certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), certificate.getDuration(), certificate.getLastUpdateDate(),
-                certificate.getId()) == 1;
+        return jdbcTemplate.update(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE, certificate.getName(),
+                certificate.getDescription(), certificate.getPrice(), certificate.getDuration(),
+                certificate.getLastUpdateDate(), certificate.getId()) == 1;
     }
 
     private void updateCertificateTagsInDB(Certificate certificate) {

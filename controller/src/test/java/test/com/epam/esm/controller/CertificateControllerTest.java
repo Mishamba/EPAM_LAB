@@ -3,12 +3,16 @@ package test.com.epam.esm.controller;
 import com.epam.esm.controller.CertificateController;
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.controller.json.entity.JsonAnswer;
+import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.impl.CertificateDaoImpl;
+import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.dao.util.parser.DateTimeParser;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.impl.CertificateServiceImpl;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,7 +20,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,19 +34,29 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CertificateControllerTest {
+    private EmbeddedDatabase embeddedDatabase;
+    private CertificateDao certificateDao;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private TagDao tagDao;
-    @Autowired
-    private DateTimeParser parser;
+    CertificateControllerTest() {
+    }
+
+    @BeforeEach
+    void setUp() {
+        this.embeddedDatabase = (new EmbeddedDatabaseBuilder()).addDefaultScripts().setType(EmbeddedDatabaseType.H2).build();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(this.embeddedDatabase);
+        TagDao tagDao = new TagDaoImpl(jdbcTemplate);
+        this.certificateDao = new CertificateDaoImpl(jdbcTemplate, tagDao, new DateTimeParser());
+    }
+
+    @AfterEach
+    void tearDown() {
+        this.embeddedDatabase.shutdown();
+    }
 
     @ParameterizedTest
     @MethodSource("databaseCertificates")
     void index(List<Certificate> expectedCertificates) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(
-                new CertificateDaoImpl(jdbcTemplate, tagDao, parser)));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
         try {
             List<Certificate> actualCertificates = controller.index();
             assertEquals(expectedCertificates, actualCertificates);
@@ -67,8 +85,7 @@ class CertificateControllerTest {
     @ParameterizedTest
     @MethodSource("firstIdCertificate")
     void getCertificate(Certificate expectedCertificate, int id) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(
-                new CertificateDaoImpl(jdbcTemplate, tagDao, parser)));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
         try {
             Certificate actualCertificate = controller.getCertificate(id);
             assertEquals(expectedCertificate, actualCertificate);
@@ -94,8 +111,7 @@ class CertificateControllerTest {
     @MethodSource("certificateToCreate")
     void createCertificate(String certificateName, String certificateDescription, int certificatePrice,
                            int certificateDuration, List<Tag> certificateTags, JsonAnswer expectedAnswer) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(
-                new CertificateDaoImpl(jdbcTemplate, tagDao, parser)));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
         JsonAnswer actualAnswer = controller.createCertificate(certificateName, certificateDescription,certificatePrice,
                 certificateDuration, certificateTags);
         assertEquals(expectedAnswer, actualAnswer);
@@ -115,8 +131,7 @@ class CertificateControllerTest {
     @MethodSource("certificateToUpdate")
     void updateCertificate(int id, String certificateName, String certificateDescription, int certificatePrice,
                            int certificateDuration, List<Tag> certificateTags, JsonAnswer expectedAnswer) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(
-                new CertificateDaoImpl(jdbcTemplate, tagDao, parser)));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
         JsonAnswer actualAnswer = controller.updateCertificate(id, certificateName, certificateDescription,certificatePrice,
                 certificateDuration, certificateTags);
         assertEquals(expectedAnswer, actualAnswer);
@@ -138,8 +153,7 @@ class CertificateControllerTest {
     @ParameterizedTest
     @MethodSource("certificatesId")
     void deleteCertificate(int id, JsonAnswer expectedAnswer) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(
-                new CertificateDaoImpl(jdbcTemplate, tagDao, parser)));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
         JsonAnswer actualAnswer = controller.deleteCertificate(id);
         assertEquals(expectedAnswer, actualAnswer);
     }
