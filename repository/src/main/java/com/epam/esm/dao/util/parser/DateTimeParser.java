@@ -1,6 +1,7 @@
 package com.epam.esm.dao.util.parser;
 
 import com.epam.esm.dao.util.exception.UtilException;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @see LocalDateTime
  */
+@Component
 public class DateTimeParser {
 
     /**
