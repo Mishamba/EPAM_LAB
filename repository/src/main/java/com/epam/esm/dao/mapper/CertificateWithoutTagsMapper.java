@@ -41,8 +41,8 @@ public class CertificateWithoutTagsMapper implements RowMapper<Certificate> {
     @Override
     public Certificate mapRow(ResultSet resultSet, int i) throws SQLException {
         try {
-            return new Certificate(resultSet.getInt("id"), resultSet.getString("_name"),
-                    resultSet.getString("description"), resultSet.getInt("price"), resultSet.getInt("duration"),
+            return new Certificate(resultSet.getInt("id"), resultSet.getString("certificate_name"),
+                    resultSet.getString("certificate_description"), resultSet.getInt("price"), resultSet.getInt("duration"),
                     dateTimeParser.parseTo(resultSet.getString("create_date")),
                     dateTimeParser.parseTo(resultSet.getString("last_update_date")), null);
         } catch (UtilException exception) {

@@ -41,3 +41,6 @@ insert into certificate_tags(certificate_id, tag_id) values
 (1, 1),
 (1, 3), 
 (2, 2);
+
+drop table if exists certificate_tags;
+drop table if exists gift_certificate;

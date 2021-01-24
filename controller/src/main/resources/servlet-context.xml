@@ -18,14 +18,11 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-    <context:component-scan base-package="com.epam.esm.service"/>
-    <context:component-scan base-package="com.epam.esm.controller"/>
-    <context:component-scan base-package="com.epam.esm.model"/>
-    <context:component-scan base-package="com.epam.esm.dao"/>
+    <context:component-scan base-package="com.epam.esm"/>
 
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <!-- <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/view/"/>
         <property name="suffix" value=".jsp"/>
-    </bean>
+    </bean> -->
 
 </beans>

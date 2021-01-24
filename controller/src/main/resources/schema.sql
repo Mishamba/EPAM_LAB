@@ -1,23 +1,23 @@
-create table gift_certificate (
-	id int not null unique auto_increment,
-    _name varchar(30) not null,
-    _description varchar(255) not null,
-    price int not null,
-    duration int not null,
-    create_date varchar(23) not null,
-    last_update_date varchar(23) not null,
-    primary key (id)
+CREATE TABLE gift_certificate (
+	id INT AUTO_INCREMENT NOT NULL UNIQUE,
+    certificate_name varchar(30) NOT NULL,
+    certificate_description varchar(255) NOT NULL,
+    price INT NOT NULL,
+    duration INT NOT NULL,
+    create_date VARCHAR(23) NOT NULL,
+    last_update_date varchar(23) NOT NULL,
+    PRIMARY KEY (id)
 );
 
-create table tag (
-	id int not null unique auto_increment,
-    _name varchar(30) not null,
-    primary key (id)
+CREATE TABLE tag (
+	id INT AUTO_INCREMENT NOT NULL UNIQUE,
+    _name varchar(30) NOT NULL,
+    PRIMARY KEY (id)
 );
 
-create table certificate_tags (
-	certificate_id int not null,
-    tag_id int not null,
-    foreign key (certificate_id) references gift_certificate(id),
-    foreign key (tag_id) references tag(id)
+CREATE TABLE certificate_tags (
+	certificate_id INT NOT NULL,
+    tag_id INT NOT NULL,
+    FOREIGN KEY (certificate_id) REFERENCES gift_certificate(id),
+    FOREIGN KEY (tag_id) REFERENCES tag(id)
 );

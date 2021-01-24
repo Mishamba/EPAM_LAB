@@ -13,18 +13,15 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.impl.CertificateServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -140,12 +137,10 @@ class CertificateControllerTest {
     static Stream<Arguments> certificateToUpdate() {
         Tag funTag = new Tag(4, "fun");
         Tag trashTag = new Tag(5, "trash");
-        Certificate certificate = new Certificate("circus in our life", "using this certificate u will see that our life is just a circus", 0, 365,
-                LocalDateTime.now(), LocalDateTime.now(), Collections.singletonList(funTag));
         JsonAnswer answer = new JsonAnswer(HttpStatus.OK, "updated certificate");
 
         return Stream.of(
-                Arguments.of("circus in our life", "using this certificate u will see that our life is just a circus",
+                Arguments.of(1, "circus in our life", "using this certificate u will see that our life is just a circus",
                         0, 365, Arrays.asList(funTag, trashTag), answer)
         );
     }
