@@ -21,7 +21,7 @@ import java.util.List;
  * @author mishamba
  */
 @RestController
-@RequestMapping("/certificates")
+@RequestMapping("/certificate")
 public class CertificateController {
     private final CertificateService certificateService;
     private final Logger logger = Logger.getLogger(CertificateDaoImpl.class);
@@ -44,7 +44,7 @@ public class CertificateController {
      * @return All certificates
      * @throws ControllerException
      */
-    @GetMapping
+    @GetMapping("get/all")
     public List<Certificate> index() throws ControllerException {
         try {
             return certificateService.findAllCertificates();
@@ -60,7 +60,7 @@ public class CertificateController {
      * @return Certificate with given id.
      * @throws ControllerException
      */
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public Certificate getCertificate(@PathVariable("id") int id) throws ControllerException {
         try {
             return certificateService.findCertificateById(id);
@@ -82,7 +82,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonAnswer
      * @see com.epam.esm.controller.json.entity.JsonError
      */
-    @PostMapping
+    @PostMapping("/create")
     public JsonAnswer createCertificate(@RequestParam("name") String name,
                                         @RequestParam("description") String description,
                                         @RequestParam("price") int price, @RequestParam("duration") int duration,
@@ -119,7 +119,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonAnswer
      * @see com.epam.esm.controller.json.entity.JsonError
      */
-    @PatchMapping("/{id}")
+    @PatchMapping("/update/{id}")
     public JsonAnswer updateCertificate(@PathVariable("id") int id, @RequestParam("name") String name,
                                         @RequestParam("description") String description,
                                         @RequestParam("price") int price, @RequestParam("duration") int duration,
@@ -150,7 +150,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonAnswer
      * @see com.epam.esm.controller.json.entity.JsonError
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public JsonAnswer deleteCertificate(@PathVariable("id") int id) {
         try {
             if (certificateService.deleteCertificate(id)) {

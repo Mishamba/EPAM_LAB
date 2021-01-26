@@ -18,7 +18,7 @@ import java.util.List;
  * @author mishamba
  */
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("/tag")
 public class TagController {
     private final TagService tagService;
     private final Logger logger = Logger.getLogger(TagController.class);
@@ -37,7 +37,7 @@ public class TagController {
      * @return All stored Tags.
      * @throws ControllerException
      */
-    @GetMapping
+    @GetMapping("/get/all")
     public List<Tag> index() throws ControllerException {
         try {
             return tagService.findAllTags();
@@ -54,7 +54,7 @@ public class TagController {
      * @return Tag with given id.
      * @throws ControllerException
      */
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public Tag getTagById(@PathVariable("id") int id) throws ControllerException {
         try {
             return tagService.findTagById(id);
@@ -73,7 +73,7 @@ public class TagController {
      * @see com.epam.esm.controller.json.entity.JsonAnswer
      * @see com.epam.esm.controller.json.entity.JsonError
      */
-    @PostMapping
+    @PostMapping("/create")
     public JsonAnswer createTag(@RequestParam("name") String name) {
         try {
             if (tagService.createTag(new Tag(name))) {
@@ -100,7 +100,7 @@ public class TagController {
      * @see com.epam.esm.controller.json.entity.JsonAnswer
      * @see com.epam.esm.controller.json.entity.JsonError
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public JsonAnswer deleteTag(@PathVariable("id") int id) {
         try {
             if (tagService.deleteTag(id)) {
