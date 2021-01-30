@@ -2,7 +2,7 @@ package test.com.epam.esm.dao.mapper;
 
 import com.epam.esm.dao.mapper.CertificateWithoutTagsMapper;
 import com.epam.esm.model.entity.Certificate;
-import com.epam.esm.dao.util.parser.DateTimeParser;
+import com.epam.esm.model.util.parser.DateTimeParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

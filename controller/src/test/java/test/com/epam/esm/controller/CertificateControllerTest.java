@@ -7,7 +7,7 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.impl.CertificateDaoImpl;
 import com.epam.esm.dao.impl.TagDaoImpl;
-import com.epam.esm.dao.util.parser.DateTimeParser;
+import com.epam.esm.model.util.parser.DateTimeParser;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.impl.CertificateServiceImpl;

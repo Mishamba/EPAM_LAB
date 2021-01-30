@@ -1,6 +1,8 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.serializator.DateTimeSerializator;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -37,10 +39,12 @@ public class Certificate {
 
     @NotEmpty
     @PastOrPresent
+    @JsonSerialize(using = DateTimeSerializator.class)
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
+    @JsonSerialize(using = DateTimeSerializator.class)
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements

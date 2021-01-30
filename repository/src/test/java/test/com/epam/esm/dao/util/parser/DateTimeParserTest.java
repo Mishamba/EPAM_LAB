@@ -1,7 +1,7 @@
 package test.com.epam.esm.dao.util.parser;
 
-import com.epam.esm.dao.util.exception.UtilException;
-import com.epam.esm.dao.util.parser.DateTimeParser;
+import com.epam.esm.model.util.exception.UtilException;
+import com.epam.esm.model.util.parser.DateTimeParser;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

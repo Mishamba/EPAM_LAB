@@ -1,6 +1,6 @@
-package com.epam.esm.dao.util.parser;
+package com.epam.esm.model.util.parser;
 
-import com.epam.esm.dao.util.exception.UtilException;
+import com.epam.esm.model.util.exception.UtilException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
