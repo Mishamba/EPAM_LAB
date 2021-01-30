@@ -24,7 +24,6 @@ import java.util.Objects;
 public class SpringConfiguration {
 
     private final Environment environment;
-    private DataSource dataSource;
 
     @Autowired
     public SpringConfiguration(Environment environment) {
@@ -39,18 +38,16 @@ public class SpringConfiguration {
         dataSource.setUsername(environment.getProperty("database.username"));
         dataSource.setPassword(environment.getProperty("database.password"));
 
-        this.dataSource = dataSource;
-
         return dataSource;
     }
 
     @Bean
     public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource);
+        return new JdbcTemplate(dataSource());
     }
 
     @Bean
     public TransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource);
+        return new DataSourceTransactionManager(dataSource());
     }
 }

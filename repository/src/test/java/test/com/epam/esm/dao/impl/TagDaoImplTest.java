@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -25,10 +24,9 @@ class TagDaoImplTest {
     @ParameterizedTest
     @MethodSource("provideTags")
     void findAllTags(List<Tag> expectedTagList) {
-        JdbcTemplate jdbcTemplateMock = (JdbcTemplate) Mockito.when(JdbcTemplate.class);
-
-        Mockito.when(jdbcTemplateMock.query(Mockito.eq(TagQueryRepository.ALL_TAGS_QUEUE),
-                (RowMapper<Object>) Mockito.any())).thenReturn(Collections.singletonList(expectedTagList));
+        JdbcTemplate jdbcTemplateMock = Mockito.mock(JdbcTemplate.class);
+        Mockito.when(jdbcTemplateMock.query(Mockito.same(TagQueryRepository.ALL_TAGS_QUEUE), (RowMapper<Tag>) Mockito.any())).
+                thenReturn(expectedTagList);
 
         TagDao tagDao = new TagDaoImpl(jdbcTemplateMock);
 

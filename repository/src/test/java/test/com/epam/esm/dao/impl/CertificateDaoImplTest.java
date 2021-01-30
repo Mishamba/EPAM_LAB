@@ -6,6 +6,7 @@ import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.dao.impl.CertificateDaoImpl;
 import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.dao.queue.CertificateQueryRepository;
+import com.epam.esm.dao.util.exception.UtilException;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.dao.util.parser.DateTimeParser;
@@ -78,8 +79,7 @@ class CertificateDaoImplTest {
         TagDao tagDao = new TagDaoImpl(jdbcTemplateMock);
 
         Mockito.when(jdbcTemplateMock.query(Mockito.same(CertificateQueryRepository.CERTIFICATE_BY_ID_QUEUE),
-                (RowMapper<Certificate>) Mockito.any(), Mockito.eq(id)).stream().findAny()).
-                thenReturn(Optional.of(expectedCertificate));
+                (RowMapper<Certificate>) Mockito.any(), Mockito.eq(id))).thenReturn(Arrays.asList(expectedCertificate));
 
         CertificateDao certificateDao = new CertificateDaoImpl(jdbcTemplateMock, tagDao, dateTimeParser);
 
@@ -111,20 +111,20 @@ class CertificateDaoImplTest {
         TagDao tagDao = new TagDaoImpl(jdbcTemplateMock);
 
         // This methods return value never used in update method.
-        Mockito.when(jdbcTemplateMock.update(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE,
-                certificate.getName(), certificate.getDescription(), certificate.getPrice(), certificate.getDuration(),
-                certificate.getLastUpdateDate(), certificate.getId())).thenReturn(1);
-        Mockito.when(jdbcTemplateMock.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE,
-                certificate.getId())).thenReturn(1);
-        Mockito.when(jdbcTemplateMock.update(
-                Mockito.eq(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE),
-                Mockito.eq(certificate.getId()), Mockito.any())).thenReturn(1);
-
-        CertificateDao certificateDao = new CertificateDaoImpl(jdbcTemplateMock, tagDao, dateTimeParser);
         try {
+            Mockito.when(jdbcTemplateMock.update(Mockito.eq(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE),
+                    Mockito.eq(certificate.getName()), Mockito.eq(certificate.getDescription()), Mockito.eq(certificate.getPrice()), Mockito.eq(certificate.getDuration()),
+                    Mockito.eq(dateTimeParser.parseFrom(certificate.getLastUpdateDate())), Mockito.eq(certificate.getId()))).thenReturn(1);
+            Mockito.when(jdbcTemplateMock.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE,
+                    certificate.getId())).thenReturn(1);
+            Mockito.when(jdbcTemplateMock.update(
+                    Mockito.eq(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE),
+                    Mockito.eq(certificate.getId()), Mockito.any())).thenReturn(1);
+
+            CertificateDao certificateDao = new CertificateDaoImpl(jdbcTemplateMock, tagDao, dateTimeParser);
             boolean actual = certificateDao.updateCertificate(certificate);
             assertEquals(expected, actual);
-        } catch (DaoException e) {
+        } catch (DaoException | UtilException e) {
             fail(e);
         }
     }

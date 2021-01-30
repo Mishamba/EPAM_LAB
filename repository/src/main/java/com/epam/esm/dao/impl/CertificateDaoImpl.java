@@ -152,6 +152,14 @@ public class CertificateDaoImpl implements CertificateDao {
         }
     }
 
+    private void updateCertificateTagsInDB(Certificate certificate) {
+        jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, certificate.getId());
+        for (Tag tag : certificate.getTags()) {
+            jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+                    certificate.getId(), tag.getId());
+        }
+    }
+
     private boolean updateCertificateInDB(Certificate certificate) throws DaoException {
         try {
             return jdbcTemplate.update(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE, certificate.getName(),
@@ -160,14 +168,6 @@ public class CertificateDaoImpl implements CertificateDao {
         } catch (UtilException e) {
             logger.error("parse error");
             throw new DaoException("query execute error", e);
-        }
-    }
-
-    private void updateCertificateTagsInDB(Certificate certificate) {
-        jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, certificate.getId());
-        for (Tag tag : certificate.getTags()) {
-            jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
-                    certificate.getId(), tag.getId());
         }
     }
 
