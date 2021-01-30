@@ -34,11 +34,17 @@ public class TagDaoImpl implements TagDao {
     @Override
     public Tag findTagById(int id) throws DaoException {
         try {
-            return jdbcTemplate.query(TagQueryRepository.TAG_BY_ID_QUEUE, new TagMapper(), new Object[]{id}).
+            return jdbcTemplate.query(TagQueryRepository.TAG_BY_ID_QUEUE, new TagMapper(), id).
                     stream().findAny().orElse(null);
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
         }
+    }
+
+    @Override
+    public Tag findTagByName(String tagName) throws DaoException {
+        return jdbcTemplate.query(TagQueryRepository.TAG_BY_NAME_QUEUE, new TagMapper(), tagName).
+                stream().findAny().orElse(null);
     }
 
     @Override

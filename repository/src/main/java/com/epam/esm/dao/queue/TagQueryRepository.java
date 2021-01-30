@@ -34,4 +34,9 @@ public class TagQueryRepository {
      * Query deleted tag from tag table.
      */
     public static final String DELETE_TAG_FROM_TAG_TABLE = "DELETE FROM tag WHERE id = ?";
+
+    /**
+     * Query selects tag by name.
+     */
+    public static final String TAG_BY_NAME_QUEUE = "SELECT id, tag_name FROM tag WHERE name = ?";
 }

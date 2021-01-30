@@ -7,6 +7,7 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.impl.CertificateDaoImpl;
 import com.epam.esm.dao.impl.TagDaoImpl;
+import com.epam.esm.model.util.comparator.CertificateComparatorFactory;
 import com.epam.esm.model.util.parser.DateTimeParser;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
@@ -53,9 +54,10 @@ class CertificateControllerTest {
     @ParameterizedTest
     @MethodSource("databaseCertificates")
     void index(List<Certificate> expectedCertificates) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao),
+                new CertificateComparatorFactory());
         try {
-            List<Certificate> actualCertificates = controller.index();
+            List<Certificate> actualCertificates = controller.index( "name",null);
             assertEquals(expectedCertificates, actualCertificates);
         } catch (ControllerException e) {
             fail(e);
@@ -82,9 +84,10 @@ class CertificateControllerTest {
     @ParameterizedTest
     @MethodSource("firstIdCertificate")
     void getCertificate(Certificate expectedCertificate, int id) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao),
+                new CertificateComparatorFactory());
         try {
-            Certificate actualCertificate = controller.getCertificate(id);
+            Certificate actualCertificate = controller.findCertificate(id);
             assertEquals(expectedCertificate, actualCertificate);
         } catch (ControllerException e) {
             fail(e);
@@ -108,7 +111,8 @@ class CertificateControllerTest {
     @MethodSource("certificateToCreate")
     void createCertificate(String certificateName, String certificateDescription, int certificatePrice,
                            int certificateDuration, List<Tag> certificateTags, JsonAnswer expectedAnswer) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao),
+                new CertificateComparatorFactory());
         JsonAnswer actualAnswer = controller.createCertificate(certificateName, certificateDescription,certificatePrice,
                 certificateDuration, certificateTags);
         assertEquals(expectedAnswer, actualAnswer);
@@ -128,9 +132,10 @@ class CertificateControllerTest {
     @MethodSource("certificateToUpdate")
     void updateCertificate(int id, String certificateName, String certificateDescription, int certificatePrice,
                            int certificateDuration, List<Tag> certificateTags, JsonAnswer expectedAnswer) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
-        JsonAnswer actualAnswer = controller.updateCertificate(id, certificateName, certificateDescription,certificatePrice,
-                certificateDuration, certificateTags);
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao),
+                new CertificateComparatorFactory());
+        JsonAnswer actualAnswer = controller.updateCertificate(id, certificateName, certificateDescription,
+                certificatePrice, certificateDuration, certificateTags);
         assertEquals(expectedAnswer, actualAnswer);
     }
 
@@ -148,7 +153,8 @@ class CertificateControllerTest {
     @ParameterizedTest
     @MethodSource("certificatesId")
     void deleteCertificate(int id, JsonAnswer expectedAnswer) {
-        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao));
+        CertificateController controller = new CertificateController(new CertificateServiceImpl(certificateDao),
+                new CertificateComparatorFactory());
         JsonAnswer actualAnswer = controller.deleteCertificate(id);
         assertEquals(expectedAnswer, actualAnswer);
     }

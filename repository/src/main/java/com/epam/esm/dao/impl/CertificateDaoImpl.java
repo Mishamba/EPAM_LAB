@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -72,7 +73,35 @@ public class CertificateDaoImpl implements CertificateDao {
         }
     }
 
-    // TODO: 1/16/21 check this code
+    @Override
+    public List<Certificate> findCertificatesByTag(String tagName) throws DaoException {
+        try {
+            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATES_BY_TAG_NAME,
+                    new CertificateWithoutTagsMapper(dateTimeParser), tagName);
+        } catch (DataAccessException exception) {
+            logger.error("can't get data");
+            throw new DaoException("can't get data", exception);
+        }
+    }
+
+    @Override
+    public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description)
+            throws DaoException {
+        String certificateNameRegEx = prepareRegEx(certificateName);
+        String descriptionRegEx = prepareRegEx(description);
+        try {
+            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART,
+                    new CertificateWithoutTagsMapper(dateTimeParser), certificateNameRegEx, descriptionRegEx);
+        } catch (DataAccessException exception) {
+            logger.error("can't get data");
+            throw new DaoException("can't get data", exception);
+        }
+    }
+
+    private String prepareRegEx(String input) {
+        return ".*" + input + ".*";
+    }
+
     private Optional<Certificate> findCertificateByIdFromDB(int id) throws DaoException {
         try {
             return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_BY_ID_QUEUE,
@@ -96,11 +125,7 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public boolean createCertificate(Certificate certificate) throws DaoException {
         Integer generatedId = createCertificateInDB(certificate);
-        if (generatedId == null) {
-            logger.error("couldn't create certificate");
-            throw new DaoException("can't create certificate");
-        }
-            certificate.setId(generatedId);
+        certificate.setId(generatedId);
         return createCertificateTagsReferences(certificate);
     }
 
@@ -113,7 +138,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
         preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
 
-        PreparedStatementCreator preparedStatementCreator = null;
+        PreparedStatementCreator preparedStatementCreator;
         try {
             preparedStatementCreator = preparedStatementCreatorFactory.newPreparedStatementCreator(
                     Arrays.asList(certificate.getName(), certificate.getDescription(), certificate.getPrice(),
@@ -126,14 +151,22 @@ public class CertificateDaoImpl implements CertificateDao {
 
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
-    private boolean createCertificateTagsReferences(Certificate certificate) {
+    private boolean createCertificateTagsReferences(Certificate certificate) throws DaoException {
         int affectedRows = 0;
         for (Tag tag : certificate.getTags()) {
-            affectedRows += jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
-                    certificate.getId(), tag.getId());
+            try {
+                affectedRows += jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+                        certificate.getId(), tag.getId());
+            } catch (DataAccessException exception) {
+                logger.info("creating new tag while certificate creation");
+                tagDao.createTag(tag);
+                tag.setId(tagDao.findTagByName(tag.getName()).getId());
+                jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+                        certificate.getId(), tag.getId());
+            }
         }
 
         return affectedRows == certificate.getTags().size();

@@ -1,6 +1,6 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.constant.Constant;
 import com.epam.esm.model.serializator.DateTimeSerializator;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
@@ -72,7 +72,7 @@ public class Certificate {
      */
     public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
-        id = ModelConstant.NOT_SET_ID;
+        id = Constant.NOT_SET_ID;
         this.name = name;
         this.description = description;
         this.price = price;

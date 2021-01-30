@@ -1,6 +1,6 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.constant.Constant;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 
@@ -24,10 +24,10 @@ public class Tag {
      * @param name Tag name.
      *             Need to be not empty because of hibernate validation annotations
      *
-     * @see com.epam.esm.model.constant.ModelConstant
+     * @see Constant
      */
     public Tag(String name) {
-        id = ModelConstant.NOT_SET_ID;
+        id = Constant.NOT_SET_ID;
         this.name = name;
     }
 

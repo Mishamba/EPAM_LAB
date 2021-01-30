@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.CertificateDao;
+import com.epam.esm.model.constant.Constant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.service.exception.ServiceException;
@@ -39,6 +40,35 @@ public class CertificateServiceImpl implements CertificateService {
         } catch (DaoException e) {
             logger.error("can't find certificate by id");
             throw new ServiceException("can't find certificate by id", e);
+        }
+    }
+
+    @Override
+    public List<Certificate> findCertificatesByTag(String tagName) throws ServiceException {
+        try {
+            return certificateDao.findCertificatesByTag(tagName);
+        } catch (DaoException e) {
+            logger.error("can't find certificate with given tag name");
+            throw new ServiceException("can't find certificate with given tag name", e);
+        }
+    }
+
+    @Override
+    public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description)
+            throws ServiceException {
+        if (certificateName == null) {
+            certificateName = Constant.STRANGE_SYMBOL;
+        }
+
+        if (description == null) {
+            description = Constant.STRANGE_SYMBOL;
+        }
+
+        try {
+            return certificateDao.findCertificatesByNameAndDescription(certificateName, description);
+        } catch (DaoException e) {
+            logger.error("can't fin certificate with given name and description");
+            throw new ServiceException("can't fin certificate with given name and description", e);
         }
     }
 

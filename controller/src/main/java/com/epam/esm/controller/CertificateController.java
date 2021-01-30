@@ -3,9 +3,11 @@ package com.epam.esm.controller;
 import com.epam.esm.controller.json.entity.JsonAnswer;
 import com.epam.esm.controller.json.entity.JsonError;
 import com.epam.esm.dao.impl.CertificateDaoImpl;
+import com.epam.esm.model.constant.Constant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
+import com.epam.esm.model.util.comparator.CertificateComparatorFactory;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
 import org.apache.log4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -24,7 +27,8 @@ import java.util.List;
 @RequestMapping("/certificate")
 public class CertificateController {
     private final CertificateService certificateService;
-    private final Logger logger = Logger.getLogger(CertificateDaoImpl.class);
+    private final CertificateComparatorFactory comparatorFactory;
+    private final Logger logger = Logger.getLogger(CertificateController.class);
 
     /**
      * Constructor. Gets parameters from Spring using @Autowired.
@@ -34,23 +38,58 @@ public class CertificateController {
      * @see com.epam.esm.service.impl.CertificateServiceImpl
      */
     @Autowired
-    public CertificateController(CertificateService certificateService) {
+    public CertificateController(CertificateService certificateService, CertificateComparatorFactory comparatorFactory) {
         this.certificateService = certificateService;
+        this.comparatorFactory = comparatorFactory;
     }
 
-    // TODO: 1/30/21 Make LocalDateTime send by format
     /**
      * Returns all Certificates stored in database.
      *
      * @return All certificates
      * @throws ControllerException
      */
-    @GetMapping("get/all")
-    public List<Certificate> index() throws ControllerException {
+    @GetMapping("/get/all")
+    public List<Certificate> index(@RequestParam(name = "sort_by", required = false) String sortBy,
+                                   @RequestParam(name = "sort_type", required = false) String sortType)
+            throws ControllerException {
         try {
-            return certificateService.findAllCertificates();
+            List<Certificate> certificates = certificateService.findAllCertificates();
+            sortCertificateList(certificates, sortBy, sortType);
+            return certificates;
         } catch (ServiceException exception) {
+            logger.error("can't get certificates");
             throw new ControllerException("can't get certificates", exception);
+        }
+    }
+
+    @GetMapping("/get/by/name_and_description")
+    public List<Certificate> findCertificateByName(@RequestParam(name = "sort_by", required = false) String sortBy,
+                                                   @RequestParam(name = "sort_type", required = false) String sortType,
+                                                   @RequestParam(value = "name", required = false) String certificateName,
+                                                   @RequestParam(value = "description", required = false) String description) throws ControllerException {
+        try {
+            List<Certificate> certificates = certificateService.
+                    findCertificatesByNameAndDescription(certificateName, description);
+            sortCertificateList(certificates, sortBy, sortType);
+            return certificates;
+        } catch (ServiceException exception) {
+            logger.error("can't get certificates", exception);
+            throw new ControllerException("can't get certificates", exception);
+        }
+    }
+
+    @GetMapping("/get/by/tag")
+    public List<Certificate> findCertificateByTag(@RequestParam(name = "sort_by", required = false) String sortBy,
+                                                  @RequestParam(name = "sort_type", required = false) String sortType,
+                                                  @RequestParam("tag_name") String tagName) throws ControllerException {
+        try {
+            List<Certificate> certificates = certificateService.findCertificatesByTag(tagName);
+            sortCertificateList(certificates, sortBy, sortType);
+            return certificates;
+        } catch (ServiceException exception) {
+            logger.error("can't get certificates");
+            throw new ControllerException("can't get certificates");
         }
     }
 
@@ -62,12 +101,29 @@ public class CertificateController {
      * @throws ControllerException
      */
     @GetMapping("/get/{id}")
-    public Certificate getCertificate(@PathVariable("id") int id) throws ControllerException {
+    public Certificate findCertificate(@PathVariable("id") int id) throws ControllerException {
         try {
             return certificateService.findCertificateById(id);
         } catch (ServiceException exception) {
             throw new ControllerException("can't get certificate", exception);
         }
+    }
+
+    private void sortCertificateList(List<Certificate> certificates, String sortBy, String sortType) {
+        if (sortBy == null) {
+            sortBy = Constant.SORT_BY_NAME;
+        }
+
+        if (sortType == null) {
+            sortType = Constant.ASC_SORT_TYPE;
+        }
+
+        Comparator<Certificate> certificateComparator = getComparator(sortBy, sortType);
+        certificates.sort(certificateComparator);
+    }
+
+    private Comparator<Certificate> getComparator(String sortBy, String sortType) {
+        return comparatorFactory.getComparator(sortBy, sortType);
     }
 
     /**

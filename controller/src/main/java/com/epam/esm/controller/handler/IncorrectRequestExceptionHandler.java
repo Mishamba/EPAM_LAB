@@ -24,6 +24,7 @@ import org.springframework.web.context.request.async.AsyncRequestTimeoutExceptio
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.util.NestedServletException;
 
 @RestControllerAdvice
 public class IncorrectRequestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -112,7 +113,7 @@ public class IncorrectRequestExceptionHandler extends ResponseEntityExceptionHan
         return handleAnyException(ex, request);
     }
 
-    @ExceptionHandler({ControllerException.class, IllegalArgumentException.class})
+    @ExceptionHandler({ControllerException.class, IllegalArgumentException.class, NestedServletException.class})
     public ResponseEntity<Object> handleAnyException(Exception exception, WebRequest request) {
         JsonError error = new JsonError(HttpStatus.BAD_REQUEST, exception.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(error, new HttpHeaders(), HttpStatus.BAD_REQUEST.value());

@@ -11,27 +11,30 @@ package com.epam.esm.dao.queue;
 public class CertificateQueryRepository {
 
     /**
-     * Query selects all certificates data without tags data.
+     * Query SELECTs all certificates data without tags data.
      */
-    public static final String ALL_CERTIFICATES_QUEUE = "SELECT id, certificate_name, certificate_description, price, duration, " +
+    public static final String ALL_CERTIFICATES_QUEUE = "SELECT id, certificate_name, certificate_description, price," +
+            "duration, " +
             "create_date, last_update_date FROM gift_certificate";
 
     /**
-     * Query selects certificate tags id using certificate id.
+     * Query SELECTs certificate tags id using certificate id.
      */
-    public static final String CERTIFICATE_TAGS_ID_QUEUE = "SELECT tag_id FROM certificate_tags WHERE certificate_id = ?";
+    public static final String CERTIFICATE_TAGS_ID_QUEUE = "SELECT tag_id FROM certificate_tags " +
+            "WHERE certificate_id = ?";
 
     /**
-     * Query selects certificate by id.
+     * Query SELECTs certificate by id.
      */
-    public static final String CERTIFICATE_BY_ID_QUEUE = "SELECT id, certificate_name, certificate_description, price, duration, " +
-            "create_date, last_update_date FROM gift_certificate WHERE id = ?";
+    public static final String CERTIFICATE_BY_ID_QUEUE = "SELECT id, certificate_name, certificate_description, " +
+            "price, duration, create_date, last_update_date FROM gift_certificate WHERE id = ?";
 
     /**
      * Query saves certificate data.
      */
     public static final String CREATE_CERTIFICATE_QUEUE = "INSERT INTO gift_certificate " +
-            "(certificate_name, certificate_description, price, duration, create_date, last_update_date) VALUES (?, ?, ?, ?, ?, ?)";
+            "(certificate_name, certificate_description, price, duration, create_date, last_update_date) VALUES " +
+            "(?, ?, ?, ?, ?, ?)";
 
     /**
      * Query saves certificate tag references.
@@ -53,6 +56,26 @@ public class CertificateQueryRepository {
     /**
      * Query updates certificate data.
      */
-    public static final String UPDATE_CERTIFICATE_BY_ID_QUEUE = "UPDATE gift_certificate SET certificate_name = ? , certificate_description = ? , " +
+    public static final String UPDATE_CERTIFICATE_BY_ID_QUEUE = "UPDATE gift_certificate SET certificate_name = ? , " +
+            "certificate_description = ? , " +
             "price = ? , duration = ? , last_update_date = ? WHERE id = ?";
+
+    /**
+     * Query selects certificates with given tag name.
+     */
+    public static final String CERTIFICATES_BY_TAG_NAME = "SELECT g_c.id, certificate_name, certificate_description, " +
+            "price, duration, create_date, last_update_date " +
+            "from gift_certificate AS g_c " +
+            "JOIN " +
+            "certificate_tags AS c_t " +
+            "ON c_t.certificate_id = g_c.id " +
+            "JOIN tag " +
+            "ON c_t.tag_id = tag.id " +
+            "WHERE tag.tag_name = ?";
+
+    /**
+     * Query selects certificates by part of name and description.
+     */
+    public static final String CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART = "SELECT * FROM gift_certificate " +
+            "WHERE certificate_name REGEXP ? OR certificate_description REGEXP ?";
 }

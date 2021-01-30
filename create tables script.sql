@@ -19,7 +19,7 @@ create table gift_certificate (
 
 create table tag (
 	id int not null unique auto_increment,
-    tag_name varchar(30) not null,
+    tag_name varchar(30) not null unique,
     primary key (id)
 );
 
@@ -45,7 +45,3 @@ insert into certificate_tags(certificate_id, tag_id) values
 (1, 1),
 (1, 3), 
 (2, 2);
-
-select * from tag;
-select * from gift_certificate;
-select * from certificate_tags;
