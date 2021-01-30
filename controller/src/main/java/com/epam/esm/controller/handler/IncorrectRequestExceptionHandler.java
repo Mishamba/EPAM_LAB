@@ -112,12 +112,8 @@ public class IncorrectRequestExceptionHandler extends ResponseEntityExceptionHan
         return handleAnyException(ex, request);
     }
 
-    @ExceptionHandler(ControllerException.class)
-    public ResponseEntity<Object> handleControllerException(Exception exception,  HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return handleAnyException(exception, request);
-    }
-
-    private ResponseEntity<Object> handleAnyException(Exception exception, WebRequest request) {
+    @ExceptionHandler({ControllerException.class, IllegalArgumentException.class})
+    public ResponseEntity<Object> handleAnyException(Exception exception, WebRequest request) {
         JsonError error = new JsonError(HttpStatus.BAD_REQUEST, exception.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(error, new HttpHeaders(), HttpStatus.BAD_REQUEST.value());
     }
