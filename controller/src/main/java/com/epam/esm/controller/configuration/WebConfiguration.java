@@ -29,8 +29,28 @@ public class WebConfiguration extends AbstractAnnotationConfigDispatcherServletI
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        super.onStartup(servletContext);
+        // Create the 'root' Spring application context
+        AnnotationConfigWebApplicationContext rootContext =
+                new AnnotationConfigWebApplicationContext();
+        rootContext.register(SpringConfiguration.class);
+
+        // Manage the lifecycle of the root application context
+        servletContext.addListener(new ContextLoaderListener(rootContext));
+
+        // Create the dispatcher servlet's Spring application context
+        AnnotationConfigWebApplicationContext dispatcherContext =
+                new AnnotationConfigWebApplicationContext();
+        dispatcherContext.register(SpringConfiguration.class);
+
+        DispatcherServlet dispatcherServlet = new DispatcherServlet(dispatcherContext);
+        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
+        // Register and map the dispatcher servlet
+        ServletRegistration.Dynamic dispatcher =
+                servletContext.addServlet("dispatcher", dispatcherServlet);
+        dispatcher.setLoadOnStartup(1);
+        dispatcher.addMapping("/");
         registerHiddenFieldFilter(servletContext);
+
     }
 
     private void registerHiddenFieldFilter(ServletContext context) {
