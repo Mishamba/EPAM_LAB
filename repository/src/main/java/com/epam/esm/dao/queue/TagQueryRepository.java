@@ -26,8 +26,12 @@ public class TagQueryRepository {
     public static final String CREATE_TAG_QUEUE = "INSERT INTO tag (tag_name) VALUE (?)";
 
     /**
-     * Query deletes tag from certificates tag references and deletes tag info.
+     * Query deletes tag from certificates tag references.
      */
-    public static final String DELETE_TAG_FROM_TAG_TABLE = "DELETE FROM certificate_tags WHERE id = ?;" +
-            "DELETE FROM tag WHERE id = ?";
+    public static final String DELETE_TAG_FROM_CERTIFICATE_TAG_TABLE = "DELETE FROM certificate_tags WHERE tag_id = ?";
+
+    /**
+     * Query deleted tag from tag table.
+     */
+    public static final String DELETE_TAG_FROM_TAG_TABLE = "DELETE FROM tag WHERE id = ?";
 }

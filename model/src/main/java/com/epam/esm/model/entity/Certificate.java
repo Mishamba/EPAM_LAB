@@ -205,7 +205,7 @@ public class Certificate {
     }
 
     /**
-     * Create date getter method.
+     * Create date as LocalDateTime getter method.
      * @return LocalDateTime
      *
      * @see java.time.LocalDateTime

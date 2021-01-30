@@ -38,6 +38,7 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
+    // TODO: 1/30/21 Make LocalDateTime send by format
     /**
      * Returns all Certificates stored in database.
      *

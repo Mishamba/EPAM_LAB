@@ -54,7 +54,8 @@ public class TagDaoImpl implements TagDao {
     @Transactional
     public boolean deleteTag(int id) throws DaoException {
         try {
-            return jdbcTemplate.update(TagQueryRepository.DELETE_TAG_FROM_TAG_TABLE, id, id) >= 1;
+            jdbcTemplate.update(TagQueryRepository.DELETE_TAG_FROM_CERTIFICATE_TAG_TABLE, id);
+            return jdbcTemplate.update(TagQueryRepository.DELETE_TAG_FROM_TAG_TABLE, id) == 1;
         } catch (DataAccessException exception) {
             throw new DaoException("data deletion error", exception);
         }

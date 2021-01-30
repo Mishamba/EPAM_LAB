@@ -12,6 +12,16 @@ public class JsonError extends JsonAnswer {
         this.errorCode = errorCode;
     }
 
+    @Override
+    public String getMessage() {
+        return super.getMessage();
+    }
+
+    @Override
+    public HttpStatus getStatus() {
+        return super.getStatus();
+    }
+
     public int getErrorCode() {
         return errorCode;
     }
