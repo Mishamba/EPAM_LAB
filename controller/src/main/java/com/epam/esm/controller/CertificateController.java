@@ -63,11 +63,24 @@ public class CertificateController {
         }
     }
 
+    /**
+     * Method find certificates with similar name or description.
+     *
+     * @param sortBy Field to sort by. Available variants are: NAME, DATE (createDate).
+     * @param sortType Sort order variant. Available variants are: ASC, DESC (as in SQL).
+     * @param certificateName Certificate name to find by.
+     * @param description Description to find by.
+     * @return Certificates with similar name of description.
+     * @throws ControllerException In case if some problems method throws ControllerException and user will get
+     *                             JSON error answer.
+     */
+
     @GetMapping("/get/by/name_and_description")
-    public List<Certificate> findCertificateByName(@RequestParam(name = "sort_by", required = false) String sortBy,
-                                                   @RequestParam(name = "sort_type", required = false) String sortType,
-                                                   @RequestParam(value = "name", required = false) String certificateName,
-                                                   @RequestParam(value = "description", required = false) String description) throws ControllerException {
+    public List<Certificate> findCertificateByNameAndDescription(
+            @RequestParam(name = "sort_by", required = false) String sortBy,
+            @RequestParam(name = "sort_type", required = false) String sortType,
+            @RequestParam(value = "name", required = false) String certificateName,
+            @RequestParam(value = "description", required = false) String description) throws ControllerException {
         try {
             List<Certificate> certificates = certificateService.
                     findCertificatesByNameAndDescription(certificateName, description);
@@ -79,6 +92,16 @@ public class CertificateController {
         }
     }
 
+    /**
+     * Method find certificates with given tag.
+     *
+     * @param sortBy Field to sort by. Available variants are: NAME, DATE (createDate).
+     * @param sortType Sort order variant. Available variants are: ASC, DESC (as in SQL).
+     * @param tagName Tag to find with.
+     * @return Certificate with given tag.
+     * @throws ControllerException In case if some problems method throws ControllerException and user will get
+     *                             JSON error answer.
+     */
     @GetMapping("/get/by/tag")
     public List<Certificate> findCertificateByTag(@RequestParam(name = "sort_by", required = false) String sortBy,
                                                   @RequestParam(name = "sort_type", required = false) String sortType,
@@ -98,7 +121,8 @@ public class CertificateController {
      *
      * @param id Certificate id.
      * @return Certificate with given id.
-     * @throws ControllerException
+     * @throws ControllerException In case if some problems method throws ControllerException and user will get
+     *                             JSON error answer.
      */
     @GetMapping("/get/{id}")
     public Certificate findCertificate(@PathVariable("id") int id) throws ControllerException {
