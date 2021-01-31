@@ -110,11 +110,12 @@ public class CertificateController {
     }
 
     private void sortCertificateList(List<Certificate> certificates, String sortBy, String sortType) {
-        if (sortBy == null) {
+        if (sortBy == null || !(sortBy.equals(Constant.SORT_BY_NAME) || sortBy.equals(Constant.SORT_BY_DATE))) {
             sortBy = Constant.SORT_BY_NAME;
         }
 
-        if (sortType == null) {
+        if (sortType == null ||
+                !(sortType.equals(Constant.DESC_SORT_TYPE) || sortType.equals(Constant.ASC_SORT_TYPE))) {
             sortType = Constant.ASC_SORT_TYPE;
         }
 
