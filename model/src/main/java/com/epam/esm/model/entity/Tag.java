@@ -1,8 +1,11 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.Constant;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Entity class. Contains fields that stores Tag data.
@@ -10,7 +13,7 @@ import jakarta.validation.constraints.Positive;
  * @version 1.0
  * @author mishamba
  */
-public class Tag {
+public class Tag extends RepresentationModel<Tag> {
 
     @Positive
     private int id;
@@ -26,7 +29,8 @@ public class Tag {
      *
      * @see Constant
      */
-    public Tag(String name) {
+    @JsonCreator
+    public Tag(@JsonProperty("name") String name) {
         id = Constant.NOT_SET_ID;
         this.name = name;
     }
@@ -38,7 +42,8 @@ public class Tag {
      * @param name Tag name.
      *             Need to be not empty because of hibernate annotation.
      */
-    public Tag(int id, String name) {
+    @JsonCreator
+    public Tag(@JsonProperty("id") int id, @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
     }

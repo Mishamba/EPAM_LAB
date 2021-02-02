@@ -1,10 +1,13 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.Constant;
-import com.epam.esm.model.serializator.DateTimeSerializator;
+import com.epam.esm.model.util.serializator.DateTimeSerializator;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ import java.util.List;
  *
  * @see com.epam.esm.model.entity.Tag
  */
-public class Certificate {
+public class Certificate extends RepresentationModel<Certificate> {
 
     @Positive
     private int id;
@@ -70,8 +73,12 @@ public class Certificate {
      *
      * @see com.epam.esm.model.entity.Tag
      */
-    public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
-                       LocalDateTime lastUpdateDate, List<Tag> tags) {
+    @JsonCreator
+    public Certificate(@JsonProperty("name") String name, @JsonProperty("description") String description,
+                       @JsonProperty("price") int price, @JsonProperty("duration") int duration,
+                       @JsonProperty("createDate") LocalDateTime createDate,
+                       @JsonProperty("lastUpdateDate") LocalDateTime lastUpdateDate,
+                       @JsonProperty("tags") List<Tag> tags) {
         id = Constant.NOT_SET_ID;
         this.name = name;
         this.description = description;
@@ -104,6 +111,7 @@ public class Certificate {
      *
      * @see com.epam.esm.model.entity.Tag
      */
+    @JsonCreator
     public Certificate(int id, String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.id = id;

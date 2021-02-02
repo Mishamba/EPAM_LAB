@@ -2,18 +2,20 @@ package com.epam.esm.controller;
 
 import com.epam.esm.controller.json.entity.JsonAnswer;
 import com.epam.esm.controller.json.entity.JsonError;
-import com.epam.esm.dao.impl.CertificateDaoImpl;
 import com.epam.esm.model.constant.Constant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
-import com.epam.esm.model.util.comparator.CertificateComparatorFactory;
+import com.epam.esm.model.util.comparator.certificate.CertificateComparatorFactory;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -50,11 +52,15 @@ public class CertificateController {
      * @throws ControllerException
      */
     @GetMapping("/get/all")
-    public List<Certificate> index(@RequestParam(name = "sort_by", required = false) String sortBy,
-                                   @RequestParam(name = "sort_type", required = false) String sortType)
+    public List<Certificate> index(
+            @RequestParam(name = "sort_by", defaultValue = Constant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_type", defaultValue = Constant.ASC_SORT_TYPE) String sortType)
             throws ControllerException {
         try {
             List<Certificate> certificates = certificateService.findAllCertificates();
+            for (Certificate certificate : certificates) {
+                addLinksToCertificate(certificate);
+            }
             sortCertificateList(certificates, sortBy, sortType);
             return certificates;
         } catch (ServiceException exception) {
@@ -77,13 +83,17 @@ public class CertificateController {
 
     @GetMapping("/get/by/name_and_description")
     public List<Certificate> findCertificateByNameAndDescription(
-            @RequestParam(name = "sort_by", required = false) String sortBy,
-            @RequestParam(name = "sort_type", required = false) String sortType,
-            @RequestParam(value = "name", required = false) String certificateName,
-            @RequestParam(value = "description", required = false) String description) throws ControllerException {
+            @RequestParam(name = "sort_by", defaultValue = Constant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_type", defaultValue = Constant.ASC_SORT_TYPE) String sortType,
+            @RequestParam(value = "name", defaultValue = Constant.STRANGE_SYMBOL) String certificateName,
+            @RequestParam(value = "description", defaultValue = Constant.STRANGE_SYMBOL) String description)
+            throws ControllerException {
         try {
             List<Certificate> certificates = certificateService.
                     findCertificatesByNameAndDescription(certificateName, description);
+            for (Certificate certificate : certificates) {
+                addLinksToCertificate(certificate);
+            }
             sortCertificateList(certificates, sortBy, sortType);
             return certificates;
         } catch (ServiceException exception) {
@@ -103,11 +113,15 @@ public class CertificateController {
      *                             JSON error answer.
      */
     @GetMapping("/get/by/tag")
-    public List<Certificate> findCertificateByTag(@RequestParam(name = "sort_by", required = false) String sortBy,
-                                                  @RequestParam(name = "sort_type", required = false) String sortType,
-                                                  @RequestParam("tag_name") String tagName) throws ControllerException {
+    public List<Certificate> findCertificateByTag(
+            @RequestParam(name = "sort_by", defaultValue = Constant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_type", defaultValue = Constant.ASC_SORT_TYPE) String sortType,
+            @RequestParam("tag_name") String tagName) throws ControllerException {
         try {
             List<Certificate> certificates = certificateService.findCertificatesByTag(tagName);
+            for (Certificate certificate : certificates) {
+                addLinksToCertificate(certificate);
+            }
             sortCertificateList(certificates, sortBy, sortType);
             return certificates;
         } catch (ServiceException exception) {
@@ -125,21 +139,28 @@ public class CertificateController {
      *                             JSON error answer.
      */
     @GetMapping("/get/{id}")
-    public Certificate findCertificate(@PathVariable("id") int id) throws ControllerException {
+    public HttpEntity<Certificate> findCertificate(@PathVariable("id") int id) throws ControllerException {
         try {
-            return certificateService.findCertificateById(id);
+            Certificate certificate = certificateService.findCertificateById(id);
+            addLinksToCertificate(certificate);
+            return new ResponseEntity<>(certificate, HttpStatus.OK);
         } catch (ServiceException exception) {
             throw new ControllerException("can't get certificate", exception);
         }
     }
 
+    private void addLinksToCertificate(Certificate certificate) throws ControllerException {
+        for (Tag tag : certificate.getTags()) {
+            certificate.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
+        }
+    }
+
     private void sortCertificateList(List<Certificate> certificates, String sortBy, String sortType) {
-        if (sortBy == null || !(sortBy.equals(Constant.SORT_BY_NAME) || sortBy.equals(Constant.SORT_BY_DATE))) {
+        if (!(sortBy.equals(Constant.SORT_BY_NAME) || sortBy.equals(Constant.SORT_BY_DATE))) {
             sortBy = Constant.SORT_BY_NAME;
         }
 
-        if (sortType == null ||
-                !(sortType.equals(Constant.DESC_SORT_TYPE) || sortType.equals(Constant.ASC_SORT_TYPE))) {
+        if (!(sortType.equals(Constant.DESC_SORT_TYPE) || sortType.equals(Constant.ASC_SORT_TYPE))) {
             sortType = Constant.ASC_SORT_TYPE;
         }
 

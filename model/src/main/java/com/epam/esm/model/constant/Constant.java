@@ -38,4 +38,10 @@ public class Constant {
      * Field name to sort by.
      */
     public final static String SORT_BY_DATE = "DATE";
+
+    public final static int CERTIFICATE_PAGE_SIZE = 5;
+
+    public final static int USER_PAGE_SIZE = 5;
+
+    public final static int TAG_PAGE_SIZE = 10;
 }

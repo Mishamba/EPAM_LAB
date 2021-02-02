@@ -1,9 +1,9 @@
-package com.epam.esm.model.util.comparator;
+package com.epam.esm.model.util.comparator.certificate;
 
 import com.epam.esm.model.constant.Constant;
 import com.epam.esm.model.entity.Certificate;
-import com.epam.esm.model.util.comparator.impl.CertificateDateComparator;
-import com.epam.esm.model.util.comparator.impl.CertificateNameComparator;
+import com.epam.esm.model.util.comparator.certificate.impl.CertificateDateComparator;
+import com.epam.esm.model.util.comparator.certificate.impl.CertificateNameComparator;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;

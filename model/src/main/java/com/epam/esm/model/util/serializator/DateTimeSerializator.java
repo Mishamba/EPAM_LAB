@@ -1,4 +1,4 @@
-package com.epam.esm.model.serializator;
+package com.epam.esm.model.util.serializator;
 
 import com.epam.esm.model.util.exception.UtilException;
 import com.epam.esm.model.util.parser.DateTimeParser;

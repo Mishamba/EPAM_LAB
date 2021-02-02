@@ -1,4 +1,4 @@
-package com.epam.esm.model.util.comparator.impl;
+package com.epam.esm.model.util.comparator.certificate.impl;
 
 import com.epam.esm.model.constant.Constant;
 import com.epam.esm.model.entity.Certificate;
