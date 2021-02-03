@@ -25,7 +25,7 @@ public class TagDaoImpl implements TagDao {
     @Override
     public List<Tag> findAllTags() throws DaoException {
         try {
-            return jdbcTemplate.query(TagQueryRepository.ALL_TAGS_QUEUE, new TagMapper());
+            return jdbcTemplate.query(TagQueryRepository.ALL_TAGS_QUERY, new TagMapper());
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
         }
@@ -34,7 +34,7 @@ public class TagDaoImpl implements TagDao {
     @Override
     public Tag findTagById(int id) throws DaoException {
         try {
-            return jdbcTemplate.query(TagQueryRepository.TAG_BY_ID_QUEUE, new TagMapper(), id).
+            return jdbcTemplate.query(TagQueryRepository.TAG_BY_ID_QUERY, new TagMapper(), id).
                     stream().findAny().orElse(null);
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
@@ -43,14 +43,14 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public Tag findTagByName(String tagName) throws DaoException {
-        return jdbcTemplate.query(TagQueryRepository.TAG_BY_NAME_QUEUE, new TagMapper(), tagName).
+        return jdbcTemplate.query(TagQueryRepository.TAG_BY_NAME_QUERY, new TagMapper(), tagName).
                 stream().findAny().orElse(null);
     }
 
     @Override
     public boolean createTag(Tag tag) throws DaoException {
         try {
-            return jdbcTemplate.update(TagQueryRepository.CREATE_TAG_QUEUE, tag.getName()) == 1;
+            return jdbcTemplate.update(TagQueryRepository.CREATE_TAG_QUERY, tag.getName()) == 1;
         } catch (DataAccessException exception) {
             throw new DaoException("data insert error", exception);
         }

@@ -1,6 +1,7 @@
 package com.epam.esm.model.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
@@ -9,10 +10,26 @@ public class Order {
     private List<Certificate> orderedCertificates;
     private LocalDateTime orderDate;
 
+
+    public Order(int id, int userId, LocalDateTime orderDate) {
+        this.id = id;
+        this.userId = userId;
+        this.orderedCertificates = new ArrayList<>();
+        this.orderDate = orderDate;
+    }
+
     public Order(int userId, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
         this.userId = userId;
         this.orderedCertificates = orderedCertificates;
         this.orderDate = orderDate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LocalDateTime getOrderDate() {
@@ -37,6 +54,10 @@ public class Order {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public void addOrderedCertificate(Certificate certificate) {
+        this.orderedCertificates.add(certificate);
     }
 
     public int getCost() {

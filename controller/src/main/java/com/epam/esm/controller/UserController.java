@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    // TODO: 2/2/21 finish
     @GetMapping("/get/all")
     public HttpEntity<User> getUsers(@RequestParam(value = "page", required = false) Integer pageNumber) {
         return null;

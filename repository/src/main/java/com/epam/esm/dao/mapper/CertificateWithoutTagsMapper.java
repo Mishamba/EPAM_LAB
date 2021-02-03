@@ -46,7 +46,7 @@ public class CertificateWithoutTagsMapper implements RowMapper<Certificate> {
                     dateTimeParser.parseTo(resultSet.getString("create_date")),
                     dateTimeParser.parseTo(resultSet.getString("last_update_date")), null);
         } catch (UtilException exception) {
-            return null;
+            throw new SQLException("can't map Certificate", exception);
         }
     }
 }

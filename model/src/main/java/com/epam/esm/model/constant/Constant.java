@@ -44,4 +44,6 @@ public class Constant {
     public final static int USER_PAGE_SIZE = 5;
 
     public final static int TAG_PAGE_SIZE = 10;
+
+    public final static int ORDER_PAGE_SIZE = 5;
 }

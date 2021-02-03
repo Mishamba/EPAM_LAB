@@ -52,7 +52,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
     private List<Certificate> findAllCertificatesFromDB() throws DaoException {
         try {
-            return jdbcTemplate.query(CertificateQueryRepository.ALL_CERTIFICATES_QUEUE,
+            return jdbcTemplate.query(CertificateQueryRepository.ALL_CERTIFICATES_QUERY,
                     new CertificateWithoutTagsMapper(dateTimeParser));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
@@ -76,8 +76,13 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public List<Certificate> findCertificatesByTag(String tagName) throws DaoException {
         try {
-            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATES_BY_TAG_NAME,
+            List<Certificate> certificates = jdbcTemplate.query(CertificateQueryRepository.CERTIFICATES_BY_TAG_NAME,
                     new CertificateWithoutTagsMapper(dateTimeParser), tagName);
+            for (Certificate certificate : certificates) {
+                setCertificateTag(certificate);
+            }
+
+            return certificates;
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);
@@ -104,7 +109,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
     private Optional<Certificate> findCertificateByIdFromDB(int id) throws DaoException {
         try {
-            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_BY_ID_QUEUE,
+            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_BY_ID_QUERY,
                     new CertificateWithoutTagsMapper(dateTimeParser), id).
                     stream().findAny();
         } catch (DataAccessException exception) {
@@ -114,7 +119,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private void setCertificateTag(Certificate certificate) throws DaoException {
-        List<Integer> tagIdList = jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_TAGS_ID_QUEUE, new IntegerMapper(),
+        List<Integer> tagIdList = jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_TAGS_ID_QUERY, new IntegerMapper(),
                 certificate.getId());
         for (int tagId : tagIdList) {
             certificate.addTag(tagDao.findTagById(tagId));
@@ -133,7 +138,7 @@ public class CertificateDaoImpl implements CertificateDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         PreparedStatementCreatorFactory preparedStatementCreatorFactory =
-                new PreparedStatementCreatorFactory(CertificateQueryRepository.CREATE_CERTIFICATE_QUEUE, Types.VARCHAR,
+                new PreparedStatementCreatorFactory(CertificateQueryRepository.CREATE_CERTIFICATE_QUERY, Types.VARCHAR,
                         Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
         preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
@@ -142,7 +147,8 @@ public class CertificateDaoImpl implements CertificateDao {
         try {
             preparedStatementCreator = preparedStatementCreatorFactory.newPreparedStatementCreator(
                     Arrays.asList(certificate.getName(), certificate.getDescription(), certificate.getPrice(),
-                            certificate.getDuration(),dateTimeParser.parseFrom(certificate.getCreateDate()), dateTimeParser.parseFrom(certificate.getLastUpdateDate()))
+                            certificate.getDuration(),dateTimeParser.parseFrom(certificate.getCreateDate()),
+                            dateTimeParser.parseFrom(certificate.getLastUpdateDate()))
             );
         } catch (UtilException e) {
             logger.error("can't parse date");
@@ -158,13 +164,13 @@ public class CertificateDaoImpl implements CertificateDao {
         int affectedRows = 0;
         for (Tag tag : certificate.getTags()) {
             try {
-                affectedRows += jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+                affectedRows += jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUERY,
                         certificate.getId(), tag.getId());
             } catch (DataAccessException exception) {
                 logger.info("creating new tag while certificate creation");
                 tagDao.createTag(tag);
                 tag.setId(tagDao.findTagByName(tag.getName()).getId());
-                jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+                jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUERY,
                         certificate.getId(), tag.getId());
             }
         }
@@ -185,16 +191,16 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private void updateCertificateTagsInDB(Certificate certificate) {
-        jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, certificate.getId());
+        jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUERY, certificate.getId());
         for (Tag tag : certificate.getTags()) {
-            jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUEUE,
+            jdbcTemplate.update(CertificateQueryRepository.CREATE_CERTIFICATE_TAGS_REFERENCES_QUERY,
                     certificate.getId(), tag.getId());
         }
     }
 
     private boolean updateCertificateInDB(Certificate certificate) throws DaoException {
         try {
-            return jdbcTemplate.update(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUEUE, certificate.getName(),
+            return jdbcTemplate.update(CertificateQueryRepository.UPDATE_CERTIFICATE_BY_ID_QUERY, certificate.getName(),
                     certificate.getDescription(), certificate.getPrice(), certificate.getDuration(),
                     dateTimeParser.parseFrom(certificate.getLastUpdateDate()), certificate.getId()) == 1;
         } catch (UtilException e) {
@@ -207,8 +213,8 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public boolean deleteCertificate(int id) throws DaoException {
         try {
-            jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUEUE, id);
-            return jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_BY_ID_QUEUE, id) == 1;
+            jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUERY, id);
+            return jdbcTemplate.update(CertificateQueryRepository.DELETE_CERTIFICATE_BY_ID_QUERY, id) == 1;
         } catch (DataAccessException exception) {
             logger.error("couldn't delete certificate");
             throw new DaoException("can't delete certificate");
