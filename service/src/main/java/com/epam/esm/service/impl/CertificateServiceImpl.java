@@ -24,9 +24,9 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<Certificate> findAllCertificates() throws ServiceException {
+    public List<Certificate> findAllCertificates(int pageNumber) throws ServiceException {
         try {
-            return certificateDao.findAllCertificates();
+            return certificateDao.findAllCertificates(pageNumber);
         } catch (DaoException e) {
             logger.error("can't find certificates");
             throw new ServiceException("can't find certificates");
@@ -44,9 +44,9 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<Certificate> findCertificatesByTag(String tagName) throws ServiceException {
+    public List<Certificate> findCertificatesByTag(String tagName, int pageNumber) throws ServiceException {
         try {
-            return certificateDao.findCertificatesByTag(tagName);
+            return certificateDao.findCertificatesByTag(tagName, pageNumber);
         } catch (DaoException e) {
             logger.error("can't find certificate with given tag name");
             throw new ServiceException("can't find certificate with given tag name", e);
@@ -54,7 +54,8 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description)
+    public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description,
+                                                                  int pageNumber)
             throws ServiceException {
         if (certificateName == null) {
             certificateName = Constant.STRANGE_SYMBOL;
@@ -65,7 +66,7 @@ public class CertificateServiceImpl implements CertificateService {
         }
 
         try {
-            return certificateDao.findCertificatesByNameAndDescription(certificateName, description);
+            return certificateDao.findCertificatesByNameAndDescription(certificateName, description, pageNumber);
         } catch (DaoException e) {
             logger.error("can't fin certificate with given name and description");
             throw new ServiceException("can't fin certificate with given name and description", e);

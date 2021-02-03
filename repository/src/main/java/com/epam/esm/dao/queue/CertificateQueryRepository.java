@@ -13,20 +13,20 @@ public class CertificateQueryRepository {
     /**
      * Query SELECTs all certificates data without tags data.
      */
-    public static final String ALL_CERTIFICATES_QUERY = "SELECT id, certificate_name, certificate_description, price," +
+    public static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT id, certificate_name, certificate_description, price," +
             "duration, " +
-            "create_date, last_update_date FROM gift_certificate";
+            "create_date, last_update_date FROM gift_certificate LIMIT ?, ?";
 
     /**
      * Query SELECTs certificate tags id using certificate id.
      */
-    public static final String CERTIFICATE_TAGS_ID_QUERY = "SELECT tag_id FROM certificate_tags " +
+    public static final String SELECT_CERTIFICATE_TAGS_ID_QUERY = "SELECT tag_id FROM certificate_tags " +
             "WHERE certificate_id = ?";
 
     /**
      * Query SELECTs certificate by id.
      */
-    public static final String CERTIFICATE_BY_ID_QUERY = "SELECT id, certificate_name, certificate_description, " +
+    public static final String SELECT_CERTIFICATE_BY_ID_QUERY = "SELECT id, certificate_name, certificate_description, " +
             "price, duration, create_date, last_update_date FROM gift_certificate WHERE id = ?";
 
     /**
@@ -63,7 +63,7 @@ public class CertificateQueryRepository {
     /**
      * Query selects certificates with given tag name.
      */
-    public static final String CERTIFICATES_BY_TAG_NAME = "SELECT g_c.id, certificate_name, certificate_description, " +
+    public static final String SELECT_CERTIFICATES_BY_TAG_NAME = "SELECT g_c.id, certificate_name, certificate_description, " +
             "price, duration, create_date, last_update_date " +
             "from gift_certificate AS g_c " +
             "JOIN " +
@@ -71,11 +71,11 @@ public class CertificateQueryRepository {
             "ON c_t.certificate_id = g_c.id " +
             "JOIN tag " +
             "ON c_t.tag_id = tag.id " +
-            "WHERE tag.tag_name = ?";
+            "WHERE tag.tag_name = ? LIMIT ?, ?";
 
     /**
      * Query selects certificates by part of name and description.
      */
-    public static final String CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART = "SELECT * FROM gift_certificate " +
-            "WHERE certificate_name REGEXP ? OR certificate_description REGEXP ?";
+    public static final String SELECT_CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART = "SELECT * FROM gift_certificate " +
+            "WHERE certificate_name REGEXP ? OR certificate_description REGEXP ? LIMIT ?, ?";
 }

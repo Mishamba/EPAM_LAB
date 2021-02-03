@@ -13,8 +13,8 @@ import java.util.List;
 
 @Service
 public class TagServiceImpl implements TagService {
-    private TagDao tagDao;
-    private final static Logger logger = Logger.getLogger(TagServiceImpl.class);
+    private final TagDao tagDao;
+    private final Logger logger = Logger.getLogger(TagServiceImpl.class);
 
     @Autowired
     public TagServiceImpl(TagDao tagDao) {
@@ -22,9 +22,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findAllTags() throws ServiceException {
+    public List<Tag> findAllTags(int pageNumber) throws ServiceException {
+        if (pageNumber < 1) {
+            logger.error("given non positive number");
+            throw new ServiceException("page number must be positive");
+        }
+
         try {
-            return tagDao.findAllTags();
+            return tagDao.findAllTags(pageNumber);
         } catch (DaoException e) {
             logger.error("can't get tags");
             throw new ServiceException("can't get tags", e);

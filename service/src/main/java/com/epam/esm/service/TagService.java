@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 public interface TagService {
-    List<Tag> findAllTags() throws ServiceException;
+    List<Tag> findAllTags(int pageNumber) throws ServiceException;
     Tag findTagById(int id) throws ServiceException;
     boolean createTag(Tag tag) throws ServiceException;
     boolean deleteTag(int id) throws ServiceException;

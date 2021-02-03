@@ -9,10 +9,10 @@ import java.util.List;
 
 @Service
 public interface CertificateService {
-    List<Certificate> findAllCertificates() throws ServiceException;
+    List<Certificate> findAllCertificates(int pageNumber) throws ServiceException;
     Certificate findCertificateById(int id) throws ServiceException;
-    List<Certificate> findCertificatesByTag(String tagName) throws ServiceException;
-    List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description)
+    List<Certificate> findCertificatesByTag(String tagName, int pageNumber) throws ServiceException;
+    List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description, int pageNumber)
             throws ServiceException;
     boolean createCertificate(Certificate certificate) throws ServiceException;
     boolean updateCertificate(Certificate certificate) throws ServiceException;

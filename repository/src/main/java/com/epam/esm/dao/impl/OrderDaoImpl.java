@@ -42,7 +42,8 @@ public class OrderDaoImpl extends PageCalculator implements OrderDao {
     }
 
     @Override
-    public List<Order> getUserOrders(int userId, int pageNumber) throws DaoException {
+    @Transactional
+    public List<Order> findUserOrders(int userId, int pageNumber) throws DaoException {
         List<Order> orders = getOrdersWithoutCertificates(userId, pageNumber);
         for (Order order : orders) {
             setOrderCertificates(order);

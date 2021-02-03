@@ -6,6 +6,6 @@ import com.epam.esm.model.entity.Order;
 import java.util.List;
 
 public interface OrderDao {
-    List<Order> getUserOrders(int userId, int pageNumber) throws DaoException;
+    List<Order> findUserOrders(int userId, int pageNumber) throws DaoException;
     boolean createOrder(Order order) throws DaoException;
 }

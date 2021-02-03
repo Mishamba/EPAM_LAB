@@ -1,10 +1,12 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateDao;
+import com.epam.esm.dao.PageCalculator;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.CertificateWithoutTagsMapper;
 import com.epam.esm.dao.mapper.IntegerMapper;
 import com.epam.esm.dao.queue.CertificateQueryRepository;
+import com.epam.esm.model.constant.Constant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.dao.exception.DaoException;
@@ -28,7 +30,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class CertificateDaoImpl implements CertificateDao {
+public class CertificateDaoImpl extends PageCalculator implements CertificateDao {
     private final Logger logger = Logger.getLogger(CertificateDaoImpl.class);
     private final JdbcTemplate jdbcTemplate;
     private final TagDao tagDao;
@@ -42,18 +44,20 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public List<Certificate> findAllCertificates() throws DaoException {
-        List<Certificate> certificates = findAllCertificatesFromDB();
+    public List<Certificate> findAllCertificates(int pageNumber) throws DaoException {
+        List<Certificate> certificates = findAllCertificatesFromDB(pageNumber);
         for (Certificate certificate : certificates) {
             setCertificateTag(certificate);
         }
         return certificates;
     }
 
-    private List<Certificate> findAllCertificatesFromDB() throws DaoException {
+    private List<Certificate> findAllCertificatesFromDB(int pageNumber) throws DaoException {
         try {
-            return jdbcTemplate.query(CertificateQueryRepository.ALL_CERTIFICATES_QUERY,
-                    new CertificateWithoutTagsMapper(dateTimeParser));
+            return jdbcTemplate.query(CertificateQueryRepository.SELECT_ALL_CERTIFICATES_QUERY,
+                    new CertificateWithoutTagsMapper(dateTimeParser),
+                    calculatePageStart(pageNumber, Constant.CERTIFICATE_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, Constant.CERTIFICATE_PAGE_SIZE));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);
@@ -74,15 +78,21 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public List<Certificate> findCertificatesByTag(String tagName) throws DaoException {
-        try {
-            List<Certificate> certificates = jdbcTemplate.query(CertificateQueryRepository.CERTIFICATES_BY_TAG_NAME,
-                    new CertificateWithoutTagsMapper(dateTimeParser), tagName);
-            for (Certificate certificate : certificates) {
-                setCertificateTag(certificate);
-            }
+    public List<Certificate> findCertificatesByTag(String tagName, int pageNumber) throws DaoException {
+        List<Certificate> certificates = findCertificateByTagInDB(tagName, pageNumber);
+        for (Certificate certificate : certificates) {
+            setCertificateTag(certificate);
+        }
 
-            return certificates;
+        return certificates;
+    }
+
+    private List<Certificate> findCertificateByTagInDB(String tagName, int pageNumber) throws DaoException {
+        try {
+            return jdbcTemplate.query(CertificateQueryRepository.SELECT_CERTIFICATES_BY_TAG_NAME,
+                    new CertificateWithoutTagsMapper(dateTimeParser), tagName,
+                    calculatePageStart(pageNumber, Constant.CERTIFICATE_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, Constant.CERTIFICATE_PAGE_SIZE));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);
@@ -90,13 +100,16 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description)
+    public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description,
+                                                                  int pageNumber)
             throws DaoException {
         String certificateNameRegEx = prepareRegEx(certificateName);
         String descriptionRegEx = prepareRegEx(description);
         try {
-            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART,
-                    new CertificateWithoutTagsMapper(dateTimeParser), certificateNameRegEx, descriptionRegEx);
+            return jdbcTemplate.query(CertificateQueryRepository.SELECT_CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART,
+                    new CertificateWithoutTagsMapper(dateTimeParser), certificateNameRegEx, descriptionRegEx,
+                    calculatePageStart(pageNumber, Constant.CERTIFICATE_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, Constant.CERTIFICATE_PAGE_SIZE));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);
@@ -109,7 +122,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
     private Optional<Certificate> findCertificateByIdFromDB(int id) throws DaoException {
         try {
-            return jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_BY_ID_QUERY,
+            return jdbcTemplate.query(CertificateQueryRepository.SELECT_CERTIFICATE_BY_ID_QUERY,
                     new CertificateWithoutTagsMapper(dateTimeParser), id).
                     stream().findAny();
         } catch (DataAccessException exception) {
@@ -119,7 +132,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private void setCertificateTag(Certificate certificate) throws DaoException {
-        List<Integer> tagIdList = jdbcTemplate.query(CertificateQueryRepository.CERTIFICATE_TAGS_ID_QUERY, new IntegerMapper(),
+        List<Integer> tagIdList = jdbcTemplate.query(CertificateQueryRepository.SELECT_CERTIFICATE_TAGS_ID_QUERY, new IntegerMapper(),
                 certificate.getId());
         for (int tagId : tagIdList) {
             certificate.addTag(tagDao.findTagById(tagId));
