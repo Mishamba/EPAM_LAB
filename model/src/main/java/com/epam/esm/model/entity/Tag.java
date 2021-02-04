@@ -1,6 +1,6 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.Constant;
+import com.epam.esm.model.constant.ModelConstant;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
@@ -27,11 +27,11 @@ public class Tag extends RepresentationModel<Tag> {
      * @param name Tag name.
      *             Need to be not empty because of hibernate validation annotations
      *
-     * @see Constant
+     * @see ModelConstant
      */
     @JsonCreator
     public Tag(@JsonProperty("name") String name) {
-        id = Constant.NOT_SET_ID;
+        id = ModelConstant.NOT_SET_ID;
         this.name = name;
     }
 

@@ -1,10 +1,12 @@
 package com.epam.esm.model.entity;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Order {
+public class Order extends RepresentationModel<Order> {
     private int id;
     private int userId;
     private List<Certificate> orderedCertificates;

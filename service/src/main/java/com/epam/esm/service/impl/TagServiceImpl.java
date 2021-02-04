@@ -5,6 +5,7 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +23,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findAllTags(int pageNumber) throws ServiceException {
-        if (pageNumber < 1) {
-            logger.error("given non positive number");
-            throw new ServiceException("page number must be positive");
-        }
-
+    public List<Tag> findAllTags(PaginationData paginationData) throws ServiceException {
         try {
-            return tagDao.findAllTags(pageNumber);
+            return tagDao.findAllTags(paginationData.getPageNumber());
         } catch (DaoException e) {
             logger.error("can't get tags");
             throw new ServiceException("can't get tags", e);

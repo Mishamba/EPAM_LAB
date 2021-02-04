@@ -7,11 +7,11 @@ import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.dao.mapper.IntegerMapper;
 import com.epam.esm.dao.mapper.OrderWithoutCertificatesMapper;
 import com.epam.esm.dao.queue.OrderQueryRepository;
-import com.epam.esm.model.constant.Constant;
+import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
-import com.epam.esm.model.util.exception.UtilException;
-import com.epam.esm.model.util.parser.DateTimeParser;
+import com.epam.esm.util.exception.UtilException;
+import com.epam.esm.util.parser.DateTimeParser;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -56,8 +56,8 @@ public class OrderDaoImpl extends PageCalculator implements OrderDao {
         try {
             return jdbcTemplate.query(OrderQueryRepository.SELECT_ORDERS_BY_USERS_ID,
                     new OrderWithoutCertificatesMapper(parser), userId,
-                    calculatePageStart(pageNumber, Constant.ORDER_PAGE_SIZE),
-                    calculatePageEnd(pageNumber, Constant.ORDER_PAGE_SIZE));
+                    calculatePageStart(pageNumber, ModelConstant.ORDER_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, ModelConstant.ORDER_PAGE_SIZE));
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
         }

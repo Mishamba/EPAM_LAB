@@ -1,7 +1,7 @@
-package com.epam.esm.model.util.serializator;
+package com.epam.esm.util.serializator;
 
-import com.epam.esm.model.util.exception.UtilException;
-import com.epam.esm.model.util.parser.DateTimeParser;
+import com.epam.esm.util.exception.UtilException;
+import com.epam.esm.util.parser.DateTimeParser;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;

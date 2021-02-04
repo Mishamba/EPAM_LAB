@@ -2,18 +2,19 @@ package com.epam.esm.controller;
 
 import com.epam.esm.controller.json.entity.JsonAnswer;
 import com.epam.esm.controller.json.entity.JsonError;
-import com.epam.esm.model.constant.Constant;
+import com.epam.esm.model.constant.CertificateSortParametersConstant;
+import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
-import com.epam.esm.model.util.comparator.certificate.CertificateComparatorFactory;
+import com.epam.esm.util.comparator.certificate.CertificateComparatorFactory;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -52,16 +53,16 @@ public class CertificateController {
      * @throws ControllerException
      */
     @GetMapping("/get/all")
-    public List<Certificate> index(
-            @RequestParam(name = "sort_by", defaultValue = Constant.SORT_BY_DATE) String sortBy,
-            @RequestParam(name = "sort_type", defaultValue = Constant.ASC_SORT_TYPE) String sortType)
+    public List<Certificate> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType)
             throws ControllerException {
         try {
-            List<Certificate> certificates = certificateService.findAllCertificates();
+            List<Certificate> certificates = certificateService.
+                    findAllCertificates(new PaginationData(sortBy, sortType, pageNumber));
             for (Certificate certificate : certificates) {
                 addLinksToCertificate(certificate);
             }
-            sortCertificateList(certificates, sortBy, sortType);
             return certificates;
         } catch (ServiceException exception) {
             logger.error("can't get certificates");
@@ -83,18 +84,19 @@ public class CertificateController {
 
     @GetMapping("/get/by/name_and_description")
     public List<Certificate> findCertificateByNameAndDescription(
-            @RequestParam(name = "sort_by", defaultValue = Constant.SORT_BY_DATE) String sortBy,
-            @RequestParam(name = "sort_type", defaultValue = Constant.ASC_SORT_TYPE) String sortType,
-            @RequestParam(value = "name", defaultValue = Constant.STRANGE_SYMBOL) String certificateName,
-            @RequestParam(value = "description", defaultValue = Constant.STRANGE_SYMBOL) String description)
+            @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
+            @RequestParam(value = "name", defaultValue = ModelConstant.STRANGE_SYMBOL) String certificateName,
+            @RequestParam(value = "description", defaultValue = ModelConstant.STRANGE_SYMBOL) String description)
             throws ControllerException {
         try {
             List<Certificate> certificates = certificateService.
-                    findCertificatesByNameAndDescription(certificateName, description);
+                    findCertificatesByNameAndDescription(certificateName, description,
+                            new PaginationData(sortBy, sortType, pageNumber));
             for (Certificate certificate : certificates) {
                 addLinksToCertificate(certificate);
             }
-            sortCertificateList(certificates, sortBy, sortType);
             return certificates;
         } catch (ServiceException exception) {
             logger.error("can't get certificates", exception);
@@ -114,15 +116,16 @@ public class CertificateController {
      */
     @GetMapping("/get/by/tag")
     public List<Certificate> findCertificateByTag(
-            @RequestParam(name = "sort_by", defaultValue = Constant.SORT_BY_DATE) String sortBy,
-            @RequestParam(name = "sort_type", defaultValue = Constant.ASC_SORT_TYPE) String sortType,
+            @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
             @RequestParam("tag_name") String tagName) throws ControllerException {
         try {
-            List<Certificate> certificates = certificateService.findCertificatesByTag(tagName);
+            List<Certificate> certificates = certificateService.
+                    findCertificatesByTag(tagName, new PaginationData(sortBy, sortType, pageNumber));
             for (Certificate certificate : certificates) {
                 addLinksToCertificate(certificate);
             }
-            sortCertificateList(certificates, sortBy, sortType);
             return certificates;
         } catch (ServiceException exception) {
             logger.error("can't get certificates");
@@ -139,11 +142,11 @@ public class CertificateController {
      *                             JSON error answer.
      */
     @GetMapping("/get/{id}")
-    public HttpEntity<Certificate> findCertificate(@PathVariable("id") int id) throws ControllerException {
+    public Certificate findCertificate(@PathVariable("id") int id) throws ControllerException {
         try {
             Certificate certificate = certificateService.findCertificateById(id);
             addLinksToCertificate(certificate);
-            return new ResponseEntity<>(certificate, HttpStatus.OK);
+            return certificate;
         } catch (ServiceException exception) {
             throw new ControllerException("can't get certificate", exception);
         }
@@ -153,23 +156,6 @@ public class CertificateController {
         for (Tag tag : certificate.getTags()) {
             certificate.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
         }
-    }
-
-    private void sortCertificateList(List<Certificate> certificates, String sortBy, String sortType) {
-        if (!(sortBy.equals(Constant.SORT_BY_NAME) || sortBy.equals(Constant.SORT_BY_DATE))) {
-            sortBy = Constant.SORT_BY_NAME;
-        }
-
-        if (!(sortType.equals(Constant.DESC_SORT_TYPE) || sortType.equals(Constant.ASC_SORT_TYPE))) {
-            sortType = Constant.ASC_SORT_TYPE;
-        }
-
-        Comparator<Certificate> certificateComparator = getComparator(sortBy, sortType);
-        certificates.sort(certificateComparator);
-    }
-
-    private Comparator<Certificate> getComparator(String sortBy, String sortType) {
-        return comparatorFactory.getComparator(sortBy, sortType);
     }
 
     /**

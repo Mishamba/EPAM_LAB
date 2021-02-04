@@ -1,4 +1,4 @@
-package com.epam.esm.model.util.exception;
+package com.epam.esm.util.exception;
 
 /**
  * Exception used by utils.
@@ -6,7 +6,7 @@ package com.epam.esm.model.util.exception;
  * @version 1.0
  * @author mishamba
  *
- * @see com.epam.esm.model.util
+ * @see com.epam.esm.util
  */
 public class UtilException extends Exception {
     public UtilException(String message) {

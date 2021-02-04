@@ -6,6 +6,6 @@ import com.epam.esm.model.entity.User;
 import java.util.List;
 
 public interface UserDao {
-    List<User> getAll(int page) throws DaoException;
-    User getById(int id) throws DaoException;
+    List<User> findAllUsers(int pageNumber) throws DaoException;
+    User findById(int id) throws DaoException;
 }

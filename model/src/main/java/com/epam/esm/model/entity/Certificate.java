@@ -1,7 +1,7 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.Constant;
-import com.epam.esm.model.util.serializator.DateTimeSerializator;
+import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.util.serializator.DateTimeSerializator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -79,7 +79,7 @@ public class Certificate extends RepresentationModel<Certificate> {
                        @JsonProperty("createDate") LocalDateTime createDate,
                        @JsonProperty("lastUpdateDate") LocalDateTime lastUpdateDate,
                        @JsonProperty("tags") List<Tag> tags) {
-        id = Constant.NOT_SET_ID;
+        id = ModelConstant.NOT_SET_ID;
         this.name = name;
         this.description = description;
         this.price = price;

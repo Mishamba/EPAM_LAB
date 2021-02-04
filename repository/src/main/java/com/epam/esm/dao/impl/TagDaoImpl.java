@@ -4,7 +4,7 @@ import com.epam.esm.dao.PageCalculator;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.TagMapper;
 import com.epam.esm.dao.queue.TagQueryRepository;
-import com.epam.esm.model.constant.Constant;
+import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.dao.exception.DaoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +28,8 @@ public class TagDaoImpl extends PageCalculator implements TagDao {
     public List<Tag> findAllTags(int pageNumber) throws DaoException {
         try {
             return jdbcTemplate.query(TagQueryRepository.ALL_TAGS_QUERY, new TagMapper(),
-                    calculatePageStart(pageNumber, Constant.TAG_PAGE_SIZE),
-                    calculatePageEnd(pageNumber, Constant.TAG_PAGE_SIZE));
+                    calculatePageStart(pageNumber, ModelConstant.TAG_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, ModelConstant.TAG_PAGE_SIZE));
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
         }

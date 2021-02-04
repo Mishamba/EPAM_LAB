@@ -6,6 +6,7 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,9 +39,9 @@ public class TagController {
      * @throws ControllerException
      */
     @GetMapping("/get/all")
-    public List<Tag> index() throws ControllerException {
+    public List<Tag> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber) throws ControllerException {
         try {
-            return tagService.findAllTags();
+            return tagService.findAllTags(new PaginationData(null, null, pageNumber));
         } catch (ServiceException exception) {
             logger.error("unsuccessful tags selection. exit with exception");
             throw new ControllerException("can't get tags", exception);
