@@ -11,12 +11,4 @@
 
     <artifactId>model</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.epam.esm</groupId>
-            <artifactId>util</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-
 </project>

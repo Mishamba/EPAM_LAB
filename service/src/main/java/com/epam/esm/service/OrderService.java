@@ -2,7 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.service.exception.ServiceException;
-import com.epam.esm.util.entity.PaginationData;
+import com.epam.esm.model.util.entity.PaginationData;
 
 import java.util.List;
 

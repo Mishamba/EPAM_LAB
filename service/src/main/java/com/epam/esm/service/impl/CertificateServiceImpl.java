@@ -1,14 +1,13 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.CertificateDao;
-import com.epam.esm.model.constant.CertificateSortParametersConstant;
 import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.util.comparator.certificate.CertificateComparatorFactory;
-import com.epam.esm.util.entity.PaginationData;
+import com.epam.esm.model.util.comparator.certificate.CertificateComparatorFactory;
+import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,9 @@ public class CertificateServiceImpl implements CertificateService {
     public List<Certificate> findAllCertificates(PaginationData paginationData) throws ServiceException {
         try {
             List<Certificate> certificates = certificateDao.findAllCertificates(paginationData.getPageNumber());
+
+            ifNullThrowServiceException(certificates);
+
             sortCertificateList(certificates, paginationData);
             return certificates;
         } catch (DaoException e) {
@@ -55,6 +57,9 @@ public class CertificateServiceImpl implements CertificateService {
     public List<Certificate> findCertificatesByTag(String tagName, PaginationData paginationData) throws ServiceException {
         try {
             List<Certificate> certificates = certificateDao.findCertificatesByTag(tagName, paginationData.getPageNumber());
+
+            ifNullThrowServiceException(certificates);
+
             sortCertificateList(certificates, paginationData);
             return certificates;
         } catch (DaoException e) {
@@ -78,6 +83,9 @@ public class CertificateServiceImpl implements CertificateService {
         try {
             List<Certificate> certificates = certificateDao.findCertificatesByNameAndDescription(certificateName, description,
                     paginationData.getPageNumber());
+
+            ifNullThrowServiceException(certificates);
+
             sortCertificateList(certificates, paginationData);
             return certificates;
         } catch (DaoException e) {
@@ -89,6 +97,12 @@ public class CertificateServiceImpl implements CertificateService {
     private void sortCertificateList(List<Certificate> certificates, PaginationData paginationData) {
         Comparator<Certificate> certificateComparator = certificateComparatorFactory.getComparator(paginationData);
         certificates.sort(certificateComparator);
+    }
+
+    private void ifNullThrowServiceException(List<Certificate> certificates) throws ServiceException {
+        if (certificates == null) {
+            throw new ServiceException("no certificates found", new NullPointerException("list is null"));
+        }
     }
 
     @Override

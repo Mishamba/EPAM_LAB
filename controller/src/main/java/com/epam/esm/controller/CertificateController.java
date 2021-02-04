@@ -8,10 +8,10 @@ import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
-import com.epam.esm.util.comparator.certificate.CertificateComparatorFactory;
+import com.epam.esm.model.util.comparator.certificate.CertificateComparatorFactory;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.util.entity.PaginationData;
+import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -30,7 +29,6 @@ import java.util.List;
 @RequestMapping("/certificate")
 public class CertificateController {
     private final CertificateService certificateService;
-    private final CertificateComparatorFactory comparatorFactory;
     private final Logger logger = Logger.getLogger(CertificateController.class);
 
     /**
@@ -41,9 +39,8 @@ public class CertificateController {
      * @see com.epam.esm.service.impl.CertificateServiceImpl
      */
     @Autowired
-    public CertificateController(CertificateService certificateService, CertificateComparatorFactory comparatorFactory) {
+    public CertificateController(CertificateService certificateService) {
         this.certificateService = certificateService;
-        this.comparatorFactory = comparatorFactory;
     }
 
     /**

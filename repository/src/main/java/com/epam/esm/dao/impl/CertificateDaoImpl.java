@@ -6,12 +6,12 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.CertificateWithoutTagsMapper;
 import com.epam.esm.dao.mapper.IntegerMapper;
 import com.epam.esm.dao.queue.CertificateQueryRepository;
-import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.constant.PageSizeConstant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.dao.exception.DaoException;
-import com.epam.esm.util.exception.UtilException;
-import com.epam.esm.util.parser.DateTimeParser;
+import com.epam.esm.model.util.exception.UtilException;
+import com.epam.esm.model.util.parser.DateTimeParser;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -56,8 +56,8 @@ public class CertificateDaoImpl extends PageCalculator implements CertificateDao
         try {
             return jdbcTemplate.query(CertificateQueryRepository.SELECT_ALL_CERTIFICATES_QUERY,
                     new CertificateWithoutTagsMapper(dateTimeParser),
-                    calculatePageStart(pageNumber, ModelConstant.CERTIFICATE_PAGE_SIZE),
-                    calculatePageEnd(pageNumber, ModelConstant.CERTIFICATE_PAGE_SIZE));
+                    calculatePageStart(pageNumber, PageSizeConstant.CERTIFICATE_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, PageSizeConstant.CERTIFICATE_PAGE_SIZE));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);
@@ -91,8 +91,8 @@ public class CertificateDaoImpl extends PageCalculator implements CertificateDao
         try {
             return jdbcTemplate.query(CertificateQueryRepository.SELECT_CERTIFICATES_BY_TAG_NAME,
                     new CertificateWithoutTagsMapper(dateTimeParser), tagName,
-                    calculatePageStart(pageNumber, ModelConstant.CERTIFICATE_PAGE_SIZE),
-                    calculatePageEnd(pageNumber, ModelConstant.CERTIFICATE_PAGE_SIZE));
+                    calculatePageStart(pageNumber, PageSizeConstant.CERTIFICATE_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, PageSizeConstant.CERTIFICATE_PAGE_SIZE));
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);
@@ -106,10 +106,15 @@ public class CertificateDaoImpl extends PageCalculator implements CertificateDao
         String certificateNameRegEx = prepareRegEx(certificateName);
         String descriptionRegEx = prepareRegEx(description);
         try {
-            return jdbcTemplate.query(CertificateQueryRepository.SELECT_CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART,
+            List<Certificate> certificates = jdbcTemplate.query(CertificateQueryRepository.SELECT_CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART,
                     new CertificateWithoutTagsMapper(dateTimeParser), certificateNameRegEx, descriptionRegEx,
-                    calculatePageStart(pageNumber, ModelConstant.CERTIFICATE_PAGE_SIZE),
-                    calculatePageEnd(pageNumber, ModelConstant.CERTIFICATE_PAGE_SIZE));
+                    calculatePageStart(pageNumber, PageSizeConstant.CERTIFICATE_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, PageSizeConstant.CERTIFICATE_PAGE_SIZE));
+            for (Certificate certificate : certificates) {
+                setCertificateTag(certificate);
+            }
+
+            return certificates;
         } catch (DataAccessException exception) {
             logger.error("can't get data");
             throw new DaoException("can't get data", exception);

@@ -6,7 +6,7 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.TagService;
-import com.epam.esm.util.entity.PaginationData;
+import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

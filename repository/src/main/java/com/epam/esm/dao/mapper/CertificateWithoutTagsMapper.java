@@ -1,8 +1,8 @@
 package com.epam.esm.dao.mapper;
 
 import com.epam.esm.model.entity.Certificate;
-import com.epam.esm.util.exception.UtilException;
-import com.epam.esm.util.parser.DateTimeParser;
+import com.epam.esm.model.util.exception.UtilException;
+import com.epam.esm.model.util.parser.DateTimeParser;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

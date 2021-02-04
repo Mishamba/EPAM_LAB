@@ -2,7 +2,6 @@ package com.epam.esm.controller;
 
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.model.constant.CertificateSortParametersConstant;
-import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.constant.UserSortParametersConstant;
 import com.epam.esm.model.entity.Order;
@@ -10,7 +9,7 @@ import com.epam.esm.model.entity.User;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.ServiceException;
-import com.epam.esm.util.entity.PaginationData;
+import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

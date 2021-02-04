@@ -6,6 +6,7 @@ import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.dao.mapper.UserMapper;
 import com.epam.esm.dao.queue.UserQueryRepository;
 import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.constant.PageSizeConstant;
 import com.epam.esm.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -27,8 +28,8 @@ public class UserDaoImpl extends PageCalculator implements UserDao {
     public List<User> findAllUsers(int pageNumber) throws DaoException {
         try {
             return jdbcTemplate.query(UserQueryRepository.SELECT_ALL_USERS_QUERY_PAGED, new UserMapper(),
-                    calculatePageStart(pageNumber, ModelConstant.USER_PAGE_SIZE),
-                    calculatePageEnd(pageNumber, ModelConstant.USER_PAGE_SIZE));
+                    calculatePageStart(pageNumber, PageSizeConstant.USER_PAGE_SIZE),
+                    calculatePageEnd(pageNumber, PageSizeConstant.USER_PAGE_SIZE));
         } catch (DataAccessException exception) {
             throw new DaoException("can't get data", exception);
         }

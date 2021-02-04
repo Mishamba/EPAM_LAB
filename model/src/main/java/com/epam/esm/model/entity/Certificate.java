@@ -1,7 +1,7 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
-import com.epam.esm.util.serializator.DateTimeSerializator;
+import com.epam.esm.model.util.serializator.DateTimeSerializator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
