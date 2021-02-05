@@ -86,14 +86,14 @@ public class OrderDaoImpl extends PageCalculator implements OrderDao {
 
         PreparedStatementCreatorFactory preparedStatementCreatorFactory =
                 new PreparedStatementCreatorFactory(OrderQueryRepository.CREATE_ORDER_SIGN,
-                        Types.INTEGER, Types.INTEGER);
+                        Types.INTEGER, Types.INTEGER, Types.VARCHAR);
 
         preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
 
         PreparedStatementCreator preparedStatementCreator;
         try {
             preparedStatementCreator = preparedStatementCreatorFactory.newPreparedStatementCreator(
-                    Arrays.asList(order.getUserId(), parser.parseFrom(order.getOrderDate())));
+                    Arrays.asList(order.getUserId(), order.getCost(), parser.parseFrom(order.getOrderDate())));
         } catch (UtilException e) {
             logger.error("can't parse date");
             throw new DaoException("query creation error", e);

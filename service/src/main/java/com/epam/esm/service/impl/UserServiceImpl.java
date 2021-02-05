@@ -29,7 +29,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAllUsers(PaginationData paginationData) throws ServiceException {
         try {
-            return  userDao.findAllUsers(paginationData.getPageNumber());
+            List<User> users = userDao.findAllUsers(paginationData.getPageNumber());
+            sortUserList(users, paginationData);
+            return users;
         } catch (DaoException e) {
             logger.error("can't find users");
             throw new ServiceException("can't find users", e);

@@ -18,7 +18,8 @@ public class OrderWithoutCertificatesMapper implements RowMapper<Order> {
     @Override
     public Order mapRow(ResultSet resultSet, int i) throws SQLException {
         try {
-            return new Order(resultSet.getInt("id"), resultSet.getInt("user_id"), parser.parseTo(resultSet.getString("order_date")));
+            return new Order(resultSet.getInt("id"), resultSet.getInt("user_id"), resultSet.getInt("cost"),
+                    null, parser.parseTo(resultSet.getString("order_date")));
         } catch (UtilException e) {
             throw new SQLException("can't map Order", e);
         }

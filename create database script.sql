@@ -43,6 +43,7 @@ create table orders (
 	id int not null unique auto_increment,
     users_id int not null,
     order_date varchar(23) not null,
+    cost int not null,
     primary key(id),
     foreign key(users_id) references users(id)
 );

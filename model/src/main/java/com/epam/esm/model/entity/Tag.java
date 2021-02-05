@@ -1,8 +1,10 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.util.deserializator.TagDeserializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import org.springframework.hateoas.RepresentationModel;
@@ -13,6 +15,7 @@ import org.springframework.hateoas.RepresentationModel;
  * @version 1.0
  * @author mishamba
  */
+@JsonDeserialize(using = TagDeserializer.class)
 public class Tag extends RepresentationModel<Tag> {
 
     @Positive

@@ -1,29 +1,38 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.util.deserializator.OrderDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
+@JsonDeserialize(using = OrderDeserializer.class)
 public class Order extends RepresentationModel<Order> {
     private int id;
     private int userId;
+    private int cost;
     private List<Certificate> orderedCertificates;
     private LocalDateTime orderDate;
 
-
-    public Order(int id, int userId, LocalDateTime orderDate) {
-        this.id = id;
-        this.userId = userId;
-        this.orderedCertificates = new ArrayList<>();
-        this.orderDate = orderDate;
-    }
-
     public Order(int userId, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
+        this.id = ModelConstant.NOT_SET_ID;
         this.userId = userId;
         this.orderedCertificates = orderedCertificates;
         this.orderDate = orderDate;
+        this.cost = 0;
+        for (Certificate orderedCertificate : orderedCertificates) {
+            this.cost += orderedCertificate.getPrice();
+        }
+    }
+
+    public Order(int id, int userId, int cost, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
+        this.id = id;
+        this.userId = userId;
+        this.orderedCertificates = orderedCertificates;
+        this.orderDate = orderDate;
+        this.cost = cost;
     }
 
     public int getId() {
@@ -63,12 +72,7 @@ public class Order extends RepresentationModel<Order> {
     }
 
     public int getCost() {
-        int cost = 0;
-        for (Certificate orderedCertificate : orderedCertificates) {
-            cost += orderedCertificate.getPrice();
-        }
-
-        return cost;
+        return this.cost;
     }
 
     @Override

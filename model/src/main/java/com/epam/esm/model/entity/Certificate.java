@@ -1,9 +1,11 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
-import com.epam.esm.model.util.serializator.DateTimeSerializator;
+import com.epam.esm.model.util.deserializator.CertificateDeserializer;
+import com.epam.esm.model.util.serializer.DateTimeSerializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
@@ -21,6 +23,7 @@ import java.util.List;
  *
  * @see com.epam.esm.model.entity.Tag
  */
+@JsonDeserialize(using = CertificateDeserializer.class)
 public class Certificate extends RepresentationModel<Certificate> {
 
     @Positive
@@ -42,12 +45,12 @@ public class Certificate extends RepresentationModel<Certificate> {
 
     @NotEmpty
     @PastOrPresent
-    @JsonSerialize(using = DateTimeSerializator.class)
+    @JsonSerialize(using = DateTimeSerializer.class)
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
-    @JsonSerialize(using = DateTimeSerializator.class)
+    @JsonSerialize(using = DateTimeSerializer.class)
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
@@ -74,11 +77,8 @@ public class Certificate extends RepresentationModel<Certificate> {
      * @see com.epam.esm.model.entity.Tag
      */
     @JsonCreator
-    public Certificate(@JsonProperty("name") String name, @JsonProperty("description") String description,
-                       @JsonProperty("price") int price, @JsonProperty("duration") int duration,
-                       @JsonProperty("createDate") LocalDateTime createDate,
-                       @JsonProperty("lastUpdateDate") LocalDateTime lastUpdateDate,
-                       @JsonProperty("tags") List<Tag> tags) {
+    public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
+                       LocalDateTime lastUpdateDate, List<Tag> tags) {
         id = ModelConstant.NOT_SET_ID;
         this.name = name;
         this.description = description;

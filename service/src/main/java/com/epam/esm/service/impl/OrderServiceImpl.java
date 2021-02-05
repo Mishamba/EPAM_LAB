@@ -30,14 +30,16 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> findUserOrders(int userId, PaginationData paginationData)
             throws ServiceException {
         try {
-            return orderDao.findUserOrders(userId, paginationData.getPageNumber());
+            List<Order> orders = orderDao.findUserOrders(userId, paginationData.getPageNumber());
+            sortOrderList(orders, paginationData);
+            return orders;
         } catch (DaoException e) {
             logger.error("can't find orders");
             throw new ServiceException("can't find orders", e);
         }
     }
 
-    private void sortOrders(List<Order> orders, PaginationData paginationData) {
+    private void sortOrderList(List<Order> orders, PaginationData paginationData) {
         Comparator<Order> comparator = orderComparatorFactory.getComparator(paginationData);
         orders.sort(comparator);
     }

@@ -1,4 +1,4 @@
-package com.epam.esm.model.util.serializator;
+package com.epam.esm.model.util.serializer;
 
 import com.epam.esm.model.util.exception.UtilException;
 import com.epam.esm.model.util.parser.DateTimeParser;
@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-public class DateTimeSerializator extends JsonSerializer<LocalDateTime> {
+public class DateTimeSerializer extends JsonSerializer<LocalDateTime> {
     private final DateTimeParser parser;
 
-    public DateTimeSerializator() {
+    public DateTimeSerializer() {
         this.parser = new DateTimeParser();
     }
 

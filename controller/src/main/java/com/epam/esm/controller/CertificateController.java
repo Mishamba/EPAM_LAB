@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -106,20 +107,25 @@ public class CertificateController {
      *
      * @param sortBy Field to sort by. Available variants are: NAME, DATE (createDate).
      * @param sortType Sort order variant. Available variants are: ASC, DESC (as in SQL).
-     * @param tagName Tag to find with.
+     * @param tags Tags to find with.
      * @return Certificate with given tag.
      * @throws ControllerException In case if some problems method throws ControllerException and user will get
      *                             JSON error answer.
      */
-    @GetMapping("/get/by/tag")
+    @GetMapping("/get/by/tags")
     public List<Certificate> findCertificateByTag(
             @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
-            @RequestParam("tag_name") String tagName) throws ControllerException {
+            @RequestBody List<Tag> tags) throws ControllerException {
         try {
-            List<Certificate> certificates = certificateService.
-                    findCertificatesByTag(tagName, new PaginationData(sortBy, sortType, pageNumber));
+            List<Certificate> certificates = new ArrayList<>();
+            // TODO: 2/5/21 move to services
+            for (Tag tag : tags) {
+                certificates.addAll(certificateService.findCertificatesByTag(tag.getName(),
+                        new PaginationData(sortBy, sortType, pageNumber)));
+            }
+
             for (Certificate certificate : certificates) {
                 addLinksToCertificate(certificate);
             }
