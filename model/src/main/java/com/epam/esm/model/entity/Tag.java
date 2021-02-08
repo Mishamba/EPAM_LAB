@@ -9,6 +9,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import java.util.Set;
+
 /**
  * Entity class. Contains fields that stores Tag data.
  *
@@ -16,13 +21,18 @@ import org.springframework.hateoas.RepresentationModel;
  * @author mishamba
  */
 @JsonDeserialize(using = TagDeserializer.class)
+@Entity
 public class Tag extends RepresentationModel<Tag> {
 
     @Positive
+    @Id
     private int id;
 
     @NotEmpty
     private String name;
+
+    @ManyToMany
+    private Set<Certificate> certificateSet;
 
     /**
      * Constructor without id parameter. This constructor used only in creation case.

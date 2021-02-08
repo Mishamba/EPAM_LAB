@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.UserDao;
 import com.epam.esm.dao.exception.DaoException;
+import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.ServiceException;
@@ -51,5 +52,11 @@ public class UserServiceImpl implements UserService {
             logger.error("can't find user");
             throw new ServiceException("can't find users", e);
         }
+    }
+
+    // TODO: 2/5/21 finish
+    @Override
+    public Tag userWidelyUsedTag(int userId) throws ServiceException {
+        return null;
     }
 }

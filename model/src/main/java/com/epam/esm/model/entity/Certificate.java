@@ -4,16 +4,21 @@ import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.util.deserializator.CertificateDeserializer;
 import com.epam.esm.model.util.serializer.DateTimeSerializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Entity class. Contains fields that stores Certificate data.
@@ -24,9 +29,11 @@ import java.util.List;
  * @see com.epam.esm.model.entity.Tag
  */
 @JsonDeserialize(using = CertificateDeserializer.class)
+@Entity
 public class Certificate extends RepresentationModel<Certificate> {
 
     @Positive
+    @Id
     private int id;
 
     @NotEmpty
@@ -46,15 +53,21 @@ public class Certificate extends RepresentationModel<Certificate> {
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
+    @CreatedDate
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
+    @LastModifiedDate
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
+    @ManyToMany
     private List<Tag> tags;
+
+    @ManyToMany
+    private Set<Order> orderSet;
 
     /**
      * Class constructor. This constructor don't get id parameter.

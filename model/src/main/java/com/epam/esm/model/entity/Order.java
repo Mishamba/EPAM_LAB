@@ -3,22 +3,39 @@ package com.epam.esm.model.entity;
 import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.util.deserializator.OrderDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @JsonDeserialize(using = OrderDeserializer.class)
+@Entity
 public class Order extends RepresentationModel<Order> {
+    @Positive
+    @Id
     private int id;
-    private int userId;
+
+    @OneToOne
+    private User orderUser;
+
+    @Positive
     private int cost;
+
+    @UniqueElements
     private List<Certificate> orderedCertificates;
+
+    @PastOrPresent
     private LocalDateTime orderDate;
 
     public Order(int userId, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
         this.id = ModelConstant.NOT_SET_ID;
-        this.userId = userId;
+        this.orderUser = null;
         this.orderedCertificates = orderedCertificates;
         this.orderDate = orderDate;
         this.cost = 0;
@@ -27,9 +44,20 @@ public class Order extends RepresentationModel<Order> {
         }
     }
 
-    public Order(int id, int userId, int cost, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
+    public Order(int id, User orderUser, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
         this.id = id;
-        this.userId = userId;
+        this.orderUser = orderUser;
+        this.orderedCertificates = orderedCertificates;
+        this.orderDate = orderDate;
+        this.cost = 0;
+        for (Certificate orderedCertificate : orderedCertificates) {
+            this.cost += orderedCertificate.getPrice();
+        }
+    }
+
+    public Order(int id, User orderUser, int cost, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
+        this.id = id;
+        this.orderUser = orderUser;
         this.orderedCertificates = orderedCertificates;
         this.orderDate = orderDate;
         this.cost = cost;
@@ -59,12 +87,12 @@ public class Order extends RepresentationModel<Order> {
         this.orderedCertificates = orderedCertificates;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUserId() {
+        return orderUser;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserId(User orderUser) {
+        this.orderUser = orderUser;
     }
 
     public void addOrderedCertificate(Certificate certificate) {
@@ -86,7 +114,7 @@ public class Order extends RepresentationModel<Order> {
         }
 
         Order order = (Order) o;
-        return userId == order.userId &&
+        return orderUser.equals(order.orderUser) &&
                 orderedCertificates.equals(order.orderedCertificates) &&
                 orderDate.equals(order.orderDate);
     }
@@ -97,7 +125,7 @@ public class Order extends RepresentationModel<Order> {
         int hash = id * prime;
         hash *= orderDate.hashCode() * prime;
         hash *= orderedCertificates.hashCode() * prime;
-        hash *=userId * prime;
+        hash *= orderUser.hashCode() * prime;
 
         return hash;
     }

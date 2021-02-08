@@ -7,6 +7,7 @@ import com.epam.esm.model.constant.CertificateSortParametersConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.constant.UserSortParametersConstant;
 import com.epam.esm.model.entity.Order;
+import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
@@ -72,6 +73,12 @@ public class UserController {
             logger.error("can't send user orders");
             throw new ControllerException("can't send user orders", exception);
         }
+    }
+
+    // TODO: 2/5/21 finish
+    @GetMapping("/user_widely_used_tag")
+    public Tag userWidelyUsedTag(@RequestParam("user_id") int userId) {
+        return null;
     }
 
     @PostMapping("/create/order")
