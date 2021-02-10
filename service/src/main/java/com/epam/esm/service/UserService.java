@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface UserService {
     List<User> findAllUsers(PaginationData paginationData) throws ServiceException;
-    User findUserById(int id) throws ServiceException;
-    Tag userWidelyUsedTag(int userId) throws ServiceException;
+    User findUserById(int id);
+    Tag userWidelyUsedTag();
 }

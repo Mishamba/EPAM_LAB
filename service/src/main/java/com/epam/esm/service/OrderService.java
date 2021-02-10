@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface OrderService {
     List<Order> findUserOrders(int userId, PaginationData paginationData) throws ServiceException;
-    boolean createOrder(Order order) throws ServiceException;
+    void createOrder(Order order);
 }

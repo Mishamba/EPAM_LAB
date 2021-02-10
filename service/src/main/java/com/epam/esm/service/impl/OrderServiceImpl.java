@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.OrderDao;
-import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.exception.ServiceException;
@@ -29,14 +28,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findUserOrders(int userId, PaginationData paginationData)
             throws ServiceException {
-        try {
-            List<Order> orders = orderDao.findUserOrders(userId, paginationData.getPageNumber());
-            sortOrderList(orders, paginationData);
-            return orders;
-        } catch (DaoException e) {
-            logger.error("can't find orders");
-            throw new ServiceException("can't find orders", e);
-        }
+        List<Order> orders = orderDao.findUserOrders(userId, paginationData.getPageNumber());
+        ifNullThrowServiceException(orders);
+        sortOrderList(orders, paginationData);
+        return orders;
     }
 
     private void sortOrderList(List<Order> orders, PaginationData paginationData) {
@@ -44,13 +39,14 @@ public class OrderServiceImpl implements OrderService {
         orders.sort(comparator);
     }
 
-    @Override
-    public boolean createOrder(Order order) throws ServiceException {
-        try {
-            return orderDao.createOrder(order);
-        } catch (DaoException e) {
-            logger.error("can't create order");
-            throw new ServiceException("can't create order", e);
+    private void ifNullThrowServiceException(List<Order> certificates) throws ServiceException {
+        if (certificates == null) {
+            throw new ServiceException("no certificates found", new NullPointerException("list is null"));
         }
+    }
+
+    @Override
+    public void createOrder(Order order) {
+        orderDao.createOrder(order);
     }
 }

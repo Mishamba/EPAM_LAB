@@ -1,18 +1,13 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
-import com.epam.esm.model.util.deserializator.TagDeserializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import java.util.Set;
+import javax.persistence.*;
 
 /**
  * Entity class. Contains fields that stores Tag data.
@@ -20,19 +15,18 @@ import java.util.Set;
  * @version 1.0
  * @author mishamba
  */
-@JsonDeserialize(using = TagDeserializer.class)
 @Entity
 public class Tag extends RepresentationModel<Tag> {
 
     @Positive
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
     @NotEmpty
+    @Column(name = "tag_name")
     private String name;
-
-    @ManyToMany
-    private Set<Certificate> certificateSet;
 
     /**
      * Constructor without id parameter. This constructor used only in creation case.

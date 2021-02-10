@@ -1,10 +1,8 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
-import com.epam.esm.model.util.deserializator.CertificateDeserializer;
 import com.epam.esm.model.util.serializer.DateTimeSerializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
@@ -12,13 +10,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Entity class. Contains fields that stores Certificate data.
@@ -28,46 +23,51 @@ import java.util.Set;
  *
  * @see com.epam.esm.model.entity.Tag
  */
-@JsonDeserialize(using = CertificateDeserializer.class)
 @Entity
+@Table(name = "gift_certificate")
 public class Certificate extends RepresentationModel<Certificate> {
 
     @Positive
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
     @NotEmpty
+    @Column(name = "certificate_name")
     private String name;
 
     @NotEmpty
+    @Column(name = "certificate_description")
     private String description;
 
     @Positive
     @NotEmpty
+    @Column(name = "price")
     private int price;
 
     @Positive
     @NotEmpty
+    @Column(name = "duration")
     private int duration;
 
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
     @CreatedDate
+    @Column(name = "create_date")
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
     @LastModifiedDate
+    @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
-    @ManyToMany
+    @ManyToMany(targetEntity = Tag.class)
     private List<Tag> tags;
-
-    @ManyToMany
-    private Set<Order> orderSet;
 
     /**
      * Class constructor. This constructor don't get id parameter.

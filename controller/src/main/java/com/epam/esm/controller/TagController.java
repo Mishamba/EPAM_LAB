@@ -57,11 +57,14 @@ public class TagController {
      */
     @GetMapping("/get/{id}")
     public Tag getTagById(@PathVariable("id") int id) throws ControllerException {
-        try {
-            return tagService.findTagById(id);
-        } catch (ServiceException exception) {
-            logger.error("unsuccessful tag search. exit with exception");
-            throw new ControllerException("can't get tags", exception);
+        Tag tag = tagService.findTagById(id);
+        ifNullThrowException(tag);
+        return tag;
+    }
+
+    private void ifNullThrowException(Object o) throws ControllerException {
+        if (o == null) {
+            throw new ControllerException("no tag found.");
         }
     }
 
@@ -76,20 +79,8 @@ public class TagController {
      */
     @PostMapping("/create")
     public JsonAnswer createTag(@RequestParam("name") String name) {
-        try {
-            if (tagService.createTag(new Tag(name))) {
-                logger.info("successfully created new tag");
-                return new JsonAnswer(HttpStatus.OK, "successfully created new tag");
-            } else {
-                logger.warn("unsuccessful tag creation");
-                return new JsonError(HttpStatus.BAD_REQUEST, "can't create tag. bad request",
-                        HttpStatus.BAD_REQUEST.value());
-            }
-        } catch (ServiceException serviceException) {
-            logger.error("unsuccessful tag deletion. exit with exception");
-            return new JsonError(HttpStatus.INTERNAL_SERVER_ERROR, "can't create tag. server error",
-                    HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }
+        tagService.createTag(new Tag(name));
+        return new JsonAnswer(HttpStatus.OK, "successfully created new tag");
     }
 
     /**
@@ -103,19 +94,7 @@ public class TagController {
      */
     @DeleteMapping("/delete/{id}")
     public JsonAnswer deleteTag(@PathVariable("id") int id) {
-        try {
-            if (tagService.deleteTag(id)) {
-                logger.info("successfully deleted tag");
-                return new JsonAnswer(HttpStatus.OK, "successfully deleted tag");
-            } else {
-                logger.warn("unsuccessful tag deletion");
-                return new JsonError(HttpStatus.BAD_REQUEST, "can't delete tag. bad request",
-                        HttpStatus.BAD_REQUEST.value());
-            }
-        } catch (ServiceException exception) {
-            logger.error("unsuccessful tag deletion");
-            return new JsonError(HttpStatus.INTERNAL_SERVER_ERROR, "can't delete tag. server error",
-                    HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }
+        tagService.deleteTag(id);
+        return new JsonAnswer(HttpStatus.OK, "successfully deleted tag");
     }
 }

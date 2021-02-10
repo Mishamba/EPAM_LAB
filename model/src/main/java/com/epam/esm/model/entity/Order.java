@@ -1,39 +1,42 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
-import com.epam.esm.model.util.deserializator.OrderDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@JsonDeserialize(using = OrderDeserializer.class)
 @Entity
+@Table(name = "orders")
 public class Order extends RepresentationModel<Order> {
     @Positive
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
     @OneToOne
     private User orderUser;
 
     @Positive
+    @Column(name = "cost")
     private int cost;
 
     @UniqueElements
+    @ManyToMany
     private List<Certificate> orderedCertificates;
 
     @PastOrPresent
+    @Column(name = "order_date")
+    @CreatedDate
     private LocalDateTime orderDate;
 
-    public Order(int userId, List<Certificate> orderedCertificates, LocalDateTime orderDate) {
+    public Order(List<Certificate> orderedCertificates, LocalDateTime orderDate) {
         this.id = ModelConstant.NOT_SET_ID;
         this.orderUser = null;
         this.orderedCertificates = orderedCertificates;

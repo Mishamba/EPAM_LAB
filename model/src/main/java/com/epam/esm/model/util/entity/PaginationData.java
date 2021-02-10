@@ -14,12 +14,13 @@ public class PaginationData {
         }
 
 
-        if (!(sortBy.equals(CertificateSortParametersConstant.SORT_BY_NAME) ||
+        if (sortBy == null || !(sortBy.equals(CertificateSortParametersConstant.SORT_BY_NAME) ||
                 sortBy.equals(CertificateSortParametersConstant.SORT_BY_DATE))) {
             sortBy = CertificateSortParametersConstant.SORT_BY_NAME;
         }
 
-        if (!(sortType.equals(SortOrderConstant.DESC_SORT_TYPE) || sortType.equals(SortOrderConstant.ASC_SORT_TYPE))) {
+        if (sortType == null || !(sortType.equals(SortOrderConstant.DESC_SORT_TYPE) ||
+                sortType.equals(SortOrderConstant.ASC_SORT_TYPE))) {
             sortType = SortOrderConstant.ASC_SORT_TYPE;
         }
 

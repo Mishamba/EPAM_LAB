@@ -2,7 +2,6 @@ package com.epam.esm.controller;
 
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.controller.json.entity.JsonAnswer;
-import com.epam.esm.controller.json.entity.JsonError;
 import com.epam.esm.model.constant.CertificateSortParametersConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.constant.UserSortParametersConstant;
@@ -75,20 +74,14 @@ public class UserController {
         }
     }
 
-    // TODO: 2/5/21 finish
-    @GetMapping("/user_widely_used_tag")
-    public Tag userWidelyUsedTag(@RequestParam("user_id") int userId) {
-        return null;
+    @GetMapping("/widely_used_tag")
+    public Tag widelyUsedTag() {
+        return userService.userWidelyUsedTag();
     }
 
     @PostMapping("/create/order")
     public JsonAnswer createOrder(@RequestBody Order order) {
-        try {
-            return (orderService.createOrder(order)) ? new JsonAnswer(HttpStatus.OK, "created order") :
-                    new JsonError(HttpStatus.BAD_REQUEST, "can't create order", 400);
-        } catch (ServiceException exception) {
-            logger.error("can't create order");
-            return new JsonError(HttpStatus.BAD_REQUEST, "can't create order", 400);
-        }
+        orderService.createOrder(order);
+        return new JsonAnswer(HttpStatus.OK, "created order");
     }
 }

@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.entity.Tag;
-import com.epam.esm.dao.exception.DaoException;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.TagService;
 import com.epam.esm.model.util.entity.PaginationData;
@@ -24,41 +23,29 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<Tag> findAllTags(PaginationData paginationData) throws ServiceException {
-        try {
-            return tagDao.findAllTags(paginationData.getPageNumber());
-        } catch (DaoException e) {
-            logger.error("can't get tags");
-            throw new ServiceException("can't get tags", e);
+        List<Tag> tags= tagDao.findAllTags(paginationData.getPageNumber());
+        ifNullThrowServiceException(tags);
+        return tags;
+    }
+
+    private void ifNullThrowServiceException(List<Tag> certificates) throws ServiceException {
+        if (certificates == null) {
+            throw new ServiceException("no certificates found", new NullPointerException("list is null"));
         }
     }
 
     @Override
-    public Tag findTagById(int id) throws ServiceException {
-        try {
-            return tagDao.findTagById(id);
-        } catch (DaoException e) {
-            logger.error("can't get tag by id");
-            throw new ServiceException("can't get tag by id", e);
-        }
+    public Tag findTagById(int id) {
+        return tagDao.findTagById(id);
     }
 
     @Override
-    public boolean createTag(Tag tag) throws ServiceException {
-        try {
-            return tagDao.createTag(tag);
-        } catch (DaoException e) {
-            logger.error("can't create tag");
-            throw new ServiceException("can't create tag", e);
-        }
+    public void createTag(Tag tag) {
+        tagDao.createTag(tag);
     }
 
     @Override
-    public boolean deleteTag(int id) throws ServiceException {
-        try {
-            return tagDao.deleteTag(id);
-        } catch (DaoException e) {
-            logger.error("can't delete tag");
-            throw new ServiceException("can't delete tag", e);
-        }
+    public void deleteTag(int id) {
+        tagDao.deleteTag(id);
     }
 }

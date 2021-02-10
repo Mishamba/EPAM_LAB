@@ -7,22 +7,22 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import java.util.Set;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class User extends RepresentationModel<User> {
 
     @Positive
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @NotEmpty
     @Pattern(regexp = "[a-zA-Z]+")
+    @Column(name = "user_name")
     private String name;
-
-    @OneToMany
-    private Set<Order> orderSet;
 
     @JsonCreator
     public User(@JsonProperty("name") String name) {

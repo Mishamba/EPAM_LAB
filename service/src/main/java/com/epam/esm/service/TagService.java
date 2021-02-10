@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public interface TagService {
     List<Tag> findAllTags(PaginationData paginationData) throws ServiceException;
-    Tag findTagById(int id) throws ServiceException;
-    boolean createTag(Tag tag) throws ServiceException;
-    boolean deleteTag(int id) throws ServiceException;
+    Tag findTagById(int id);
+    void createTag(Tag tag);
+    void deleteTag(int id);
 }
