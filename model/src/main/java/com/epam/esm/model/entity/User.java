@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -24,6 +25,9 @@ public class User extends RepresentationModel<User> {
     @Column(name = "user_name")
     private String name;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderUser")
+    private Set<Order> orders;
+
     @JsonCreator
     public User(@JsonProperty("name") String name) {
         this.name = name;
@@ -33,6 +37,14 @@ public class User extends RepresentationModel<User> {
     public User(@JsonProperty("id") Integer id, @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
     }
 
     public Integer getId() {

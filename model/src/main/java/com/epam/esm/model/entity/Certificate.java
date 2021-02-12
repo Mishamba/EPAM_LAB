@@ -66,8 +66,14 @@ public class Certificate extends RepresentationModel<Certificate> {
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
-    @ManyToMany(targetEntity = Tag.class)
+    @OneToMany(targetEntity = Tag.class)
+    @JoinTable(name = "certificate_tags",
+            joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
+    )
     private List<Tag> tags;
+
+    public Certificate() {}
 
     /**
      * Class constructor. This constructor don't get id parameter.

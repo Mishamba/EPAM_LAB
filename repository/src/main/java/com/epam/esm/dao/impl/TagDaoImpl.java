@@ -17,19 +17,19 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public List<Tag> findAllTags(int pageNumber) {
-        return manager.createQuery("SELECT e FROM tag e", Tag.class).setMaxResults(PageSizeConstant.TAG_PAGE_SIZE).
-                setFirstResult(PageSizeConstant.TAG_PAGE_SIZE * pageNumber).getResultList();
+        return manager.createQuery("SELECT e FROM Tag e", Tag.class).setMaxResults(PageSizeConstant.TAG_PAGE_SIZE).
+                setFirstResult(PageSizeConstant.TAG_PAGE_SIZE * (pageNumber - 1)).getResultList();
     }
 
     @Override
     public Tag findTagById(int id) {
-        return manager.createQuery("SELECT e FROM tag e WHERE e.id = :id", Tag.class).setParameter("id", id).
+        return manager.createQuery("SELECT e FROM Tag e WHERE e.id = :id", Tag.class).setParameter("id", id).
                 getSingleResult();
     }
 
     @Override
     public Tag findTagByName(String tagName) {
-        return manager.createQuery("SELECT e FROM tag e WHERE e.name = :name", Tag.class).setParameter("name", tagName).
+        return manager.createQuery("SELECT e FROM Tag e WHERE e.name = :name", Tag.class).setParameter("name", tagName).
                 getSingleResult();
     }
 
@@ -42,7 +42,7 @@ public class TagDaoImpl implements TagDao {
     @Override
     @Transactional
     public void deleteTag(int id) {
-        manager.createQuery("DELETE FROM tag e WHERE e.id = :id").setParameter("id", id).
+        manager.createQuery("DELETE FROM Tag e WHERE e.id = :id").setParameter("id", id).
                 executeUpdate();
     }
 }

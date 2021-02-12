@@ -20,7 +20,8 @@ public class Order extends RepresentationModel<Order> {
     @Column(name = "id")
     private int id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false)
     private User orderUser;
 
     @Positive

@@ -17,21 +17,21 @@ public class CertificateDaoImpl implements CertificateDao {
 
     @Override
     public List<Certificate> findAllCertificates(int pageNumber) {
-        return manager.createQuery("SELECT e FROM certificate e", Certificate.class).
+        return manager.createQuery("SELECT e FROM Certificate e", Certificate.class).
                 setMaxResults(PageSizeConstant.CERTIFICATE_PAGE_SIZE).
                 setFirstResult(PageSizeConstant.CERTIFICATE_PAGE_SIZE * pageNumber).getResultList();
     }
 
     @Override
     public Certificate findCertificateById(int id) {
-        return manager.createQuery("SELECT e FROM certificate e WHERE e.id = :id", Certificate.class).
+        return manager.createQuery("SELECT e FROM Certificate e WHERE e.id = :id", Certificate.class).
                 setParameter("id", id).getSingleResult();
     }
 
     @Override
     public List<Certificate> findCertificatesByTag(String tagName, int pageNumber) {
         return manager.
-                createQuery("SELECT e FROM certificate AS c WHERE c.id IN " +
+                createQuery("SELECT e FROM Certificate AS c WHERE c.id IN " +
                                 "(SELECT gc.id FROM tag t JOIN t.certificates gc WHERE t.name = :name)",
                         Certificate.class).setParameter("name", tagName).
                 setMaxResults(PageSizeConstant.CERTIFICATE_PAGE_SIZE).
@@ -65,6 +65,6 @@ public class CertificateDaoImpl implements CertificateDao {
     @Transactional
     @Override
     public void deleteCertificate(int id) {
-        manager.createQuery("DELETE FROM certificate e WHERE e.id = :id").setParameter("id", id);
+        manager.createQuery("DELETE FROM Certificate e WHERE e.id = :id").setParameter("id", id);
     }
 }

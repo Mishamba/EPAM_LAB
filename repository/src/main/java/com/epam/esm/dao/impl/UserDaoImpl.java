@@ -17,19 +17,19 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAllUsers(int pageNumber) {
-        return manager.createQuery("SELECT e FROM user e", User.class).
+        return manager.createQuery("SELECT e FROM User e", User.class).
                 setMaxResults(PageSizeConstant.USER_PAGE_SIZE).
                 setFirstResult(PageSizeConstant.USER_PAGE_SIZE * pageNumber).getResultList();
     }
 
     @Override
     public User findById(int id) {
-        return (User) manager.createQuery("SELECT e FROM user e WHERE e.id = :id").
+        return manager.createQuery("SELECT e FROM User e WHERE e.id = :id", User.class).
                 setParameter("id", id).getSingleResult();
     }
 
     @Override
     public Tag findWidelyUsedTag() {
-        return null;
+        return manager.createQuery("SELECT t FROM Tag t WHERE ")
     }
 }
