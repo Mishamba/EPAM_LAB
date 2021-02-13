@@ -1,6 +1,8 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.util.converter.LocalDateTimeConverter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import org.hibernate.validator.constraints.UniqueElements;
@@ -20,8 +22,8 @@ public class Order extends RepresentationModel<Order> {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "users_id", nullable = false)
     private User orderUser;
 
     @Positive
@@ -29,13 +31,20 @@ public class Order extends RepresentationModel<Order> {
     private int cost;
 
     @UniqueElements
-    @ManyToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "certificate_orders",
+            joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id")
+    )
     private List<Certificate> orderedCertificates;
 
     @PastOrPresent
     @Column(name = "order_date")
     @CreatedDate
+    @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime orderDate;
+
+    public Order() {}
 
     public Order(List<Certificate> orderedCertificates, LocalDateTime orderDate) {
         this.id = ModelConstant.NOT_SET_ID;
@@ -105,6 +114,16 @@ public class Order extends RepresentationModel<Order> {
 
     public int getCost() {
         return this.cost;
+    }
+
+    @PreUpdate
+    @PrePersist
+    public void calculateCost() {
+        this.cost = 0;
+        for (Certificate certificate : orderedCertificates) {
+            this.cost += certificate.getPrice();
+        }
+        this.orderDate = LocalDateTime.now();
     }
 
     @Override

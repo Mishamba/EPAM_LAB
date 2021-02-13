@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.controller.json.entity.JsonAnswer;
 import com.epam.esm.model.constant.CertificateSortParametersConstant;
+import com.epam.esm.model.constant.OrderSortParametersConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.constant.UserSortParametersConstant;
 import com.epam.esm.model.entity.Order;
@@ -37,7 +38,7 @@ public class UserController {
     @GetMapping("/get/all")
     public List<User> findAllUsers(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_by", defaultValue = UserSortParametersConstant.SORT_BY_ID) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType) throws ControllerException {
         try {
             List<User> users = userService.findAllUsers(new PaginationData(sortBy, sortType, pageNumber));
@@ -55,7 +56,6 @@ public class UserController {
     private void addLinkToUser(User user) throws ControllerException {
         user.add(linkTo(methodOn(CertificateController.class).index(1,
                 CertificateSortParametersConstant.SORT_BY_NAME, SortOrderConstant.ASC_SORT_TYPE)).withSelfRel());
-        // TODO: 2/4/21 get user id from session
         user.add(linkTo(methodOn(UserController.class).findUserOrders(1,
                 UserSortParametersConstant.SORT_BY_ID, SortOrderConstant.ASC_SORT_TYPE, 1)).withSelfRel());
     }
@@ -63,9 +63,9 @@ public class UserController {
     @GetMapping("/get/user_orders")
     public List<Order> findUserOrders(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_by", defaultValue = OrderSortParametersConstant.SORT_BY_NAME) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
-            @SessionAttribute("userId") int userId) throws ControllerException {
+            @RequestParam("user_id") int userId) throws ControllerException {
         try {
             return orderService.findUserOrders(userId, new PaginationData(sortBy, sortType, pageNumber));
         } catch (ServiceException exception) {
@@ -81,6 +81,7 @@ public class UserController {
 
     @PostMapping("/create/order")
     public JsonAnswer createOrder(@RequestBody Order order) {
+        // TODO: 2/13/21 fix
         orderService.createOrder(order);
         return new JsonAnswer(HttpStatus.OK, "created order");
     }

@@ -1,13 +1,12 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.util.converter.LocalDateTimeConverter;
 import com.epam.esm.model.util.serializer.DateTimeSerializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
@@ -54,19 +53,19 @@ public class Certificate extends RepresentationModel<Certificate> {
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
-    @CreatedDate
+    @Convert(converter = LocalDateTimeConverter.class)
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
-    @LastModifiedDate
+    @Convert(converter = LocalDateTimeConverter.class)
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
-    @OneToMany(targetEntity = Tag.class)
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = Tag.class, cascade = CascadeType.ALL)
     @JoinTable(name = "certificate_tags",
             joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
@@ -95,7 +94,6 @@ public class Certificate extends RepresentationModel<Certificate> {
      *
      * @see com.epam.esm.model.entity.Tag
      */
-    @JsonCreator
     public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
         id = ModelConstant.NOT_SET_ID;
@@ -130,7 +128,6 @@ public class Certificate extends RepresentationModel<Certificate> {
      *
      * @see com.epam.esm.model.entity.Tag
      */
-    @JsonCreator
     public Certificate(int id, String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.id = id;
@@ -299,6 +296,17 @@ public class Certificate extends RepresentationModel<Certificate> {
      */
     public void addTag(Tag tag) {
         tags.add(tag);
+    }
+
+    @PrePersist
+    public void setDates() {
+        setCreateDate(LocalDateTime.now());
+        setLastUpdateDate(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void updateDate() {
+        setLastUpdateDate(LocalDateTime.now());
     }
 
     @Override

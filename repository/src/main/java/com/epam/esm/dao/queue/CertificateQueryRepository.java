@@ -77,5 +77,5 @@ public class CertificateQueryRepository {
      * Query selects certificates by part of name and description.
      */
     public static final String SELECT_CERTIFICATE_BY_NAME_AND_DESCRIPTION_PART = "SELECT * FROM gift_certificate " +
-            "WHERE certificate_name REGEXP ? OR certificate_description REGEXP ? LIMIT ?, ?";
+            "WHERE certificate_name LIKE ? OR certificate_description LIKE ? LIMIT ?, ?";
 }

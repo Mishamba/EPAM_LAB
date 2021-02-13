@@ -70,3 +70,16 @@ insert into certificate_tags(certificate_id, tag_id) values
 (1, 1),
 (1, 3), 
 (2, 2);
+
+insert into users(user_name) values 
+('mishamba'),
+('user'),
+('smth');
+
+insert into orders(users_id, order_date, cost) values
+(1, '2020-12-15T13:00:00.000', 15),
+(2, '2020-12-16T13:00:00.000', 20);
+
+insert into certificate_orders(order_id, certificate_id) values
+(1, 1),
+(2, 2);

@@ -19,7 +19,7 @@ public class UserDaoImpl implements UserDao {
     public List<User> findAllUsers(int pageNumber) {
         return manager.createQuery("SELECT e FROM User e", User.class).
                 setMaxResults(PageSizeConstant.USER_PAGE_SIZE).
-                setFirstResult(PageSizeConstant.USER_PAGE_SIZE * pageNumber).getResultList();
+                setFirstResult(PageSizeConstant.USER_PAGE_SIZE * (pageNumber - 1)).getResultList();
     }
 
     @Override
@@ -28,8 +28,9 @@ public class UserDaoImpl implements UserDao {
                 setParameter("id", id).getSingleResult();
     }
 
+    // TODO: 2/12/21 finish
     @Override
     public Tag findWidelyUsedTag() {
-        return manager.createQuery("SELECT t FROM Tag t WHERE ")
+        return null;
     }
 }

@@ -117,7 +117,6 @@ public class CertificateController {
             @RequestBody List<Tag> tags) throws ControllerException {
         try {
             List<Certificate> certificates = new ArrayList<>();
-            // TODO: 2/5/21 move to services
             for (Tag tag : tags) {
                 certificates.addAll(certificateService.findCertificatesByTag(tag.getName(),
                         new PaginationData(sortBy, sortType, pageNumber)));
@@ -144,7 +143,11 @@ public class CertificateController {
     @GetMapping("/get/{id}")
     public Certificate findCertificate(@PathVariable("id") int id) throws ControllerException {
         Certificate certificate = certificateService.findCertificateById(id);
-        addLinksToCertificate(certificate);
+        if (certificate != null) {
+            addLinksToCertificate(certificate);
+        } else {
+            throw new ControllerException("can't find certificate");
+        }
         return certificate;
     }
 

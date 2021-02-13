@@ -1,6 +1,7 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import org.springframework.hateoas.RepresentationModel;
@@ -14,6 +15,7 @@ import java.util.Set;
  * @version 1.0
  * @author mishamba
  */
+@JsonIgnoreProperties(value = {"certificates"})
 @Entity
 @Table(name = "tag")
 public class Tag extends RepresentationModel<Tag> {
@@ -28,7 +30,7 @@ public class Tag extends RepresentationModel<Tag> {
     @Column(name = "tag_name")
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags", cascade = CascadeType.ALL)
     private Set<Certificate> certificates;
 
     public Tag() {}

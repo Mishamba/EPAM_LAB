@@ -19,20 +19,21 @@ public class CertificateDaoImpl implements CertificateDao {
     public List<Certificate> findAllCertificates(int pageNumber) {
         return manager.createQuery("SELECT e FROM Certificate e", Certificate.class).
                 setMaxResults(PageSizeConstant.CERTIFICATE_PAGE_SIZE).
-                setFirstResult(PageSizeConstant.CERTIFICATE_PAGE_SIZE * pageNumber).getResultList();
+                setFirstResult(PageSizeConstant.CERTIFICATE_PAGE_SIZE * (pageNumber - 1)).getResultList();
     }
 
     @Override
     public Certificate findCertificateById(int id) {
         return manager.createQuery("SELECT e FROM Certificate e WHERE e.id = :id", Certificate.class).
-                setParameter("id", id).getSingleResult();
+                setParameter("id", id).getResultList().stream().findAny().orElse(null);
     }
 
     @Override
     public List<Certificate> findCertificatesByTag(String tagName, int pageNumber) {
         return manager.
-                createQuery("SELECT e FROM Certificate AS c WHERE c.id IN " +
-                                "(SELECT gc.id FROM tag t JOIN t.certificates gc WHERE t.name = :name)",
+                createQuery("SELECT e FROM Certificate e JOIN e.tags tags WHERE EXISTS " +
+                                "(SELECT e0 FROM Certificate e0 JOIN e0.tags tags " +
+                                "WHERE tags.name = :name AND e0.id =e.id)",
                         Certificate.class).setParameter("name", tagName).
                 setMaxResults(PageSizeConstant.CERTIFICATE_PAGE_SIZE).
                 setFirstResult(PageSizeConstant.CERTIFICATE_PAGE_SIZE * pageNumber).getResultList();
@@ -41,9 +42,12 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description,
                                                                   int pageNumber) {
-        return manager.createQuery("SELECT e FROM Certificate WHERE " +
-                "e.name REGEXP :nameRegExp OR e.description REGEXP :descriptionRegExp", Certificate.class).
-                setParameter("nameRegExp", prepareRegEx(certificateName)).
+        String query = "SELECT e FROM Certificate e WHERE e.name LIKE CONCAT('%', :descriptionRegExp,'%') OR e.description " +
+                "LIKE CONCAT('%', :nameRegExp, '%')" ;
+        return manager.createQuery("SELECT e FROM Certificate e " +
+                "WHERE e.name LIKE CONCAT('%', :descriptionRegExp,'%') " +
+                "OR e.description LIKE CONCAT('%', :nameRegExp, '%')", Certificate.class).
+                setParameter("nameRegExp", certificateName).
                 setParameter("descriptionRegExp", prepareRegEx(description)).
                 setMaxResults(PageSizeConstant.CERTIFICATE_PAGE_SIZE).
                 setFirstResult(PageSizeConstant.CERTIFICATE_PAGE_SIZE * pageNumber).
@@ -51,7 +55,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private String prepareRegEx(String input) {
-        return ".*" + input + ".*";
+        return "%" + input + "%";
     }
 
     @Transactional
@@ -65,6 +69,6 @@ public class CertificateDaoImpl implements CertificateDao {
     @Transactional
     @Override
     public void deleteCertificate(int id) {
-        manager.createQuery("DELETE FROM Certificate e WHERE e.id = :id").setParameter("id", id);
+        manager.createQuery("DELETE FROM Certificate e WHERE e.id = :id").setParameter("id", id).executeUpdate();
     }
 }
