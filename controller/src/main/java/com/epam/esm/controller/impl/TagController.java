@@ -1,7 +1,6 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.impl;
 
 import com.epam.esm.controller.json.entity.JsonAnswer;
-import com.epam.esm.controller.json.entity.JsonError;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.service.exception.ServiceException;

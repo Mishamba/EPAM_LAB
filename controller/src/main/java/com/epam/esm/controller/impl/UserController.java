@@ -1,4 +1,4 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.impl;
 
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.controller.json.entity.JsonAnswer;
