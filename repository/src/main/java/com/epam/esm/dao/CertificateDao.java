@@ -9,6 +9,8 @@ public interface CertificateDao {
     Certificate findCertificateById(int id);
     List<Certificate> findCertificatesByTag(String tagName, int pageNumber);
     List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description, int pageNumber);
+    void updateCertificateDuration(int id, int duration);
+    void updateCertificatePrice(int id, int price);
     void createCertificate(Certificate certificate);
     void deleteCertificate(int id);
 }

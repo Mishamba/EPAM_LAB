@@ -1,9 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "logging.pattern.console.regexp",
-      "type": "java.lang.String",
-      "description": "Description for logging.pattern.console.regexp."
-    }
-  ]
-}

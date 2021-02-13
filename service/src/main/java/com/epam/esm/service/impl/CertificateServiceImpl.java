@@ -85,11 +85,15 @@ public class CertificateServiceImpl implements CertificateService {
         certificateDao.createCertificate(certificate);
     }
 
-    /*@Override
-    public void updateCertificate(Certificate newCertificate) {
-        newCertificate.setLastUpdateDate(LocalDateTime.now());
-        return certificateDao.updateCertificate(newCertificate);
-    }*/
+    @Override
+    public void updateCertificateDuration(int id, int duration) {
+        certificateDao.updateCertificateDuration(id, duration);
+    }
+
+    @Override
+    public void updateCertificatePrice(int id, int price) {
+        certificateDao.updateCertificatePrice(id, price);
+    }
 
     @Override
     public void deleteCertificate(int id) {

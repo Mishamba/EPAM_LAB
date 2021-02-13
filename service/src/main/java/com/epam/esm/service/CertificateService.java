@@ -15,8 +15,7 @@ public interface CertificateService {
     List<Certificate> findCertificatesByNameAndDescription(
             String certificateName, String description, PaginationData paginationData) throws ServiceException;
     void createCertificate(Certificate certificate);
-
-    // TODO: 2/9/21 finish method
-    //void updateCertificate(Certificate certificate);
+    void updateCertificateDuration(int id, int duration);
+    void updateCertificatePrice(int id, int price);
     void deleteCertificate(int id);
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.controller.json.entity.JsonAnswer;
+import com.epam.esm.controller.json.entity.JsonError;
 import com.epam.esm.model.constant.CertificateSortParametersConstant;
 import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
@@ -66,7 +67,7 @@ public class CertificateController {
     }
 
     /**
-     * Method find certificates with similar name or description.
+     * Find certificates with similar name or description.
      *
      * @param sortBy Field to sort by. Available variants are: NAME, DATE (createDate).
      * @param sortType Sort order variant. Available variants are: ASC, DESC (as in SQL).
@@ -100,7 +101,7 @@ public class CertificateController {
     }
 
     /**
-     * Method find certificates with given tag.
+     * Find certificates with given tag.
      *
      * @param sortBy Field to sort by. Available variants are: NAME, DATE (createDate).
      * @param sortType Sort order variant. Available variants are: ASC, DESC (as in SQL).
@@ -187,9 +188,14 @@ public class CertificateController {
     public JsonAnswer updateCertificate(@PathVariable("id") int id,
                                         @RequestParam(value = "price", defaultValue = "-1") int price,
                                         @RequestParam(value = "duration", defaultValue = "-1") int duration) {
-        if (price != -1) {
-
+        if (price > 0 && duration < 0) {
+            certificateService.updateCertificatePrice(id, price);
+        } else if (price < 0 && duration > 0) {
+            certificateService.updateCertificateDuration(id, duration);
+        } else {
+            return new JsonError(HttpStatus.BAD_REQUEST, "wrong parameters", 400);
         }
+
         return new JsonAnswer(HttpStatus.OK, "updated certificate");
     }
 

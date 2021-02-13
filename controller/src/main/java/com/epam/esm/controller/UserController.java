@@ -6,9 +6,11 @@ import com.epam.esm.model.constant.CertificateSortParametersConstant;
 import com.epam.esm.model.constant.OrderSortParametersConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.constant.UserSortParametersConstant;
+import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.ServiceException;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -27,12 +30,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class UserController {
     private final UserService userService;
     private final OrderService orderService;
+    private final CertificateService certificateService;
     private final Logger logger = Logger.getLogger(UserController.class);
 
     @Autowired
-    public UserController(UserService userService, OrderService orderService) {
+    public UserController(UserService userService, OrderService orderService, CertificateService certificateService) {
         this.userService = userService;
         this.orderService = orderService;
+        this.certificateService = certificateService;
     }
 
     @GetMapping("/get/all")
@@ -80,9 +85,19 @@ public class UserController {
     }
 
     @PostMapping("/create/order")
-    public JsonAnswer createOrder(@RequestBody Order order) {
-        // TODO: 2/13/21 fix
-        orderService.createOrder(order);
+    public JsonAnswer createOrder(@RequestParam("user_id") int userId,
+                                  @RequestParam("certificate_id") int[] orderedCertificateIds) throws ControllerException {
+        User orderUser = userService.findUserById(userId);
+        List<Certificate> orderedCertificates = new ArrayList<>();
+        for (int id : orderedCertificateIds) {
+            Certificate certificate = certificateService.findCertificateById(id);
+            if (certificate != null) {
+                orderedCertificates.add(certificate);
+            } else {
+                throw new ControllerException("can't find certificate with given id");
+            }
+        }
+        orderService.createOrder(new Order(orderUser, orderedCertificates));
         return new JsonAnswer(HttpStatus.OK, "created order");
     }
 }

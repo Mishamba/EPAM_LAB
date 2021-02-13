@@ -33,7 +33,7 @@ public class TagController {
     }
 
     /**
-     * Method returns all Tags stored in database.
+     * Returns all Tags stored in database.
      *
      * @return All stored Tags.
      * @throws ControllerException
@@ -49,7 +49,7 @@ public class TagController {
     }
 
     /**
-     * Method returns Tag with given id.
+     * Returns Tag with given id.
      *
      * @param id Tag id.
      * @return Tag with given id.
@@ -69,7 +69,7 @@ public class TagController {
     }
 
     /**
-     * Method creates and stores Tag in database.
+     * Creates and stores Tag in database.
      *
      * @param name New tag name.
      * @return JsonError of JsonAnswer with operation result status.
@@ -84,7 +84,7 @@ public class TagController {
     }
 
     /**
-     * Method deletes tag from database using tag id.
+     * Deletes tag from database using tag id.
      *
      * @param id Delete tag id.
      * @return JsonError of JsonAnswer with operation result status.

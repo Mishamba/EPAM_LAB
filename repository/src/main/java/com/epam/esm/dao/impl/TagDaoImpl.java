@@ -29,8 +29,8 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public Tag findTagByName(String tagName) {
-        return manager.createQuery("SELECT e FROM Tag e WHERE e.name = :name", Tag.class).setParameter("name", tagName).
-                getSingleResult();
+        return manager.createQuery("SELECT e FROM Tag e WHERE e.name = :name", Tag.class).
+                setParameter("name", tagName).getResultList().stream().findAny().orElse(null);
     }
 
     @Override

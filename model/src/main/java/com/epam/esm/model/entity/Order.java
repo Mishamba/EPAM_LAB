@@ -22,7 +22,7 @@ public class Order extends RepresentationModel<Order> {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "users_id", nullable = false)
     private User orderUser;
 
@@ -31,7 +31,7 @@ public class Order extends RepresentationModel<Order> {
     private int cost;
 
     @UniqueElements
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "certificate_orders",
             joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id")
@@ -45,6 +45,11 @@ public class Order extends RepresentationModel<Order> {
     private LocalDateTime orderDate;
 
     public Order() {}
+
+    public Order(User orderUser, @UniqueElements List<Certificate> orderedCertificates) {
+        this.orderUser = orderUser;
+        this.orderedCertificates = orderedCertificates;
+    }
 
     public Order(List<Certificate> orderedCertificates, LocalDateTime orderDate) {
         this.id = ModelConstant.NOT_SET_ID;

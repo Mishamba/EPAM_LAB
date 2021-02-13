@@ -69,7 +69,7 @@ public class Tag extends RepresentationModel<Tag> {
     }
 
     /**
-     * Identification number getter method.
+     * Identification number getter.
      * @return int
      */
     public int getId() {
@@ -86,7 +86,7 @@ public class Tag extends RepresentationModel<Tag> {
     }
 
     /**
-     * Name getter method.
+     * Name getter.
      * @return String
      */
     public String getName() {
@@ -94,7 +94,7 @@ public class Tag extends RepresentationModel<Tag> {
     }
 
     /**
-     * Name setter method.
+     * Name setter.
      * @param name Tag name.
      *             Need to be not empty because of hibernate annotation.
      */
@@ -123,7 +123,7 @@ public class Tag extends RepresentationModel<Tag> {
     }
 
     /**
-     * Default toString() method. Returns tag in format:
+     * Default toString(). Returns tag in format:
      * Tag{id=${id}, name='${name}'}
      *
      * @return String

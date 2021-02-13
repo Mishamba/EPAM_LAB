@@ -30,7 +30,7 @@ public class DateTimeParser {
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(parseFormat);
 
     /**
-     * This method parse LocalDateTime to String using parseFormat format.
+     * This parse LocalDateTime to String using parseFormat format.
      *
      * @param dateTime This parameter is parsed to String.
      * @return Parsed LocalDateTime to String
@@ -45,7 +45,7 @@ public class DateTimeParser {
     }
 
     /**
-     * This method parse String to LocalDateTime using parseFormat format.
+     * This parse String to LocalDateTime using parseFormat format.
      *
      * @param stringDateTime This parameter is parsed to LocalDateTime
      * @return Parsed String to LocalDateTime
