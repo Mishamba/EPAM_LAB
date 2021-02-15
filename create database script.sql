@@ -56,20 +56,22 @@ create table certificate_orders (
 );
 
 insert into gift_certificate (certificate_name, certificate_description, price, duration, create_date, last_update_date) values 
-('spa', 'using this certificate u can go to spa', 15, 15, '2020-12-12T12:00:00.000', '2020-12-12T12:00:00.000'), -- id 1
-('gym', '15 days of free gym', 20, 15, '2020-12-15T13:00:00.000', '2020-12-15T13:00:00.000');  					 -- id 2
+('spa', 'using this certificate u can go to spa', 15, 15, '2020-12-12T12:00:00.000', '2020-12-12T12:00:00.000'), 
+('gym', '15 days of free gym', 20, 15, '2020-12-15T13:00:00.000', '2020-12-15T13:00:00.000');  					 
 
 insert into tag (tag_name) values
-('chill'), -- id 1
-('sport'), -- id 2
-('relax'); -- id 3
-insert into tag(tag_name) value ('fun'); -- id 4
-insert into tag(tag_name) value ('trash'); -- id 5
+('chill'), 
+('sport'), 
+('relax'); 
+insert into tag(tag_name) value ('fun');   
+insert into tag(tag_name) value ('trash'); 
 
 insert into certificate_tags(certificate_id, tag_id) values
 (1, 1),
 (1, 3), 
-(2, 2);
+(2, 2),
+(2, 4),
+(1, 5);
 
 insert into users(user_name) values 
 ('mishamba'),
@@ -77,9 +79,16 @@ insert into users(user_name) values
 ('smth');
 
 insert into orders(users_id, order_date, cost) values
-(1, '2020-12-15T13:00:00.000', 15),
-(2, '2020-12-16T13:00:00.000', 20);
+(1, '2020-12-15T13:00:00.000', 15), 
+(2, '2020-12-16T13:00:00.000', 50), 
+(3, '2020-12-16T13:00:00.000', 10), 
+(1, '2020-12-16T13:00:00.000', 15); 
 
 insert into certificate_orders(order_id, certificate_id) values
 (1, 1),
-(2, 2);
+(2, 2),
+(2, 2),
+(2, 2),
+(2, 1),
+(3, 2),
+(4, 2);

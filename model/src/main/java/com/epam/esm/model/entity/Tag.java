@@ -1,10 +1,8 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -15,10 +13,9 @@ import java.util.Set;
  * @version 1.0
  * @author mishamba
  */
-@JsonIgnoreProperties(value = {"certificates"})
 @Entity
 @Table(name = "tag")
-public class Tag extends RepresentationModel<Tag> {
+public class Tag {
 
     @Positive
     @Id

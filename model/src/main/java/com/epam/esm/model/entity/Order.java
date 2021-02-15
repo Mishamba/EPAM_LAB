@@ -15,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-public class Order extends RepresentationModel<Order> {
+public class Order {
     @Positive
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -105,11 +105,11 @@ public class Order extends RepresentationModel<Order> {
         this.orderedCertificates = orderedCertificates;
     }
 
-    public User getUserId() {
+    public User getUser() {
         return orderUser;
     }
 
-    public void setUserId(User orderUser) {
+    public void setUser(User orderUser) {
         this.orderUser = orderUser;
     }
 

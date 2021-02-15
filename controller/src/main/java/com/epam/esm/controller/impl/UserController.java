@@ -10,6 +10,10 @@ import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.model.entity.dto.CertificateDTO;
+import com.epam.esm.model.entity.dto.OrderDTO;
+import com.epam.esm.model.entity.dto.TagDTO;
+import com.epam.esm.model.entity.dto.UserDTO;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
@@ -30,24 +34,22 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class UserController {
     private final UserService userService;
     private final OrderService orderService;
-    private final CertificateService certificateService;
     private final Logger logger = Logger.getLogger(UserController.class);
 
     @Autowired
-    public UserController(UserService userService, OrderService orderService, CertificateService certificateService) {
+    public UserController(UserService userService, OrderService orderService) {
         this.userService = userService;
         this.orderService = orderService;
-        this.certificateService = certificateService;
     }
 
     @GetMapping("/get/all")
-    public List<User> findAllUsers(
+    public List<UserDTO> findAllUsers(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = UserSortParametersConstant.SORT_BY_ID) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType) throws ControllerException {
         try {
-            List<User> users = userService.findAllUsers(new PaginationData(sortBy, sortType, pageNumber));
-            for (User user : users) {
+            List<UserDTO> users = userService.findAllUsers(new PaginationData(sortBy, sortType, pageNumber));
+            for (UserDTO user : users) {
                 addLinkToUser(user);
             }
 
@@ -58,7 +60,7 @@ public class UserController {
         }
     }
 
-    private void addLinkToUser(User user) throws ControllerException {
+    private void addLinkToUser(UserDTO user) throws ControllerException {
         user.add(linkTo(methodOn(CertificateController.class).index(1,
                 CertificateSortParametersConstant.SORT_BY_NAME, SortOrderConstant.ASC_SORT_TYPE)).withSelfRel());
         user.add(linkTo(methodOn(UserController.class).findUserOrders(1,
@@ -66,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/get/user_orders")
-    public List<Order> findUserOrders(
+    public List<OrderDTO> findUserOrders(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = OrderSortParametersConstant.SORT_BY_NAME) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
@@ -80,24 +82,14 @@ public class UserController {
     }
 
     @GetMapping("/widely_used_tag")
-    public Tag widelyUsedTag() {
+    public TagDTO widelyUsedTag() {
         return userService.userWidelyUsedTag();
     }
 
     @PostMapping("/create/order")
     public JsonAnswer createOrder(@RequestParam("user_id") int userId,
                                   @RequestParam("certificate_id") int[] orderedCertificateIds) throws ControllerException {
-        User orderUser = userService.findUserById(userId);
-        List<Certificate> orderedCertificates = new ArrayList<>();
-        for (int id : orderedCertificateIds) {
-            Certificate certificate = certificateService.findCertificateById(id);
-            if (certificate != null) {
-                orderedCertificates.add(certificate);
-            } else {
-                throw new ControllerException("can't find certificate with given id");
-            }
-        }
-        orderService.createOrder(new Order(orderUser, orderedCertificates));
+        orderService.createOrder(userId, orderedCertificateIds);
         return new JsonAnswer(HttpStatus.OK, "created order");
     }
 }

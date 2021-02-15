@@ -1,20 +1,17 @@
 package com.epam.esm.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
-@JsonIgnoreProperties(value = "orders")
 @Entity
 @Table(name = "users")
-public class User extends RepresentationModel<User> {
+public class User {
 
     @Positive
     @Id
@@ -28,7 +25,7 @@ public class User extends RepresentationModel<User> {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderUser")
-    private Set<Order> orders;
+    private List<Order> orders;
 
     public User() {}
 
@@ -41,11 +38,11 @@ public class User extends RepresentationModel<User> {
         this.name = name;
     }
 
-    public Set<Order> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(Set<Order> orders) {
+    public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 

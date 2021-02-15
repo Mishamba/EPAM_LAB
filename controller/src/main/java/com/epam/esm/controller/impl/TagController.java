@@ -3,6 +3,7 @@ package com.epam.esm.controller.impl;
 import com.epam.esm.controller.json.entity.JsonAnswer;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
+import com.epam.esm.model.entity.dto.TagDTO;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.TagService;
 import com.epam.esm.model.util.entity.PaginationData;
@@ -38,7 +39,7 @@ public class TagController {
      * @throws ControllerException
      */
     @GetMapping("/get/all")
-    public List<Tag> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber) throws ControllerException {
+    public List<TagDTO> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber) throws ControllerException {
         try {
             return tagService.findAllTags(new PaginationData(null, null, pageNumber));
         } catch (ServiceException exception) {
@@ -55,8 +56,8 @@ public class TagController {
      * @throws ControllerException
      */
     @GetMapping("/get/{id}")
-    public Tag getTagById(@PathVariable("id") int id) throws ControllerException {
-        Tag tag = tagService.findTagById(id);
+    public TagDTO getTagById(@PathVariable("id") int id) throws ControllerException {
+        TagDTO tag = tagService.findTagById(id);
         ifNullThrowException(tag);
         return tag;
     }

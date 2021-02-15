@@ -3,6 +3,7 @@ package com.epam.esm.controller.confugration;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -10,17 +11,19 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import javax.sql.DataSource;
+import java.nio.channels.Channel;
 import java.util.Locale;
 import java.util.Properties;
 
 @SpringBootConfiguration
-public class DBConfiguration {
+public class SpringConfiguration {
     private final Environment env;
 
     @Autowired
-    public DBConfiguration(Environment env) {
+    public SpringConfiguration(Environment env) {
         this.env = env;
     }
 
@@ -69,8 +72,7 @@ public class DBConfiguration {
     public MessageSource messageSource() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
         source.setBasename("messages");
-        source.setDefaultLocale(Locale.ENGLISH);
-        source.setUseCodeAsDefaultMessage(true);
+        source.setDefaultLocale(new Locale("ru", "RU"));
 
         return source;
     }

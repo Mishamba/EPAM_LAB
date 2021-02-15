@@ -8,6 +8,8 @@ import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.controller.exception.ControllerException;
+import com.epam.esm.model.entity.dto.CertificateDTO;
+import com.epam.esm.model.entity.dto.TagDTO;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.model.util.entity.PaginationData;
@@ -49,14 +51,14 @@ public class CertificateController {
      * @throws ControllerException
      */
     @GetMapping("/get/all")
-    public List<Certificate> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
-            @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType)
+    public List<CertificateDTO> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
+                                      @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+                                      @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType)
             throws ControllerException {
         try {
-            List<Certificate> certificates = certificateService.
+            List<CertificateDTO> certificates = certificateService.
                     findAllCertificates(new PaginationData(sortBy, sortType, pageNumber));
-            for (Certificate certificate : certificates) {
+            for (CertificateDTO certificate : certificates) {
                 addLinksToCertificate(certificate);
             }
             return certificates;
@@ -79,7 +81,7 @@ public class CertificateController {
      */
 
     @GetMapping("/get/by/name_and_description")
-    public List<Certificate> findCertificateByNameAndDescription(
+    public List<CertificateDTO> findCertificateByNameAndDescription(
             @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
@@ -87,10 +89,10 @@ public class CertificateController {
             @RequestParam(value = "description", defaultValue = ModelConstant.STRANGE_SYMBOL) String description)
             throws ControllerException {
         try {
-            List<Certificate> certificates = certificateService.
+            List<CertificateDTO> certificates = certificateService.
                     findCertificatesByNameAndDescription(certificateName, description,
                             new PaginationData(sortBy, sortType, pageNumber));
-            for (Certificate certificate : certificates) {
+            for (CertificateDTO certificate : certificates) {
                 addLinksToCertificate(certificate);
             }
             return certificates;
@@ -111,19 +113,19 @@ public class CertificateController {
      *                             JSON error answer.
      */
     @GetMapping("/get/by/tags")
-    public List<Certificate> findCertificateByTag(
+    public List<CertificateDTO> findCertificateByTag(
             @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
             @RequestBody List<Tag> tags) throws ControllerException {
         try {
-            List<Certificate> certificates = new ArrayList<>();
+            List<CertificateDTO> certificates = new ArrayList<>();
             for (Tag tag : tags) {
                 certificates.addAll(certificateService.findCertificatesByTag(tag.getName(),
                         new PaginationData(sortBy, sortType, pageNumber)));
             }
 
-            for (Certificate certificate : certificates) {
+            for (CertificateDTO certificate : certificates) {
                 addLinksToCertificate(certificate);
             }
             return certificates;
@@ -142,8 +144,8 @@ public class CertificateController {
      *                             JSON error answer.
      */
     @GetMapping("/get/{id}")
-    public Certificate findCertificate(@PathVariable("id") int id) throws ControllerException {
-        Certificate certificate = certificateService.findCertificateById(id);
+    public CertificateDTO findCertificate(@PathVariable("id") int id) throws ControllerException {
+        CertificateDTO certificate = certificateService.findCertificateById(id);
         if (certificate != null) {
             addLinksToCertificate(certificate);
         } else {
@@ -152,8 +154,8 @@ public class CertificateController {
         return certificate;
     }
 
-    private void addLinksToCertificate(Certificate certificate) throws ControllerException {
-        for (Tag tag : certificate.getTags()) {
+    private void addLinksToCertificate(CertificateDTO certificate) throws ControllerException {
+        for (TagDTO tag : certificate.getTags()) {
             certificate.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
         }
     }

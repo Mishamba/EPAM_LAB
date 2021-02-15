@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "gift_certificate")
-public class Certificate extends RepresentationModel<Certificate> {
+public class Certificate {
 
     @Positive
     @Id
