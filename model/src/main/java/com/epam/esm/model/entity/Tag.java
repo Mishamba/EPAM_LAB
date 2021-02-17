@@ -3,9 +3,9 @@ package com.epam.esm.model.entity;
 import com.epam.esm.model.constant.ModelConstant;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "tag")
-public class Tag extends RepresentationModel<Tag> {
+public class Tag {
 
     @Positive
     @Id
@@ -28,8 +28,8 @@ public class Tag extends RepresentationModel<Tag> {
     @Column(name = "tag_name")
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
-    private Set<Certificate> certificates;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags", cascade = CascadeType.ALL)
+    private List<Certificate> certificates;
 
     public Tag() {}
 
@@ -58,16 +58,16 @@ public class Tag extends RepresentationModel<Tag> {
         this.name = name;
     }
 
-    public Set<Certificate> getCertificates() {
+    public List<Certificate> getCertificates() {
         return certificates;
     }
 
-    public void setCertificates(Set<Certificate> certificates) {
+    public void setCertificates(List<Certificate> certificates) {
         this.certificates = certificates;
     }
 
     /**
-     * Identification number getter method.
+     * Identification number getter.
      * @return int
      */
     public int getId() {
@@ -84,7 +84,7 @@ public class Tag extends RepresentationModel<Tag> {
     }
 
     /**
-     * Name getter method.
+     * Name getter.
      * @return String
      */
     public String getName() {
@@ -92,7 +92,7 @@ public class Tag extends RepresentationModel<Tag> {
     }
 
     /**
-     * Name setter method.
+     * Name setter.
      * @param name Tag name.
      *             Need to be not empty because of hibernate annotation.
      */
@@ -121,7 +121,7 @@ public class Tag extends RepresentationModel<Tag> {
     }
 
     /**
-     * Default toString() method. Returns tag in format:
+     * Default toString(). Returns tag in format:
      * Tag{id=${id}, name='${name}'}
      *
      * @return String

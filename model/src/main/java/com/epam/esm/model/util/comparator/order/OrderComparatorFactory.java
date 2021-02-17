@@ -22,7 +22,7 @@ public class OrderComparatorFactory {
         this.orderComparator = new HashMap<>();
         this.idOrderComparator = new HashMap<>();
         this.dateOrderComparator = new HashMap<>();
-        orderComparator.put(OrderSortParametersConstant.SORT_BY_ID, idOrderComparator);
+        orderComparator.put(OrderSortParametersConstant.SORT_BY_NAME, idOrderComparator);
         orderComparator.put(OrderSortParametersConstant.SORT_BY_ORDER_DATE, dateOrderComparator);
         idOrderComparator.put(SortOrderConstant.ASC_SORT_TYPE, new OrderIdComparator(SortOrderConstant.ASC_SORT_TYPE));
         idOrderComparator.put(SortOrderConstant.DESC_SORT_TYPE,

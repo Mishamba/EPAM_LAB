@@ -1,13 +1,20 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.impl;
 
 import com.epam.esm.controller.exception.ControllerException;
 import com.epam.esm.controller.json.entity.JsonAnswer;
 import com.epam.esm.model.constant.CertificateSortParametersConstant;
+import com.epam.esm.model.constant.OrderSortParametersConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.constant.UserSortParametersConstant;
+import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.model.entity.dto.CertificateDTO;
+import com.epam.esm.model.entity.dto.OrderDTO;
+import com.epam.esm.model.entity.dto.TagDTO;
+import com.epam.esm.model.entity.dto.UserDTO;
+import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.ServiceException;
@@ -17,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -35,13 +43,13 @@ public class UserController {
     }
 
     @GetMapping("/get/all")
-    public List<User> findAllUsers(
+    public List<UserDTO> findAllUsers(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_by", defaultValue = UserSortParametersConstant.SORT_BY_ID) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType) throws ControllerException {
         try {
-            List<User> users = userService.findAllUsers(new PaginationData(sortBy, sortType, pageNumber));
-            for (User user : users) {
+            List<UserDTO> users = userService.findAllUsers(new PaginationData(sortBy, sortType, pageNumber));
+            for (UserDTO user : users) {
                 addLinkToUser(user);
             }
 
@@ -52,20 +60,19 @@ public class UserController {
         }
     }
 
-    private void addLinkToUser(User user) throws ControllerException {
+    private void addLinkToUser(UserDTO user) throws ControllerException {
         user.add(linkTo(methodOn(CertificateController.class).index(1,
                 CertificateSortParametersConstant.SORT_BY_NAME, SortOrderConstant.ASC_SORT_TYPE)).withSelfRel());
-        // TODO: 2/4/21 get user id from session
         user.add(linkTo(methodOn(UserController.class).findUserOrders(1,
                 UserSortParametersConstant.SORT_BY_ID, SortOrderConstant.ASC_SORT_TYPE, 1)).withSelfRel());
     }
 
     @GetMapping("/get/user_orders")
-    public List<Order> findUserOrders(
+    public List<OrderDTO> findUserOrders(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
+            @RequestParam(name = "sort_by", defaultValue = OrderSortParametersConstant.SORT_BY_NAME) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
-            @SessionAttribute("userId") int userId) throws ControllerException {
+            @RequestParam("user_id") int userId) throws ControllerException {
         try {
             return orderService.findUserOrders(userId, new PaginationData(sortBy, sortType, pageNumber));
         } catch (ServiceException exception) {
@@ -75,13 +82,14 @@ public class UserController {
     }
 
     @GetMapping("/widely_used_tag")
-    public Tag widelyUsedTag() {
+    public TagDTO widelyUsedTag() {
         return userService.userWidelyUsedTag();
     }
 
     @PostMapping("/create/order")
-    public JsonAnswer createOrder(@RequestBody Order order) {
-        orderService.createOrder(order);
+    public JsonAnswer createOrder(@RequestParam("user_id") int userId,
+                                  @RequestParam("certificate_id") int[] orderedCertificateIds) throws ControllerException {
+        orderService.createOrder(userId, orderedCertificateIds);
         return new JsonAnswer(HttpStatus.OK, "created order");
     }
 }

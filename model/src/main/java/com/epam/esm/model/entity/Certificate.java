@@ -1,14 +1,11 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.util.converter.LocalDateTimeConverter;
 import com.epam.esm.model.util.serializer.DateTimeSerializer;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -25,7 +22,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "gift_certificate")
-public class Certificate extends RepresentationModel<Certificate> {
+public class Certificate {
 
     @Positive
     @Id
@@ -54,24 +51,28 @@ public class Certificate extends RepresentationModel<Certificate> {
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
-    @CreatedDate
+    @Convert(converter = LocalDateTimeConverter.class)
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
     @JsonSerialize(using = DateTimeSerializer.class)
-    @LastModifiedDate
+    @Convert(converter = LocalDateTimeConverter.class)
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
-    @OneToMany(targetEntity = Tag.class)
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Tag.class, cascade = CascadeType.DETACH)
     @JoinTable(name = "certificate_tags",
             joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
     )
     private List<Tag> tags;
+
+    // TODO: 2/16/21 remove certificate without removing orders with certificates
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "orderedCertificates", cascade = CascadeType.ALL)
+    private List<Order> orders;
 
     public Certificate() {}
 
@@ -95,7 +96,6 @@ public class Certificate extends RepresentationModel<Certificate> {
      *
      * @see com.epam.esm.model.entity.Tag
      */
-    @JsonCreator
     public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
         id = ModelConstant.NOT_SET_ID;
@@ -130,7 +130,6 @@ public class Certificate extends RepresentationModel<Certificate> {
      *
      * @see com.epam.esm.model.entity.Tag
      */
-    @JsonCreator
     public Certificate(int id, String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.id = id;
@@ -148,7 +147,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Id getter method.
+     * Id getter.
      * @return int
      */
     public int getId() {
@@ -156,7 +155,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Id setter method. If given id is null throws NullPointerException.
+     * Id setter. If given id is null throws NullPointerException.
      * @param id Identification number. Generated in database.
      *           Need to be not null because of hibernate validation annotations.
      */
@@ -169,7 +168,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Name getter method.
+     * Name getter.
      * @return String
      */
     public String getName() {
@@ -177,7 +176,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Name setter method.
+     * Name setter.
      * @param name Given certificate name. Need to be not null because of hibernate validation annotations.
      */
     public void setName(String name) {
@@ -185,7 +184,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Description getter method.
+     * Description getter.
      * @return String
      */
     public String getDescription() {
@@ -193,7 +192,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Description setter method.
+     * Description setter.
      * @param description Certificate description.
      *             Need to be not empty because of hibernate validation annotation.
      */
@@ -202,7 +201,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Price getter method.
+     * Price getter.
      * @return int
      */
     public int getPrice() {
@@ -210,7 +209,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Price setter method.
+     * Price setter.
      * @param price Conventional units.
      *              Need to be not empty and positive because of hibernate validation annotations.
      */
@@ -219,7 +218,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Duration getter method.
+     * Duration getter.
      * @return int
      */
     public int getDuration() {
@@ -227,7 +226,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Duration setter method.
+     * Duration setter.
      * @param duration Certificate shelf life duration in days.
      *                 Need to be not empty and positive because of hibernate validation annotations.
      */
@@ -236,7 +235,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Create date as LocalDateTime getter method.
+     * Create date as LocalDateTime getter.
      * @return LocalDateTime
      *
      * @see java.time.LocalDateTime
@@ -246,7 +245,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Create date setter method.
+     * Create date setter.
      * @param createDate Certificate create date.
      *                   Can't be future date and can't be empty because of hibernate validation annotations.
      */
@@ -255,7 +254,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Last update date getter method.
+     * Last update date getter.
      * @return LocalDateTime
      *
      * @see java.time.LocalDateTime
@@ -265,7 +264,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Last update date setter method.
+     * Last update date setter.
      * @param lastUpdateDate Date of last update time.
      *                       Can't be future date and can't be empty because of hibernate validation annotations.
      */
@@ -274,7 +273,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Certificate Tag List getter method.
+     * Certificate Tag List getter.
      * @return List with Tag generic
      *
      * @see java.util.List
@@ -285,7 +284,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Certificate Tag List setter method.
+     * Certificate Tag List setter.
      * @param tags Certificate tags list.
      *             Must contain only unique elements because of hibernate validation annotations.
      */
@@ -299,6 +298,25 @@ public class Certificate extends RepresentationModel<Certificate> {
      */
     public void addTag(Tag tag) {
         tags.add(tag);
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    @PrePersist
+    public void setDates() {
+        setCreateDate(LocalDateTime.now());
+        setLastUpdateDate(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void updateDate() {
+        setLastUpdateDate(LocalDateTime.now());
     }
 
     @Override
@@ -336,7 +354,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     }
 
     /**
-     * Default toString() method. Returns certificate in format:
+     * Default toString(). Returns certificate in format:
      * Certificate{name='${name}, description='${description}, price=${price}, duration=${duration},
      * createDate=${createDate}, lastUpdateDate=${lastUpdateDate}, tags=${tags}}
      *

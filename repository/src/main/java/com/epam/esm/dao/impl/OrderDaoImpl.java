@@ -18,9 +18,10 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     @Transactional
     public List<Order> findUserOrders(int userId, int pageNumber) {
-        return manager.createQuery("SELECT e FROM Order e WHERE e.user_id = :user_id", Order.class).
+        return manager.createQuery("SELECT DISTINCT e FROM Order e JOIN User u ON e.orderUser.id = u.id WHERE u.id = :user_id",
+                Order.class).
                 setParameter("user_id", userId).setMaxResults(PageSizeConstant.ORDER_PAGE_SIZE).
-                setFirstResult(PageSizeConstant.ORDER_PAGE_SIZE * pageNumber).getResultList();
+                setFirstResult(PageSizeConstant.ORDER_PAGE_SIZE * (pageNumber - 1)).getResultList();
     }
 
     @Override

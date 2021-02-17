@@ -3,6 +3,7 @@ package test.com.epam.esm.service.impl;
 import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
+import com.epam.esm.model.entity.dto.CertificateDTO;
 import com.epam.esm.model.util.comparator.certificate.CertificateComparatorFactory;
 import com.epam.esm.model.util.entity.PaginationData;
 import com.epam.esm.service.CertificateService;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +34,7 @@ class CertificateServiceImplTest {
 
         CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
 
-        List<Certificate> actualCertificates = null;
+        List<CertificateDTO> actualCertificates = null;
         try {
             actualCertificates = service.findAllCertificates(new PaginationData(null, null, 1));
             assertEquals(expectedCertificates, actualCertificates);
@@ -72,8 +74,8 @@ class CertificateServiceImplTest {
 
         CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
 
-        Certificate actualCertificate = service.findCertificateById(id);
-        assertEquals(expectedCertificate, actualCertificate);
+        CertificateDTO actualCertificate = service.findCertificateById(id);
+        assertEquals(CertificateDTO.createFromCertificate(expectedCertificate), actualCertificate);
     }
 
     private static Stream<Arguments> provideCertificateWithId() {
@@ -96,9 +98,10 @@ class CertificateServiceImplTest {
         CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
 
         try {
-            List<Certificate> actualCertificate = service.findCertificatesByTag(tagName,
+            List<CertificateDTO> actualCertificate = service.findCertificatesByTag(tagName,
                     new PaginationData(null, null, pageNumber));
-            assertEquals(expectedCertificates, actualCertificate);
+            assertEquals(expectedCertificates.stream().map(CertificateDTO::createFromCertificate).
+                    collect(Collectors.toList()), actualCertificate);
         } catch (ServiceException exception) {
             fail("fail with exception");
         }
@@ -141,9 +144,11 @@ class CertificateServiceImplTest {
         CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
 
         try {
-            List<Certificate> actualCertificates = service.findCertificatesByNameAndDescription(name, description,
+            List<CertificateDTO> actualCertificates = service.findCertificatesByNameAndDescription(name, description,
                     new PaginationData(null, null, pageNumber));
-            assertEquals(expectedCertificates, actualCertificates);
+            assertEquals(expectedCertificates.stream().map(CertificateDTO::createFromCertificate).
+                            collect(Collectors.toList()),
+                    actualCertificates);
         } catch (ServiceException exception) {
             fail("fail with exception");
         }

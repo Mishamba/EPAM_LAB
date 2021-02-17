@@ -17,20 +17,20 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public List<Tag> findAllTags(int pageNumber) {
-        return manager.createQuery("SELECT e FROM Tag e", Tag.class).setMaxResults(PageSizeConstant.TAG_PAGE_SIZE).
+        return manager.createQuery("SELECT DISTINCT e FROM Tag e", Tag.class).setMaxResults(PageSizeConstant.TAG_PAGE_SIZE).
                 setFirstResult(PageSizeConstant.TAG_PAGE_SIZE * (pageNumber - 1)).getResultList();
     }
 
     @Override
     public Tag findTagById(int id) {
-        return manager.createQuery("SELECT e FROM Tag e WHERE e.id = :id", Tag.class).setParameter("id", id).
+        return manager.createQuery("SELECT DISTINCT e FROM Tag e WHERE e.id = :id", Tag.class).setParameter("id", id).
                 getSingleResult();
     }
 
     @Override
     public Tag findTagByName(String tagName) {
-        return manager.createQuery("SELECT e FROM Tag e WHERE e.name = :name", Tag.class).setParameter("name", tagName).
-                getSingleResult();
+        return manager.createQuery("SELECT DISTINCT e FROM Tag e WHERE e.name = :name", Tag.class).
+                setParameter("name", tagName).getResultList().stream().findAny().orElse(null);
     }
 
     @Override

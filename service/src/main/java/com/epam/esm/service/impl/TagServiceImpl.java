@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.entity.Tag;
+import com.epam.esm.model.entity.dto.TagDTO;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.TagService;
 import com.epam.esm.model.util.entity.PaginationData;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -22,10 +24,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findAllTags(PaginationData paginationData) throws ServiceException {
+    public List<TagDTO> findAllTags(PaginationData paginationData) throws ServiceException {
         List<Tag> tags= tagDao.findAllTags(paginationData.getPageNumber());
         ifNullThrowServiceException(tags);
-        return tags;
+        return tags.stream().map(TagDTO::createFromTag).collect(Collectors.toList());
     }
 
     private void ifNullThrowServiceException(List<Tag> certificates) throws ServiceException {
@@ -35,8 +37,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag findTagById(int id) {
-        return tagDao.findTagById(id);
+    public TagDTO findTagById(int id) {
+        return TagDTO.createFromTag(tagDao.findTagById(id));
     }
 
     @Override

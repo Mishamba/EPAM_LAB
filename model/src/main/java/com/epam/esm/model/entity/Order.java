@@ -1,11 +1,11 @@
 package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.util.converter.LocalDateTimeConverter;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,15 +13,15 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-public class Order extends RepresentationModel<Order> {
+public class Order {
     @Positive
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "users_id", nullable = false)
     private User orderUser;
 
     @Positive
@@ -29,13 +29,25 @@ public class Order extends RepresentationModel<Order> {
     private int cost;
 
     @UniqueElements
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Certificate.class, cascade = CascadeType.DETACH)
+    @JoinTable(name = "certificate_orders",
+            joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id")
+    )
     private List<Certificate> orderedCertificates;
 
     @PastOrPresent
     @Column(name = "order_date")
     @CreatedDate
+    @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime orderDate;
+
+    public Order() {}
+
+    public Order(User orderUser, @UniqueElements List<Certificate> orderedCertificates) {
+        this.orderUser = orderUser;
+        this.orderedCertificates = orderedCertificates;
+    }
 
     public Order(List<Certificate> orderedCertificates, LocalDateTime orderDate) {
         this.id = ModelConstant.NOT_SET_ID;
@@ -91,11 +103,11 @@ public class Order extends RepresentationModel<Order> {
         this.orderedCertificates = orderedCertificates;
     }
 
-    public User getUserId() {
+    public User getUser() {
         return orderUser;
     }
 
-    public void setUserId(User orderUser) {
+    public void setUser(User orderUser) {
         this.orderUser = orderUser;
     }
 
@@ -105,6 +117,16 @@ public class Order extends RepresentationModel<Order> {
 
     public int getCost() {
         return this.cost;
+    }
+
+    @PreUpdate
+    @PrePersist
+    public void calculateCost() {
+        this.cost = 0;
+        for (Certificate certificate : orderedCertificates) {
+            this.cost += certificate.getPrice();
+        }
+        this.orderDate = LocalDateTime.now();
     }
 
     @Override

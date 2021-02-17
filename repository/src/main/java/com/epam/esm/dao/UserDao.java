@@ -8,5 +8,5 @@ import java.util.List;
 public interface UserDao {
     List<User> findAllUsers(int pageNumber);
     User findById(int id);
-    Tag findWidelyUsedTag();
+    List<User> findAllUsersWithOrders();
 }
