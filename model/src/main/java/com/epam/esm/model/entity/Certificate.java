@@ -1,11 +1,13 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.Constant;
-import com.epam.esm.model.serializator.DateTimeSerializator;
+import com.epam.esm.model.constant.ModelConstant;
+import com.epam.esm.model.util.converter.LocalDateTimeConverter;
+import com.epam.esm.model.util.serializer.DateTimeSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,39 +20,62 @@ import java.util.List;
  *
  * @see com.epam.esm.model.entity.Tag
  */
+
+@Entity
+@Table(name = "gift_certificate")
 public class Certificate {
 
     @Positive
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
     @NotEmpty
+    @Column(name = "certificate_name")
     private String name;
 
     @NotEmpty
+    @Column(name = "certificate_description")
+
     private String description;
 
     @Positive
     @NotEmpty
+    @Column(name = "price")
     private int price;
 
     @Positive
     @NotEmpty
+    @Column(name = "duration")
     private int duration;
 
     @NotEmpty
     @PastOrPresent
-    @JsonSerialize(using = DateTimeSerializator.class)
+    @JsonSerialize(using = DateTimeSerializer.class)
+    @Convert(converter = LocalDateTimeConverter.class)
+    @Column(name = "create_date")
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
-    @JsonSerialize(using = DateTimeSerializator.class)
+    @JsonSerialize(using = DateTimeSerializer.class)
+    @Convert(converter = LocalDateTimeConverter.class)
+    @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Tag.class, cascade = CascadeType.DETACH)
+    @JoinTable(name = "certificate_tags",
+            joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
+    )
     private List<Tag> tags;
 
-    /**
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "orderedCertificates", cascade = CascadeType.ALL)
+    private List<Order> orders;
+
+    public Certificate() {}
      * Class constructor. This constructor don't get id parameter.
      * It used when certificate is going to be stored in database. Id will be generated in database.
      * @param name Certificate name.
@@ -72,7 +97,7 @@ public class Certificate {
      */
     public Certificate(String name, String description, int price, int duration, LocalDateTime createDate,
                        LocalDateTime lastUpdateDate, List<Tag> tags) {
-        id = Constant.NOT_SET_ID;
+        id = ModelConstant.NOT_SET_ID;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -121,7 +146,7 @@ public class Certificate {
     }
 
     /**
-     * Id getter method.
+     * Id getter.
      * @return int
      */
     public int getId() {
@@ -129,7 +154,7 @@ public class Certificate {
     }
 
     /**
-     * Id setter method. If given id is null throws NullPointerException.
+     * Id setter. If given id is null throws NullPointerException.
      * @param id Identification number. Generated in database.
      *           Need to be not null because of hibernate validation annotations.
      */
@@ -142,7 +167,7 @@ public class Certificate {
     }
 
     /**
-     * Name getter method.
+     * Name getter.
      * @return String
      */
     public String getName() {
@@ -150,7 +175,7 @@ public class Certificate {
     }
 
     /**
-     * Name setter method.
+     * Name setter.
      * @param name Given certificate name. Need to be not null because of hibernate validation annotations.
      */
     public void setName(String name) {
@@ -158,7 +183,7 @@ public class Certificate {
     }
 
     /**
-     * Description getter method.
+     * Description getter.
      * @return String
      */
     public String getDescription() {
@@ -166,7 +191,7 @@ public class Certificate {
     }
 
     /**
-     * Description setter method.
+     * Description setter.
      * @param description Certificate description.
      *             Need to be not empty because of hibernate validation annotation.
      */
@@ -175,7 +200,7 @@ public class Certificate {
     }
 
     /**
-     * Price getter method.
+     * Price getter.
      * @return int
      */
     public int getPrice() {
@@ -183,7 +208,7 @@ public class Certificate {
     }
 
     /**
-     * Price setter method.
+     * Price setter.
      * @param price Conventional units.
      *              Need to be not empty and positive because of hibernate validation annotations.
      */
@@ -192,7 +217,7 @@ public class Certificate {
     }
 
     /**
-     * Duration getter method.
+     * Duration getter.
      * @return int
      */
     public int getDuration() {
@@ -200,7 +225,7 @@ public class Certificate {
     }
 
     /**
-     * Duration setter method.
+     * Duration setter.
      * @param duration Certificate shelf life duration in days.
      *                 Need to be not empty and positive because of hibernate validation annotations.
      */
@@ -209,7 +234,7 @@ public class Certificate {
     }
 
     /**
-     * Create date as LocalDateTime getter method.
+     * Create date as LocalDateTime getter.
      * @return LocalDateTime
      *
      * @see java.time.LocalDateTime
@@ -219,7 +244,7 @@ public class Certificate {
     }
 
     /**
-     * Create date setter method.
+     * Create date setter.
      * @param createDate Certificate create date.
      *                   Can't be future date and can't be empty because of hibernate validation annotations.
      */
@@ -228,7 +253,7 @@ public class Certificate {
     }
 
     /**
-     * Last update date getter method.
+     * Last update date getter.
      * @return LocalDateTime
      *
      * @see java.time.LocalDateTime
@@ -238,7 +263,7 @@ public class Certificate {
     }
 
     /**
-     * Last update date setter method.
+     * Last update date setter.
      * @param lastUpdateDate Date of last update time.
      *                       Can't be future date and can't be empty because of hibernate validation annotations.
      */
@@ -247,7 +272,7 @@ public class Certificate {
     }
 
     /**
-     * Certificate Tag List getter method.
+     * Certificate Tag List getter.
      * @return List with Tag generic
      *
      * @see java.util.List
@@ -258,7 +283,7 @@ public class Certificate {
     }
 
     /**
-     * Certificate Tag List setter method.
+     * Certificate Tag List setter.
      * @param tags Certificate tags list.
      *             Must contain only unique elements because of hibernate validation annotations.
      */
@@ -274,6 +299,25 @@ public class Certificate {
         tags.add(tag);
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    @PrePersist
+    public void setDates() {
+        setCreateDate(LocalDateTime.now());
+        setLastUpdateDate(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void updateDate() {
+        setLastUpdateDate(LocalDateTime.now());
+    }
+  
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -309,7 +353,7 @@ public class Certificate {
     }
 
     /**
-     * Default toString() method. Returns certificate in format:
+     * Default toString(). Returns certificate in format:
      * Certificate{name='${name}, description='${description}, price=${price}, duration=${duration},
      * createDate=${createDate}, lastUpdateDate=${lastUpdateDate}, tags=${tags}}
      *

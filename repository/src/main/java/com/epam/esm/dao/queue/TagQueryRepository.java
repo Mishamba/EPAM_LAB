@@ -13,17 +13,17 @@ public class TagQueryRepository {
     /**
      * Query selects all tags data.
      */
-    public static final String ALL_TAGS_QUEUE = "SELECT id, tag_name FROM tag";
+    public static final String ALL_TAGS_QUERY = "SELECT id, tag_name FROM tag";
 
     /**
      * Query selects tag by id.
      */
-    public static final String TAG_BY_ID_QUEUE = "SELECT id, tag_name FROM tag WHERE id = ?";
+    public static final String TAG_BY_ID_QUERY = "SELECT id, tag_name FROM tag WHERE id = ?";
 
     /**
      * Query saves tag info.
      */
-    public static final String CREATE_TAG_QUEUE = "INSERT INTO tag (tag_name) VALUE (?)";
+    public static final String CREATE_TAG_QUERY = "INSERT INTO tag (tag_name) VALUE (?)";
 
     /**
      * Query deletes tag from certificates tag references.
@@ -38,5 +38,5 @@ public class TagQueryRepository {
     /**
      * Query selects tag by name.
      */
-    public static final String TAG_BY_NAME_QUEUE = "SELECT id, tag_name FROM tag WHERE name = ?";
+    public static final String TAG_BY_NAME_QUERY = "SELECT id, tag_name FROM tag WHERE name = ?";
 }

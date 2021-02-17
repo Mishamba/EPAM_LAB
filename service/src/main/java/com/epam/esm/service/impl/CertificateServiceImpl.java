@@ -1,105 +1,111 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.CertificateDao;
-import com.epam.esm.model.constant.Constant;
+import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.entity.Certificate;
-import com.epam.esm.dao.exception.DaoException;
+import com.epam.esm.model.entity.dto.CertificateDTO;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
-import org.apache.log4j.Logger;
+import com.epam.esm.model.util.comparator.certificate.CertificateComparatorFactory;
+import com.epam.esm.model.util.entity.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
     private final CertificateDao certificateDao;
-    private final Logger logger = Logger.getLogger(CertificateServiceImpl.class);
+    private final CertificateComparatorFactory certificateComparatorFactory;
 
     @Autowired
-    public CertificateServiceImpl(CertificateDao certificateDao) {
+    public CertificateServiceImpl(CertificateDao certificateDao, CertificateComparatorFactory certificateComparatorFactory) {
         this.certificateDao = certificateDao;
+        this.certificateComparatorFactory = certificateComparatorFactory;
     }
 
     @Override
-    public List<Certificate> findAllCertificates() throws ServiceException {
-        try {
-            return certificateDao.findAllCertificates();
-        } catch (DaoException e) {
-            logger.error("can't find certificates");
-            throw new ServiceException("can't find certificates");
-        }
+    public List<CertificateDTO> findAllCertificates(PaginationData paginationData) throws ServiceException {
+        List<Certificate> certificates = certificateDao.findAllCertificates(paginationData.getPageNumber());
+
+        ifEmptyOrNullThrowServiceException(certificates);
+
+        sortCertificateList(certificates, paginationData);
+
+        return covertToDTO(certificates);
     }
 
     @Override
-    public Certificate findCertificateById(int id) throws ServiceException {
-        try {
-            return certificateDao.findCertificateById(id);
-        } catch (DaoException e) {
-            logger.error("can't find certificate by id");
-            throw new ServiceException("can't find certificate by id", e);
-        }
+    public CertificateDTO findCertificateById(int id) {
+        return CertificateDTO.createFromCertificate(certificateDao.findCertificateById(id));
     }
 
     @Override
-    public List<Certificate> findCertificatesByTag(String tagName) throws ServiceException {
-        try {
-            return certificateDao.findCertificatesByTag(tagName);
-        } catch (DaoException e) {
-            logger.error("can't find certificate with given tag name");
-            throw new ServiceException("can't find certificate with given tag name", e);
-        }
+    public List<CertificateDTO> findCertificatesByTag(String tagName, PaginationData paginationData) throws ServiceException {
+        List<Certificate> certificates = certificateDao.findCertificatesByTag(tagName, paginationData.getPageNumber());
+
+        ifEmptyOrNullThrowServiceException(certificates);
+
+        sortCertificateList(certificates, paginationData);
+
+        return covertToDTO(certificates);
     }
 
     @Override
-    public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description)
-            throws ServiceException {
+    public List<CertificateDTO> findCertificatesByNameAndDescription(String certificateName, String description,
+                                                                  PaginationData paginationData) throws ServiceException {
         if (certificateName == null) {
-            certificateName = Constant.STRANGE_SYMBOL;
+            certificateName = ModelConstant.STRANGE_SYMBOL;
         }
 
         if (description == null) {
-            description = Constant.STRANGE_SYMBOL;
+            description = ModelConstant.STRANGE_SYMBOL;
         }
 
-        try {
-            return certificateDao.findCertificatesByNameAndDescription(certificateName, description);
-        } catch (DaoException e) {
-            logger.error("can't fin certificate with given name and description");
-            throw new ServiceException("can't fin certificate with given name and description", e);
+        List<Certificate> certificates = certificateDao.findCertificatesByNameAndDescription(certificateName, description,
+                paginationData.getPageNumber());
+
+        ifEmptyOrNullThrowServiceException(certificates);
+
+        sortCertificateList(certificates, paginationData);
+
+        return covertToDTO(certificates);
+    }
+
+    private List<CertificateDTO> covertToDTO(List<Certificate> certificates) {
+        return certificates.stream().map(CertificateDTO::createFromCertificate).collect(Collectors.toList());
+    }
+
+    private void sortCertificateList(List<Certificate> certificates, PaginationData paginationData) {
+        Comparator<Certificate> certificateComparator = certificateComparatorFactory.getComparator(paginationData);
+        certificates.sort(certificateComparator);
+    }
+
+    private void ifEmptyOrNullThrowServiceException(List<Certificate> certificates) throws ServiceException {
+        if (certificates == null || certificates.isEmpty()) {
+            throw new ServiceException("no certificates found", new NullPointerException("list is null"));
         }
     }
 
     @Override
-    public boolean createCertificate(Certificate certificate) throws ServiceException {
-        try {
-            return certificateDao.createCertificate(certificate);
-        } catch (DaoException e) {
-            logger.error("can't create certificate");
-            throw new ServiceException("can't create certificate");
-        }
+    public void createCertificate(Certificate certificate) {
+        certificateDao.createCertificate(certificate);
     }
 
     @Override
-    public boolean updateCertificate(Certificate newCertificate) throws ServiceException {
-        try {
-            newCertificate.setLastUpdateDate(LocalDateTime.now());
-            return certificateDao.updateCertificate(newCertificate);
-        } catch (DaoException e) {
-            logger.error("can't update certificate");
-            throw new ServiceException("can't update certificate", e);
-        }
+    public void updateCertificateDuration(int id, int duration) {
+        certificateDao.updateCertificateDuration(id, duration);
     }
 
     @Override
-    public boolean deleteCertificate(int id) throws ServiceException {
-        try {
-            return certificateDao.deleteCertificate(id);
-        } catch (DaoException e) {
-            logger.error("can't delete certificate");
-            throw new ServiceException("can't update certificate", e);
-        }
+    public void updateCertificatePrice(int id, int price) {
+        certificateDao.updateCertificatePrice(id, price);
+    }
+
+    @Override
+    public void deleteCertificate(int id) {
+        certificateDao.deleteCertificate(id);
     }
 }

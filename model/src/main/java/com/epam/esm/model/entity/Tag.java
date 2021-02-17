@@ -1,8 +1,12 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.constant.Constant;
+import com.epam.esm.model.constant.ModelConstant;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
+
+import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Entity class. Contains fields that stores Tag data.
@@ -10,13 +14,25 @@ import jakarta.validation.constraints.Positive;
  * @version 1.0
  * @author mishamba
  */
+
+@Entity
+@Table(name = "tag")
 public class Tag {
 
     @Positive
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
     @NotEmpty
+    @Column(name = "tag_name")
     private String name;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags", cascade = CascadeType.ALL)
+    private List<Certificate> certificates;
+
+    public Tag() {}
 
     /**
      * Constructor without id parameter. This constructor used only in creation case.
@@ -24,10 +40,10 @@ public class Tag {
      * @param name Tag name.
      *             Need to be not empty because of hibernate validation annotations
      *
-     * @see Constant
+     * @see ModelConstant
      */
     public Tag(String name) {
-        id = Constant.NOT_SET_ID;
+        id = ModelConstant.NOT_SET_ID;
         this.name = name;
     }
 
@@ -43,8 +59,16 @@ public class Tag {
         this.name = name;
     }
 
+    public List<Certificate> getCertificates() {
+        return certificates;
+    }
+
+    public void setCertificates(List<Certificate> certificates) {
+        this.certificates = certificates;
+    }
+
     /**
-     * Identification number getter method.
+     * Identification number getter.
      * @return int
      */
     public int getId() {
@@ -61,7 +85,7 @@ public class Tag {
     }
 
     /**
-     * Name getter method.
+     * Name getter.
      * @return String
      */
     public String getName() {
@@ -69,7 +93,7 @@ public class Tag {
     }
 
     /**
-     * Name setter method.
+     * Name setter.
      * @param name Tag name.
      *             Need to be not empty because of hibernate annotation.
      */
@@ -98,7 +122,7 @@ public class Tag {
     }
 
     /**
-     * Default toString() method. Returns tag in format:
+     * Default toString(). Returns tag in format:
      * Tag{id=${id}, name='${name}'}
      *
      * @return String

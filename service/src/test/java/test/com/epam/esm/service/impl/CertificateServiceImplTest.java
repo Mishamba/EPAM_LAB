@@ -3,157 +3,171 @@ package test.com.epam.esm.service.impl;
 import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
-import com.epam.esm.dao.exception.DaoException;
-import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.model.entity.dto.CertificateDTO;
+import com.epam.esm.model.util.comparator.certificate.CertificateComparatorFactory;
+import com.epam.esm.model.util.entity.PaginationData;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.impl.CertificateServiceImpl;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CertificateServiceImplTest {
-    private final static int nanosecondsMultiplier = (int) Math.pow(10, 6);
-
 
     @ParameterizedTest
-    @MethodSource("providerCertificateList")
-    void findAllCertificates(List<Certificate> expectedCertificates) {
-        CertificateDao certificateDao = Mockito.mock(CertificateDao.class);
+    @MethodSource("provideCertificatesWithPage")
+    void findAllCertificates(List<Certificate> expectedCertificates, int pageNumber) {
+        CertificateDao dao = Mockito.mock(CertificateDao.class);
 
+        Mockito.when(dao.findAllCertificates(pageNumber)).thenReturn(expectedCertificates);
+
+        CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
+
+        List<CertificateDTO> actualCertificates = null;
         try {
-            Mockito.when(certificateDao.findAllCertificates()).thenReturn(expectedCertificates);
-
-            CertificateService certificateService = new CertificateServiceImpl(certificateDao);
-
-            List<Certificate> actualCertificates = certificateService.findAllCertificates();
+            actualCertificates = service.findAllCertificates(new PaginationData(null, null, 1));
             assertEquals(expectedCertificates, actualCertificates);
-        } catch (ServiceException | DaoException exception) {
-            fail(exception);
+        } catch (ServiceException exception) {
+            fail("fail with exception");
         }
     }
 
-    static Stream<Arguments> providerCertificateList() {
-        Tag tag1 = new Tag(1, "certificate12tag");
-        Tag tag2 = new Tag(2, "certificate1tag");
-        List<Tag> tagList1 = Arrays.asList(tag1, tag2);
-        List<Tag> tagList2 = Collections.singletonList(tag1);
-        List<Certificate> certificateList = Arrays.asList(
-                new Certificate(1, "certificate1", "some description", 15, 53,
-                        LocalDateTime.of(2021, Month.DECEMBER, 12, 15, 6, 22),
-                        LocalDateTime.of(2021, Month.DECEMBER, 12, 15, 6, 22),
-                        tagList1),
-                new Certificate(2, "certificate2", "custom description", 20, 20,
-                        LocalDateTime.of(2020, Month.AUGUST, 15, 8, 30, 36, 20 * nanosecondsMultiplier),
-                        LocalDateTime.of(2020, Month.AUGUST, 18, 9, 31, 57, 21 * nanosecondsMultiplier),
-                        tagList2));
-
+    private static Stream<Arguments> provideCertificatesWithPage() {
+        Tag sportTag = new Tag(1, "sport");
+        Tag adrenalineTag = new Tag(2, "adrenaline");
+        Tag chillTag = new Tag(3, "chill");
+        Tag planeTag = new Tag(4, "plane");
+        Tag moonTag = new Tag(5, "moon");
+        Certificate simpleGymCertificate = new Certificate(1, "gym", "15 days gym certificate", 50, 20,
+                LocalDateTime.now(), LocalDateTime.now(), Arrays.asList(adrenalineTag, sportTag));
+        Certificate gymAtPlane = new Certificate(2, "gym at plane", "train in plane", 100, 20, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(sportTag, adrenalineTag, planeTag));
+        Certificate midnightGym = new Certificate(3, "gym at night", "train at night", 60, 30, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(sportTag, moonTag));
+        Certificate oneHourSleepCertificate = new Certificate(4, "sleep certificate",
+                "using this certificate u can sleep one more hour a day", 10000, 20, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(chillTag, moonTag));
+        List<Certificate> certificates = Arrays.asList(oneHourSleepCertificate, simpleGymCertificate, midnightGym,
+                gymAtPlane);
         return Stream.of(
-                Arguments.of(certificateList)
+                Arguments.of(certificates, 1)
         );
     }
 
-
     @ParameterizedTest
-    @MethodSource("provideCertficateAndId")
+    @MethodSource("provideCertificateWithId")
     void findCertificateById(Certificate expectedCertificate, int id) {
-        CertificateDao certificateDao = Mockito.mock(CertificateDao.class);
+        CertificateDao dao = Mockito.mock(CertificateDao.class);
 
-        try {
-            Mockito.when(certificateDao.findCertificateById(id)).thenReturn(expectedCertificate);
+        Mockito.when(dao.findCertificateById(id)).thenReturn(expectedCertificate);
 
-            CertificateService certificateService = new CertificateServiceImpl(certificateDao);
+        CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
 
-            Certificate actualCertificate = certificateService.findCertificateById(id);
-            assertEquals(expectedCertificate, actualCertificate);
-        } catch (DaoException | ServiceException e) {
-            fail();
-        }
+        CertificateDTO actualCertificate = service.findCertificateById(id);
+        assertEquals(CertificateDTO.createFromCertificate(expectedCertificate), actualCertificate);
     }
 
-    static Stream<Arguments> provideCertficateAndId() {
-        Tag tag1 = new Tag(1, "certificate12tag");
-        Tag tag2 = new Tag(2, "certificate1tag");
-        List<Tag> tagList1 = Arrays.asList(tag1, tag2);
-        Certificate certificate = new Certificate(1, "certificate1", "some description", 15, 53,
-                        LocalDateTime.of(2021, Month.DECEMBER, 12, 15, 6, 22),
-                        LocalDateTime.of(2021, Month.DECEMBER, 12, 15, 6, 22),
-                        tagList1);
+    private static Stream<Arguments> provideCertificateWithId() {
+        Tag sportTag = new Tag(1, "sport");
+        Tag adrenalineTag = new Tag(2, "adrenaline");
+        Certificate simpleGymCertificate = new Certificate(1, "gym", "15 days gym certificate", 50, 20,
+                LocalDateTime.now(), LocalDateTime.now(), Arrays.asList(adrenalineTag, sportTag));
         return Stream.of(
-                Arguments.of(certificate, 1)
+                Arguments.of(simpleGymCertificate, 1)
         );
     }
 
     @ParameterizedTest
-    @MethodSource("provideCertificateAndBoolean")
-    void createCertificate(Certificate certificate, boolean expected) {
-        CertificateDao certificateDao = Mockito.mock(CertificateDao.class);
+    @MethodSource("provideCertificatesWithTagName")
+    void findCertificatesByTag(List<Certificate> expectedCertificates, String tagName, int pageNumber) {
+        CertificateDao dao = Mockito.mock(CertificateDao.class);
+
+        Mockito.when(dao.findCertificatesByTag(tagName, pageNumber)).thenReturn(expectedCertificates);
+
+        CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
 
         try {
-            Mockito.when(certificateDao.createCertificate(certificate)).thenReturn(true);
-
-            CertificateService certificateService = new CertificateServiceImpl(certificateDao);
-            boolean actual = certificateService.createCertificate(certificate);
-            assertEquals(expected, actual);
-        } catch (DaoException | ServiceException e) {
-            fail();
+            List<CertificateDTO> actualCertificate = service.findCertificatesByTag(tagName,
+                    new PaginationData(null, null, pageNumber));
+            assertEquals(expectedCertificates.stream().map(CertificateDTO::createFromCertificate).
+                    collect(Collectors.toList()), actualCertificate);
+        } catch (ServiceException exception) {
+            fail("fail with exception");
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("provideCertificateAndBoolean")
-    void updateCertificate(Certificate certificate, boolean expected) {
-        CertificateDao certificateDao = Mockito.mock(CertificateDao.class);
-
-        try {
-            Mockito.when(certificateDao.updateCertificate(certificate)).thenReturn(true);
-
-            CertificateService certificateService = new CertificateServiceImpl(certificateDao);
-            boolean actual = certificateService.updateCertificate(certificate);
-            assertEquals(expected, actual);
-        } catch (DaoException | ServiceException e) {
-            fail();
-        }
-    }
-
-    static Stream<Arguments> provideCertificateAndBoolean() {
-        Tag tag1 = new Tag(1, "certificate12tag");
-        Tag tag2 = new Tag(2, "certificate1tag");
-        List<Tag> tagList1 = Arrays.asList(tag1, tag2);
-        Certificate certificate = new Certificate(1, "certificate1", "some description", 15, 53,
-                LocalDateTime.of(2021, Month.DECEMBER, 12, 15, 6, 22),
-                LocalDateTime.of(2021, Month.DECEMBER, 12, 15, 6, 22),
-                tagList1);
-
+    private static Stream<Arguments> provideCertificatesWithTagName() {
+        Tag sportTag = new Tag(1, "sport");
+        Tag adrenalineTag = new Tag(2, "adrenaline");
+        Tag chillTag = new Tag(3, "chill");
+        Tag planeTag = new Tag(4, "plane");
+        Tag moonTag = new Tag(5, "moon");
+        Certificate simpleGymCertificate = new Certificate(1, "gym", "15 days gym certificate", 50, 20,
+                LocalDateTime.now(), LocalDateTime.now(), Arrays.asList(adrenalineTag, sportTag));
+        Certificate gymAtPlane = new Certificate(2, "gym at plane", "train in plane", 100, 20, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(sportTag, adrenalineTag, planeTag));
+        Certificate midnightGym = new Certificate(3, "gym at night", "train at night", 60, 30, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(sportTag, moonTag, adrenalineTag));
+        Certificate oneHourSleepCertificate = new Certificate(4, "sleep certificate",
+                "using this certificate u can sleep one more hour a day", 10000, 20, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(chillTag, moonTag));
+        List<Certificate> sportCertificates = Arrays.asList(simpleGymCertificate, gymAtPlane, midnightGym);
+        List<Certificate> chillCertificates = Collections.singletonList(oneHourSleepCertificate);
+        List<Certificate> moonCertificates = Arrays.asList(oneHourSleepCertificate, midnightGym);
         return Stream.of(
-                Arguments.of(certificate, true)
+                Arguments.of(sportCertificates, sportTag.getName(), 1),
+                Arguments.of(chillCertificates, chillTag.getName(), 1),
+                Arguments.of(moonCertificates, moonTag.getName(), 1)
         );
     }
 
-    @Test
-    void deleteCertificate() {
-        int id = 5;
+    @ParameterizedTest
+    @MethodSource("provideCertificatesWithNameAndDescription")
+    void findCertificatesByNameAndDescription(List<Certificate> expectedCertificates, String name, String description,
+                                              int pageNumber) {
+        CertificateDao dao = Mockito.mock(CertificateDao.class);
 
-        CertificateDao certificateDao = Mockito.mock(CertificateDao.class);
+        Mockito.when(dao.findCertificatesByNameAndDescription(name, description, pageNumber)).
+                thenReturn(expectedCertificates);
+
+        CertificateService service = new CertificateServiceImpl(dao, new CertificateComparatorFactory());
 
         try {
-            Mockito.when(certificateDao.deleteCertificate(id)).thenReturn(true);
-
-            CertificateService certificateService = new CertificateServiceImpl(certificateDao);
-            boolean actual = certificateService.deleteCertificate(id);
-            assertTrue(actual);
-        } catch (DaoException | ServiceException e) {
-            fail(e);
+            List<CertificateDTO> actualCertificates = service.findCertificatesByNameAndDescription(name, description,
+                    new PaginationData(null, null, pageNumber));
+            assertEquals(expectedCertificates.stream().map(CertificateDTO::createFromCertificate).
+                            collect(Collectors.toList()),
+                    actualCertificates);
+        } catch (ServiceException exception) {
+            fail("fail with exception");
         }
+    }
+
+    private static Stream<Arguments> provideCertificatesWithNameAndDescription() {
+        Tag sportTag = new Tag(1, "sport");
+        Tag adrenalineTag = new Tag(2, "adrenaline");
+        Tag planeTag = new Tag(4, "plane");
+        Tag moonTag = new Tag(5, "moon");
+        Certificate simpleGymCertificate = new Certificate(1, "gym", "15 days gym train certificate", 50, 20,
+                LocalDateTime.now(), LocalDateTime.now(), Arrays.asList(adrenalineTag, sportTag));
+        Certificate gymAtPlane = new Certificate(2, "gym at plane", "train in plane", 100, 20, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(sportTag, adrenalineTag, planeTag));
+        Certificate midnightGym = new Certificate(3, "gym at night", "train at night", 60, 30, LocalDateTime.now(),
+                LocalDateTime.now(), Arrays.asList(sportTag, moonTag, adrenalineTag));
+        List<Certificate> gymTrainCertificates = Arrays.asList(simpleGymCertificate, gymAtPlane, midnightGym);
+        return Stream.of(
+                Arguments.of(gymTrainCertificates, "gym", "train", 1)
+        );
     }
 }
