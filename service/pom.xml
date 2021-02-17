@@ -17,11 +17,13 @@
             <artifactId>model</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+      
         <dependency>
             <groupId>com.epam.esm</groupId>
             <artifactId>repository</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+      
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -37,6 +39,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 
 </project>

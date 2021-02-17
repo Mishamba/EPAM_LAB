@@ -2,6 +2,7 @@ package com.epam.esm.dao;
 
 import com.epam.esm.model.entity.Certificate;
 
+
 import java.util.List;
 
 public interface CertificateDao {

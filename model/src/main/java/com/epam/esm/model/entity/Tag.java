@@ -14,6 +14,7 @@ import java.util.Set;
  * @version 1.0
  * @author mishamba
  */
+
 @Entity
 @Table(name = "tag")
 public class Tag {

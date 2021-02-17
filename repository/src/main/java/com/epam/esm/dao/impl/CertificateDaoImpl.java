@@ -77,6 +77,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
     private String prepareRegEx(String input) {
         return "%" + input + "%";
+
     }
 
     @Transactional
@@ -95,5 +96,6 @@ public class CertificateDaoImpl implements CertificateDao {
     public void deleteCertificate(int id) {
         Certificate certificate = this.findCertificateById(id);
         manager.remove(certificate);
+
     }
 }

@@ -37,6 +37,7 @@ public class TagDaoImpl implements TagDao {
     @Transactional
     public void createTag(Tag tag) {
         manager.persist(tag);
+
     }
 
     @Override
@@ -44,5 +45,6 @@ public class TagDaoImpl implements TagDao {
     public void deleteTag(int id) {
         manager.createQuery("DELETE FROM Tag e WHERE e.id = :id").setParameter("id", id).
                 executeUpdate();
+
     }
 }

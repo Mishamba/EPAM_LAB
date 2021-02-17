@@ -17,22 +17,26 @@ public class CertificateQueryRepository {
             "duration, " +
             "create_date, last_update_date FROM gift_certificate LIMIT ?, ?";
 
+
     /**
      * Query SELECTs certificate tags id using certificate id.
      */
     public static final String SELECT_CERTIFICATE_TAGS_ID_QUERY = "SELECT tag_id FROM certificate_tags " +
+
             "WHERE certificate_id = ?";
 
     /**
      * Query SELECTs certificate by id.
      */
     public static final String SELECT_CERTIFICATE_BY_ID_QUERY = "SELECT id, certificate_name, certificate_description, " +
+
             "price, duration, create_date, last_update_date FROM gift_certificate WHERE id = ?";
 
     /**
      * Query saves certificate data.
      */
     public static final String CREATE_CERTIFICATE_QUERY = "INSERT INTO gift_certificate " +
+
             "(certificate_name, certificate_description, price, duration, create_date, last_update_date) VALUES " +
             "(?, ?, ?, ?, ?, ?)";
 
@@ -46,12 +50,14 @@ public class CertificateQueryRepository {
      * Query deletes certificate tag references data using id.
      */
     public static final String DELETE_CERTIFICATE_TAGS_BY_ID_REFERENCES_QUERY = "DELETE FROM certificate_tags " +
+
             "WHERE certificate_id = ?";
 
     /**
      * Query deletes certificate data using id.
      */
     public static final String DELETE_CERTIFICATE_BY_ID_QUERY = "DELETE FROM gift_certificate WHERE id = ?";
+
 
     /**
      * Query updates certificate data.

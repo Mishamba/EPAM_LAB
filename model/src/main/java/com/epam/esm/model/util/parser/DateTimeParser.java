@@ -31,12 +31,14 @@ public class DateTimeParser {
 
     /**
      * This parse LocalDateTime to String using parseFormat format.
+
      *
      * @param dateTime This parameter is parsed to String.
      * @return Parsed LocalDateTime to String
      * @throws UtilException
      */
     public static String parseFrom(LocalDateTime dateTime) throws UtilException {
+
         try {
             return dateFormatter.format(dateTime);
         } catch (NullPointerException exception) {
@@ -52,6 +54,7 @@ public class DateTimeParser {
      * @throws UtilException
      */
     public static LocalDateTime parseTo(String stringDateTime) throws UtilException {
+
         try {
             return LocalDateTime.parse(stringDateTime, dateFormatter);
         } catch (NullPointerException exception) {

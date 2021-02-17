@@ -20,6 +20,7 @@ import java.util.List;
  *
  * @see com.epam.esm.model.entity.Tag
  */
+
 @Entity
 @Table(name = "gift_certificate")
 public class Certificate {
@@ -36,6 +37,7 @@ public class Certificate {
 
     @NotEmpty
     @Column(name = "certificate_description")
+
     private String description;
 
     @Positive
@@ -70,13 +72,10 @@ public class Certificate {
     )
     private List<Tag> tags;
 
-    // TODO: 2/16/21 remove certificate without removing orders with certificates
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "orderedCertificates", cascade = CascadeType.ALL)
     private List<Order> orders;
 
     public Certificate() {}
-
-    /**
      * Class constructor. This constructor don't get id parameter.
      * It used when certificate is going to be stored in database. Id will be generated in database.
      * @param name Certificate name.
@@ -318,7 +317,7 @@ public class Certificate {
     public void updateDate() {
         setLastUpdateDate(LocalDateTime.now());
     }
-
+  
     @Override
     public boolean equals(Object o) {
         if (this == o) {
