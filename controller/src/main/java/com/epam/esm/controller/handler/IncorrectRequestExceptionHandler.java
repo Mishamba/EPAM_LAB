@@ -26,7 +26,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.util.NestedServletException;
 
 import java.util.Locale;
 
@@ -151,7 +150,7 @@ public class IncorrectRequestExceptionHandler {
     }
 
     @ExceptionHandler(value = {ControllerException.class})
-    protected ResponseEntity<Object> handleContorllerException(Exception ex, WebRequest request, Locale locale) {
+    protected ResponseEntity<Object> handleControllerException(Exception ex, WebRequest request, Locale locale) {
         return handleAnyException(ex, messageSource.getMessage("exception_any", null, locale), request);
     }
 

@@ -11,13 +11,15 @@ public class CertificateDTO extends RepresentationModel<CertificateDTO> {
     private final String name;
     private final String description;
     private final int price;
+    private final int duration;
     private final List<TagDTO> tags;
 
-    protected CertificateDTO(int id, String name, String description, int price, List<TagDTO> tags) {
+    protected CertificateDTO(int id, String name, String description, int price, int duration, List<TagDTO> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
+        this.duration =duration;
         this.tags = tags;
     }
 
@@ -28,7 +30,7 @@ public class CertificateDTO extends RepresentationModel<CertificateDTO> {
 
         List<TagDTO> tagDTOS = certificate.getTags().stream().map(TagDTO::createFromTag).collect(Collectors.toList());
         return new CertificateDTO(certificate.getId(), certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), tagDTOS);
+                certificate.getPrice(), certificate.getDuration(), tagDTOS);
     }
 
     public int getId() {
@@ -49,5 +51,9 @@ public class CertificateDTO extends RepresentationModel<CertificateDTO> {
 
     public List<TagDTO> getTags() {
         return tags;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }

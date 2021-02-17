@@ -2,12 +2,10 @@ package com.epam.esm.model.entity;
 
 import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.util.converter.LocalDateTimeConverter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,10 +29,10 @@ public class Order {
     private int cost;
 
     @UniqueElements
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Certificate.class, cascade = CascadeType.DETACH)
     @JoinTable(name = "certificate_orders",
-            joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id")
     )
     private List<Certificate> orderedCertificates;
 

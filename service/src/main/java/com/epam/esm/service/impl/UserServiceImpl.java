@@ -1,6 +1,5 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.OrderDao;
 import com.epam.esm.dao.UserDao;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
@@ -12,7 +11,6 @@ import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.model.util.comparator.user.UserComparatorFactory;
 import com.epam.esm.model.util.entity.PaginationData;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final UserComparatorFactory userComparatorFactory;
-    private final Logger logger = Logger.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserDao userDao, UserComparatorFactory userComparatorFactory) {
@@ -59,15 +56,13 @@ public class UserServiceImpl implements UserService {
         User mostRichUser = users.get(0);
         int ordersCost = 0;
         for (User user : users) {
-            int spendOnOrders = 0;
+            int spentMoney = 0;
             for (Order order : user.getOrders()) {
-                for (Certificate orderedCertificate : order.getOrderedCertificates()) {
-                    spendOnOrders += orderedCertificate.getPrice();
-                }
+                spentMoney += order.getCost();
             }
 
-            if (ordersCost < spendOnOrders) {
-                ordersCost = spendOnOrders;
+            if (ordersCost < spentMoney) {
+                ordersCost = spentMoney;
                 mostRichUser = user;
             }
         }

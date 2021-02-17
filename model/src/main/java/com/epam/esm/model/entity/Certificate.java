@@ -3,11 +3,9 @@ package com.epam.esm.model.entity;
 import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.util.converter.LocalDateTimeConverter;
 import com.epam.esm.model.util.serializer.DateTimeSerializer;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -65,12 +63,16 @@ public class Certificate {
     private LocalDateTime lastUpdateDate;
 
     @UniqueElements
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = Tag.class, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Tag.class, cascade = CascadeType.DETACH)
     @JoinTable(name = "certificate_tags",
             joinColumns = @JoinColumn(name = "certificate_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
     )
     private List<Tag> tags;
+
+    // TODO: 2/16/21 remove certificate without removing orders with certificates
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "orderedCertificates", cascade = CascadeType.ALL)
+    private List<Order> orders;
 
     public Certificate() {}
 
@@ -296,6 +298,14 @@ public class Certificate {
      */
     public void addTag(Tag tag) {
         tags.add(tag);
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     @PrePersist

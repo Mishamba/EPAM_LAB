@@ -26,21 +26,21 @@ public class CertificateDaoImpl implements CertificateDao {
 
     @Override
     public List<Certificate> findAllCertificates(int pageNumber) {
-        return manager.createQuery("SELECT e FROM Certificate e", Certificate.class).
+        return manager.createQuery("SELECT DISTINCT e FROM Certificate e", Certificate.class).
                 setMaxResults(PageSizeConstant.CERTIFICATE_PAGE_SIZE).
                 setFirstResult(PageSizeConstant.CERTIFICATE_PAGE_SIZE * (pageNumber - 1)).getResultList();
     }
 
     @Override
     public Certificate findCertificateById(int id) {
-        return manager.createQuery("SELECT e FROM Certificate e WHERE e.id = :id", Certificate.class).
+        return manager.createQuery("SELECT DISTINCT e FROM Certificate e WHERE e.id = :id", Certificate.class).
                 setParameter("id", id).getResultList().stream().findAny().orElse(null);
     }
 
     @Override
     public List<Certificate> findCertificatesByTag(String tagName, int pageNumber) {
         return manager.
-                createQuery("SELECT e FROM Certificate e JOIN e.tags tags WHERE EXISTS " +
+                createQuery("SELECT DISTINCT e FROM Certificate e JOIN e.tags tags WHERE EXISTS " +
                                 "(SELECT e0 FROM Certificate e0 JOIN e0.tags tags " +
                                 "WHERE tags.name = :name AND e0.id =e.id)",
                         Certificate.class).setParameter("name", tagName).
@@ -51,7 +51,7 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public List<Certificate> findCertificatesByNameAndDescription(String certificateName, String description,
                                                                   int pageNumber) {
-        return manager.createQuery("SELECT e FROM Certificate e " +
+        return manager.createQuery("SELECT DISTINCT e FROM Certificate e " +
                 "WHERE e.name LIKE :nameRegExp " +
                 "OR e.description LIKE :descriptionRegExp", Certificate.class).
                 setParameter("nameRegExp", prepareRegEx(certificateName)).
@@ -93,6 +93,7 @@ public class CertificateDaoImpl implements CertificateDao {
     @Transactional
     @Override
     public void deleteCertificate(int id) {
-        manager.createQuery("DELETE FROM Certificate e WHERE e.id = :id").setParameter("id", id).executeUpdate();
+        Certificate certificate = this.findCertificateById(id);
+        manager.remove(certificate);
     }
 }
