@@ -70,7 +70,6 @@ public class Certificate {
     )
     private List<Tag> tags;
 
-    // TODO: 2/16/21 remove certificate without removing orders with certificates
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "orderedCertificates", cascade = CascadeType.ALL)
     private List<Order> orders;
 

@@ -2,7 +2,6 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.UserDao;
 import com.epam.esm.model.constant.PageSizeConstant;
-import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
 import org.springframework.stereotype.Repository;
 
@@ -31,5 +30,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> findAllUsersWithOrders() {
         return manager.createQuery("SELECT DISTINCT e FROM User e JOIN FETCH e.orders", User.class).getResultList();
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return manager.createQuery("SELECT e FROM User e WHERE e.name = :username", User.class).
+                setParameter("username", username).getSingleResult();
     }
 }

@@ -9,4 +9,5 @@ public interface UserDao {
     List<User> findAllUsers(int pageNumber);
     User findById(int id);
     List<User> findAllUsersWithOrders();
+    User findByUsername(String username);
 }

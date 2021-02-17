@@ -6,15 +6,9 @@ import com.epam.esm.model.constant.CertificateSortParametersConstant;
 import com.epam.esm.model.constant.OrderSortParametersConstant;
 import com.epam.esm.model.constant.SortOrderConstant;
 import com.epam.esm.model.constant.UserSortParametersConstant;
-import com.epam.esm.model.entity.Certificate;
-import com.epam.esm.model.entity.Order;
-import com.epam.esm.model.entity.Tag;
-import com.epam.esm.model.entity.User;
-import com.epam.esm.model.entity.dto.CertificateDTO;
 import com.epam.esm.model.entity.dto.OrderDTO;
 import com.epam.esm.model.entity.dto.TagDTO;
 import com.epam.esm.model.entity.dto.UserDTO;
-import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.ServiceException;
@@ -24,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
