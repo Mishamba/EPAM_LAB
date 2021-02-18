@@ -3,7 +3,6 @@ package com.epam.esm.model.entity;
 import com.epam.esm.model.constant.ModelConstant;
 import com.epam.esm.model.util.converter.LocalDateTimeConverter;
 import com.epam.esm.model.util.serializer.DateTimeSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -50,14 +49,12 @@ public class Certificate {
 
     @NotEmpty
     @PastOrPresent
-    @JsonSerialize(using = DateTimeSerializer.class)
     @Convert(converter = LocalDateTimeConverter.class)
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
     @NotEmpty
     @PastOrPresent
-    @JsonSerialize(using = DateTimeSerializer.class)
     @Convert(converter = LocalDateTimeConverter.class)
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;

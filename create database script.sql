@@ -35,7 +35,10 @@ create table certificate_tags (
 
 create table users (
 	id int not null unique auto_increment,
-    user_name varchar(30) not null,
+    email varchar(30) not null unique,
+    `password` varchar(255) not null,
+    first_name varchar(50) not null,
+    last_name varchar(100) not null,
     primary key(id)
 );
 
@@ -103,13 +106,14 @@ insert into certificate_tags(certificate_id, tag_id) values
 (8, 7),
 (8, 6);
 
-insert into users(user_name) values 
-('mishamba'), -- 1
-('user'), -- 2
-('smth'), -- 3
-('igor'), -- 4 
-('slava'), -- 5
-('egor'); -- 6
+-- password = `email` without @email.com
+insert into users(email, `password`, first_name, last_name) values 
+('mishamba@email.com', '$2y$12$r/M8JBQhR9mZKsjgv.5NTuGx7igWTum7.6GHMr1ecNNAU67l0kj3q', 'mihail', 'nenahov'), -- 1
+('user@email.com', '$2y$12$s8skGtNCjV1W2JQdyAnBcu4OAFZFnlo6He3ux9TCfL2UZxUNoiqA.', 'user', 'userov'), -- 2
+('smth@email.com', '$2y$12$AeQ5HzVR.H1uEtZwaoxbfOpEKHP5a5h.rSok6UQustE7sIWTtYTby', 'some', 'user'), -- 3
+('igor@email.com', '$2y$12$//rbn7wVZRp5WFCCmHzWMeZrwgzD.ARyuZzWn.DxwFlztp0aPT.Za', 'igor', 'blinov'), -- 4 
+('slava@email.com', '$2y$12$yo8NVZCH0StKQNxelBjfsOU9.BaX3be07UFnv56DVImI3H0CC8oN2', 'slava', 'marlov'), -- 5
+('egor@email.com', '$2y$12$XoeON40ZpLQ3r3baicj/3epVR5NrB8twbQ33XMLp4w51GblCt47dq', 'egor', 'zhukov'); -- 6
 
 insert into orders(users_id, order_date, cost) values
 (1, '2020-12-15T13:00:00.000', 15), -- 1

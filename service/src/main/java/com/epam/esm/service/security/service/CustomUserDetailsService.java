@@ -8,13 +8,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserDao userDao;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return new CustomUserDetails(userDao.findByUsername(username));
+        return new CustomUserDetails(userDao.findByEmail(username));
     }
 }

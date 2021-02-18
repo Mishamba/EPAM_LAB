@@ -17,6 +17,6 @@ public class UserNameComparator extends AscDescCheck implements Comparator<User>
     }
 
     private int calculateCompare(User user, User anotherUser) {
-        return user.getName().compareTo(anotherUser.getName());
+        return user.getEmail().compareTo(anotherUser.getEmail());
     }
 }

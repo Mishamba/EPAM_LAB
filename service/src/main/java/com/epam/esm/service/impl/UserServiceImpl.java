@@ -46,6 +46,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO findUserByEmail(String email) {
+        return UserDTO.createFromUser(userDao.findByEmail(email));
+    }
+
+    @Override
     public TagDTO userWidelyUsedTag() {
         List<User> users = userDao.findAllUsersWithOrders();
         User mostRichUser = findMostReachUser(users);

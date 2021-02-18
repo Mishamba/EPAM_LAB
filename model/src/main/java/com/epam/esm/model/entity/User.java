@@ -1,14 +1,14 @@
 package com.epam.esm.model.entity;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
+// TODO: 2/17/21 add password
 @Entity
 @Table(name = "users")
 public class User {
@@ -20,22 +20,54 @@ public class User {
     private Integer id;
 
     @NotEmpty
-    @Pattern(regexp = "[a-zA-Z]+")
-    @Column(name = "user_name")
-    private String name;
+    @Email
+    @Column(name = "email")
+    private String email;
+
+    @NotEmpty
+    @Pattern(regexp = "[a-zA-Z]")
+    private String firstName;
+
+    @NotEmpty
+    @Pattern(regexp = "[a-zA-Z]")
+    private String lastName;
+
+    @NotEmpty
+    @Column(name = "password")
+    private String password;
+
+    @NotEmpty
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderUser")
     private List<Order> orders;
 
     public User() {}
 
-    public User(String name) {
-        this.name = name;
+    public User(@NotEmpty @Email String email,
+                @NotEmpty @Pattern(regexp = "[a-zA-Z]") String firstName,
+                @NotEmpty @Pattern(regexp = "[a-zA-Z]") String lastName,
+                @NotEmpty String password,
+                @NotEmpty Role role) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.role = role;
     }
 
-    public User(Integer id, String name) {
+    public User(@Positive Integer id, @NotEmpty @Email String email,
+                @NotEmpty @Pattern(regexp = "[a-zA-Z]") String firstName,
+                @NotEmpty @Pattern(regexp = "[a-zA-Z]") String lastName,
+                @NotEmpty String password,
+                @NotEmpty Role role) {
         this.id = id;
-        this.name = name;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.role = role;
     }
 
     public List<Order> getOrders() {
@@ -54,12 +86,44 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getEmail() {
+        return email;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
@@ -74,14 +138,14 @@ public class User {
 
         User user = (User) o;
         return this.id.equals(user.id) &&
-                this.name.equals(user.name);
+                this.email.equals(user.email);
     }
 
     @Override
     public int hashCode() {
         int prime = 3;
         int hash = id.hashCode() * prime;
-        hash *= name.hashCode() * prime;
+        hash *= email.hashCode() * prime;
         return hash;
     }
 }

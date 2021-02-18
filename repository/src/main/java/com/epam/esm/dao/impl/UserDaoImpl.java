@@ -33,8 +33,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return manager.createQuery("SELECT e FROM User e WHERE e.name = :username", User.class).
-                setParameter("username", username).getSingleResult();
+    public User findByEmail(String email) {
+        return manager.createQuery("SELECT e FROM User e WHERE e.email = :email", User.class).
+                setParameter("email", email).getSingleResult();
     }
 }
