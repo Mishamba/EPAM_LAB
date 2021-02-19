@@ -26,10 +26,12 @@ public class User {
 
     @NotEmpty
     @Pattern(regexp = "[a-zA-Z]")
+    @Column(name = "first_name")
     private String firstName;
 
     @NotEmpty
     @Pattern(regexp = "[a-zA-Z]")
+    @Column(name = "last_name")
     private String lastName;
 
     @NotEmpty

@@ -9,8 +9,12 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
     private final User user;
 
-    public CustomUserDetails(User user) {
+    protected CustomUserDetails(User user) {
         this.user = user;
+    }
+
+    public static UserDetails createFromUser(User user) {
+        return new CustomUserDetails(user);
     }
 
     @Override

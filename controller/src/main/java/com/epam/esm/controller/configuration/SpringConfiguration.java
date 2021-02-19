@@ -1,4 +1,4 @@
-package com.epam.esm.controller.confugration;
+package com.epam.esm.controller.configuration;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

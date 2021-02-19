@@ -7,12 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum  Role {
-    GUEST(Arrays.asList(
-            Permission.CERTIFICATE_READ,
-            Permission.TAG_READ,
-            Permission.USER_WIDELY_USED_TAG
-    )),
-
     USER(Arrays.asList(
             Permission.CERTIFICATE_READ,
             Permission.TAG_READ,
