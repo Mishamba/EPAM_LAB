@@ -3,13 +3,12 @@ package com.epam.esm.controller.security;
 import com.epam.esm.controller.json.entity.JsonError;
 import com.epam.esm.controller.security.jwt.JwtTokenProvider;
 import com.epam.esm.model.entity.dto.UserDTO;
-import com.epam.esm.model.entity.dto.security.AuthenticationRequestDTO;
+import com.epam.esm.model.security.AuthenticationRequestDTO;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -47,6 +46,7 @@ public class AuthenticationController {
             String token = jwtTokenProvider.createToken(requestDTO.getEmail(), user.getRole().name());
             Map<Object, Object> response = new HashMap<>();
             response.put("email", requestDTO.getEmail());
+            response.put("role", user.getRole().name());
             response.put("token", token);
 
             return ResponseEntity.ok(response);

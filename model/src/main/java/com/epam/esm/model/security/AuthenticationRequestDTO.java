@@ -1,4 +1,4 @@
-package com.epam.esm.model.entity.dto.security;
+package com.epam.esm.model.security;
 
 public class AuthenticationRequestDTO {
     private String email;

@@ -1,5 +1,6 @@
-package com.epam.esm.controller.configuration;
+package com.epam.esm.controller.security.configuration;
 
+import com.epam.esm.controller.security.handler.CustomAuthenticationEntryPoint;
 import com.epam.esm.model.entity.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,24 +31,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 csrf().disable().
                 sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
 
-                /*and().anonymous().authorities(
-                        Permission.CERTIFICATE_READ.getPermission(),
-                        Permission.TAG_READ.getPermission(),
-                        Permission.USER_WIDELY_USED_TAG.getPermission()
-                ).*/
-
                 and().authorizeRequests().
 
-                antMatchers(HttpMethod.GET , "/certificate/get/*", "/tag/get/*", "/user/widely_userd_tag").
-                permitAll().
-
-                /*hasAnyAuthority(
-                        Permission.CERTIFICATE_READ.getPermission(),
-                        Permission.TAG_READ.getPermission(),
-                        Permission.USER_WIDELY_USED_TAG.getPermission()
-                ).*/
-
-                antMatchers(HttpMethod.GET , "/certificate/get/*", "/tag/get/*", "/user/widely_userd_tag").
+                antMatchers(HttpMethod.GET , "/certificates/*", "/tags/*", "/users/widely-used-tag",
+                        "/certificates/by-name-and-description", "/certificates/by-tags", "/certificates").
                 permitAll().
 
                 antMatchers("/auth/login").
@@ -56,26 +43,34 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 antMatchers("/auth/logout").
                 permitAll().
 
-                and().
-                authorizeRequests().
-                antMatchers("/user/create/order").
+                antMatchers(HttpMethod.POST, "/users/create-order").
                 hasAuthority(
                         Permission.USER_CREATE_ORDER.getPermission()
                 ).
 
                 // FIXME: 2/19/21 ADMIN permissions
-                antMatchers(HttpMethod.GET, "/user/get/*", "/certificate/update/*", "/certificate/delete/*",
-                        "tag/delete/*", "/tag/create", "/user/create/order", "/user/get/user_orders", "/user/get/all").
+                antMatchers(HttpMethod.GET, "/users/*/orders", "/users").
                 hasAnyAuthority(
-                        Permission.CERTIFICATE_DELETE.getPermission(),
-                        Permission.CERTIFICATE_UPDATE.getPermission(),
-                        Permission.CERTIFICATE_WRITE.getPermission(),
-                        Permission.TAG_WRITE.getPermission(),
-                        Permission.TAG_DELETE.getPermission(),
                         Permission.USER_READ.getPermission(),
                         Permission.USER_ORDER_READ.getPermission()
                 ).
-                anyRequest().authenticated().
+
+                antMatchers(HttpMethod.POST,
+                        "/certificates/create" ,"/certificates/*/update", "/certificates/*/delete",
+                        "tags/*/delete", "/tags/create").
+                hasAnyAuthority(
+                    Permission.CERTIFICATE_DELETE.getPermission(),
+                    Permission.CERTIFICATE_UPDATE.getPermission(),
+                    Permission.CERTIFICATE_WRITE.getPermission(),
+                    Permission.TAG_WRITE.getPermission(),
+                    Permission.TAG_DELETE.getPermission()
+                ).
+
+                anyRequest().denyAll().
+
+                and().
+                exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint()).
+
                 and().
                 apply(jwtConfigurer);
     }

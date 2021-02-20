@@ -23,7 +23,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final OrderService orderService;
@@ -35,7 +35,7 @@ public class UserController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/get/all")
+    @GetMapping
     public List<UserDTO> findAllUsers(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = UserSortParametersConstant.SORT_BY_ID) String sortBy,
@@ -60,12 +60,12 @@ public class UserController {
                 UserSortParametersConstant.SORT_BY_ID, SortOrderConstant.ASC_SORT_TYPE, 1)).withSelfRel());
     }
 
-    @GetMapping("/get/user_orders")
+    @GetMapping("/{id}/orders")
     public List<OrderDTO> findUserOrders(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = OrderSortParametersConstant.SORT_BY_NAME) String sortBy,
             @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType,
-            @RequestParam("user_id") int userId) throws ControllerException {
+            @PathVariable("id") int userId) throws ControllerException {
         try {
             return orderService.findUserOrders(userId, new PaginationData(sortBy, sortType, pageNumber));
         } catch (ServiceException exception) {
@@ -74,12 +74,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("/widely_used_tag")
+    @GetMapping("/widely-used-tag")
     public TagDTO widelyUsedTag() {
         return userService.userWidelyUsedTag();
     }
 
-    @PostMapping("/create/order")
+    @PostMapping("/create-order")
     public JsonAnswer createOrder(@RequestParam("user_id") int userId,
                                   @RequestParam("certificate_id") int[] orderedCertificateIds) throws ControllerException {
         orderService.createOrder(userId, orderedCertificateIds);

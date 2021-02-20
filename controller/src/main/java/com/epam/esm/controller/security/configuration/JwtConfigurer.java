@@ -1,7 +1,9 @@
-package com.epam.esm.controller.configuration;
+package com.epam.esm.controller.security.configuration;
 
 import com.epam.esm.controller.security.filter.JwtTokenFilter;
+import com.epam.esm.model.entity.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;

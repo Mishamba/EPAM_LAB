@@ -16,7 +16,6 @@ import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -28,7 +27,7 @@ import java.util.List;
  * @author mishamba
  */
 @RestController
-@RequestMapping("/certificate")
+@RequestMapping("/certificates")
 public class CertificateController {
     private final CertificateService certificateService;
     private final Logger logger = Logger.getLogger(CertificateController.class);
@@ -51,7 +50,7 @@ public class CertificateController {
      * @return All certificates
      * @throws ControllerException
      */
-    @GetMapping("/get/all")
+    @GetMapping
     public List<CertificateDTO> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
                                       @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
                                       @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType)
@@ -81,7 +80,7 @@ public class CertificateController {
      *                             JSON error answer.
      */
 
-    @GetMapping("/get/by/name_and_description")
+    @GetMapping("/by-name-and-description")
     public List<CertificateDTO> findCertificateByNameAndDescription(
             @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
@@ -113,7 +112,7 @@ public class CertificateController {
      * @throws ControllerException In case if some problems method throws ControllerException and user will get
      *                             JSON error answer.
      */
-    @GetMapping("/get/by/tags")
+    @GetMapping("/by-tags")
     public List<CertificateDTO> findCertificateByTag(
             @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
@@ -144,7 +143,7 @@ public class CertificateController {
      * @throws ControllerException In case if some problems method throws ControllerException and user will get
      *                             JSON error answer.
      */
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public CertificateDTO findCertificate(@PathVariable("id") int id) throws ControllerException {
         CertificateDTO certificate = certificateService.findCertificateById(id);
         if (certificate != null) {
@@ -187,7 +186,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonAnswer
      * @see com.epam.esm.controller.json.entity.JsonError
      */
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}/update")
     public JsonAnswer updateCertificate(@PathVariable("id") int id,
                                         @RequestParam(value = "price", defaultValue = "-1") int price,
                                         @RequestParam(value = "duration", defaultValue = "-1") int duration) {
@@ -211,7 +210,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonAnswer
      * @see com.epam.esm.controller.json.entity.JsonError
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}/delete")
     public JsonAnswer deleteCertificate(@PathVariable("id") int id) {
         certificateService.deleteCertificate(id);
         return new JsonAnswer(HttpStatus.OK, "deleted certificate");
