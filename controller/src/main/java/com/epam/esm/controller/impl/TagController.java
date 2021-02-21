@@ -10,8 +10,10 @@ import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.PermitAll;
 import java.util.List;
 
 /**
@@ -39,6 +41,7 @@ public class TagController {
      * @throws ControllerException
      */
     @GetMapping
+    @PermitAll
     public List<TagDTO> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber) throws ControllerException {
         try {
             return tagService.findAllTags(new PaginationData(null, null, pageNumber));
@@ -56,6 +59,7 @@ public class TagController {
      * @throws ControllerException
      */
     @GetMapping("/{id}")
+    @PermitAll
     public TagDTO getTagById(@PathVariable("id") int id) throws ControllerException {
         TagDTO tag = tagService.findTagById(id);
         ifNullThrowException(tag);
@@ -78,6 +82,7 @@ public class TagController {
      * @see com.epam.esm.controller.json.entity.JsonError
      */
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('tag:write')")
     public JsonAnswer createTag(@RequestParam("name") String name) {
         tagService.createTag(new Tag(name));
         return new JsonAnswer(HttpStatus.OK, "successfully created new tag");
@@ -93,6 +98,7 @@ public class TagController {
      * @see com.epam.esm.controller.json.entity.JsonError
      */
     @DeleteMapping("/{id}/delete")
+    @PreAuthorize("hasAuthority('tag:delete')")
     public JsonAnswer deleteTag(@PathVariable("id") int id) {
         tagService.deleteTag(id);
         return new JsonAnswer(HttpStatus.OK, "successfully deleted tag");

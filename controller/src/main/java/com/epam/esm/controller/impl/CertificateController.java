@@ -16,7 +16,11 @@ import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.security.PermitAll;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.util.ArrayList;
@@ -51,6 +55,7 @@ public class CertificateController {
      * @throws ControllerException
      */
     @GetMapping
+    @PermitAll
     public List<CertificateDTO> index(@RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
                                       @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
                                       @RequestParam(name = "sort_type", defaultValue = SortOrderConstant.ASC_SORT_TYPE) String sortType)
@@ -81,6 +86,7 @@ public class CertificateController {
      */
 
     @GetMapping("/by-name-and-description")
+    @PermitAll
     public List<CertificateDTO> findCertificateByNameAndDescription(
             @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
@@ -113,6 +119,7 @@ public class CertificateController {
      *                             JSON error answer.
      */
     @GetMapping("/by-tags")
+    @PermitAll
     public List<CertificateDTO> findCertificateByTag(
             @RequestParam(value = "page_number", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = CertificateSortParametersConstant.SORT_BY_DATE) String sortBy,
@@ -144,6 +151,7 @@ public class CertificateController {
      *                             JSON error answer.
      */
     @GetMapping("/{id}")
+    @PermitAll
     public CertificateDTO findCertificate(@PathVariable("id") int id) throws ControllerException {
         CertificateDTO certificate = certificateService.findCertificateById(id);
         if (certificate != null) {
@@ -170,6 +178,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonError
      */
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('certificate:write')")
     public JsonAnswer createCertificate(@RequestBody Certificate newCertificate) {
         certificateService.createCertificate(newCertificate);
         return new JsonAnswer(HttpStatus.OK, "created new certificate");
@@ -187,6 +196,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonError
      */
     @PatchMapping("/{id}/update")
+    @PreAuthorize("hasAuthority('certificate:update')")
     public JsonAnswer updateCertificate(@PathVariable("id") int id,
                                         @RequestParam(value = "price", defaultValue = "-1") int price,
                                         @RequestParam(value = "duration", defaultValue = "-1") int duration) {
@@ -211,6 +221,7 @@ public class CertificateController {
      * @see com.epam.esm.controller.json.entity.JsonError
      */
     @DeleteMapping("/{id}/delete")
+    @PreAuthorize("hasAuthority('certificate:delete')")
     public JsonAnswer deleteCertificate(@PathVariable("id") int id) {
         certificateService.deleteCertificate(id);
         return new JsonAnswer(HttpStatus.OK, "deleted certificate");

@@ -22,6 +22,7 @@ public enum  Role {
             Permission.TAG_READ,
             Permission.TAG_DELETE,
             Permission.TAG_WRITE,
+            Permission.USER_READ,
             Permission.USER_ORDER_READ,
             Permission.USER_WIDELY_USED_TAG
     ));

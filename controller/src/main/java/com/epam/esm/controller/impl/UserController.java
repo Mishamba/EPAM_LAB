@@ -16,8 +16,10 @@ import com.epam.esm.model.util.entity.PaginationData;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.PermitAll;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -36,6 +38,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('user:read')")
     public List<UserDTO> findAllUsers(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = UserSortParametersConstant.SORT_BY_ID) String sortBy,
@@ -61,6 +64,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/orders")
+    @PreAuthorize("hasAuthority('user:order_read')")
     public List<OrderDTO> findUserOrders(
             @RequestParam(value = "page", defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by", defaultValue = OrderSortParametersConstant.SORT_BY_NAME) String sortBy,
@@ -75,11 +79,13 @@ public class UserController {
     }
 
     @GetMapping("/widely-used-tag")
+    @PermitAll
     public TagDTO widelyUsedTag() {
         return userService.userWidelyUsedTag();
     }
 
     @PostMapping("/create-order")
+    @PreAuthorize("hasAuthority('user:order_create')")
     public JsonAnswer createOrder(@RequestParam("user_id") int userId,
                                   @RequestParam("certificate_id") int[] orderedCertificateIds) throws ControllerException {
         orderService.createOrder(userId, orderedCertificateIds);

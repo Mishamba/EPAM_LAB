@@ -15,6 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
+    @PermitAll
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequestDTO requestDTO) {
         try {
             authenticationManager.authenticate(
@@ -58,6 +60,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
+    @PermitAll
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler handler = new SecurityContextLogoutHandler();
         handler.logout(request, response, null);
