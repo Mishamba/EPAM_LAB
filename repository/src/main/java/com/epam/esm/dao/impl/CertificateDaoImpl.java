@@ -4,6 +4,7 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.constant.PageSizeConstant;
 import com.epam.esm.model.entity.Certificate;
+import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -93,7 +95,57 @@ public class CertificateDaoImpl implements CertificateDao {
     @Transactional
     @Override
     public void deleteCertificate(int id) {
-        Certificate certificate = this.findCertificateById(id);
+        Certificate certificate = getCertificateWithOrders(id);
+        certificate.setTags(getCertificateTagsWithCertificates(certificate));
+        removeCertificateOrderReferences(certificate);
+        removeCertificateTagReferences(certificate);
         manager.remove(certificate);
+    }
+
+    private Certificate getCertificateWithOrders(int id) {
+        return manager.
+                createQuery("SELECT e FROM Certificate e " +
+                        "JOIN FETCH e.orders " +
+                        "WHERE e.id = :id",
+                        Certificate.class).
+                setParameter("id", id).
+                getResultList().stream().findAny().orElse(new Certificate());
+    }
+
+    private List<Tag> getCertificateTagsWithCertificates(Certificate certificate) {
+        List<Tag> tagsWithCertificates = new ArrayList<>();
+        for (Tag tag : certificate.getTags()) {
+            Tag tagWithCertificates = manager.
+                    createQuery("SELECT e FROM Tag e JOIN e.certificates WHERE e.id = :id", Tag.class).
+                    setParameter("id", tag.getId()).
+                    getSingleResult();
+            tagsWithCertificates.add(tagWithCertificates);
+        }
+
+        return tagsWithCertificates;
+    }
+
+    // Give certificate with fetched orders.
+    private void removeCertificateOrderReferences(Certificate certificate) {
+        for (Order order : certificate.getOrders()) {
+            List<Certificate> orderedCertificates = order.getOrderedCertificates();
+            orderedCertificates.remove(certificate);
+            order.setOrderedCertificates(orderedCertificates);
+            manager.persist(order);
+        }
+
+        certificate.setOrders(new ArrayList<>());
+    }
+
+    // Give certificate with fetched tags.certificates
+    private void removeCertificateTagReferences(Certificate certificate) {
+        for (Tag tag : certificate.getTags()) {
+            List<Certificate> certificates = tag.getCertificates();
+            certificates.remove(certificate);
+            tag.setCertificates(certificates);
+            manager.persist(tag);
+        }
+
+        certificate.setTags(new ArrayList<>());
     }
 }

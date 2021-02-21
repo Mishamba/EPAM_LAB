@@ -1,6 +1,6 @@
 package com.epam.esm.controller.security.handler;
 
-import com.epam.esm.controller.exception.JwtAuthenticationException;
+import com.epam.esm.controller.security.exception.JwtAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.AuthenticationException;

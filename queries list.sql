@@ -1,6 +1,7 @@
 use module2 ;
 
 select * from gift_certificate;
+select * from tag;
 
 select SUM(cost) FROM orders WHERE user_id = 1;
 

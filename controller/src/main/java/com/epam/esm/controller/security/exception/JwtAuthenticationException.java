@@ -1,4 +1,4 @@
-package com.epam.esm.controller.exception;
+package com.epam.esm.controller.security.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;

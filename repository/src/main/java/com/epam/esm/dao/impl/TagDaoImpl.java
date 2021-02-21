@@ -2,12 +2,14 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.constant.PageSizeConstant;
+import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -42,7 +44,29 @@ public class TagDaoImpl implements TagDao {
     @Override
     @Transactional
     public void deleteTag(int id) {
-        manager.createQuery("DELETE FROM Tag e WHERE e.id = :id").setParameter("id", id).
-                executeUpdate();
+        Tag tagToDelete = getTagWithCertificatesById(id);
+
+        removeCertificateTagReferences(tagToDelete);
+
+        manager.remove(tagToDelete);
+    }
+
+    private Tag getTagWithCertificatesById(int id) {
+        return manager.
+                createQuery("SELECT DISTINCT e FROM Tag e JOIN fetch e.certificates WHERE e.id = :id", Tag.class).
+                setParameter("id", id).
+                getSingleResult();
+    }
+
+    // Give tags with fetched certificates.
+    private void removeCertificateTagReferences(Tag tag) {
+        for (Certificate certificate : tag.getCertificates()) {
+            List<Tag> tagList = certificate.getTags();
+            tagList.remove(tag);
+            certificate.setTags(tagList);
+            manager.persist(certificate);
+        }
+
+        tag.setCertificates(new ArrayList<>());
     }
 }

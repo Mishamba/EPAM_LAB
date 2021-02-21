@@ -1,7 +1,6 @@
 package com.epam.esm.controller.handler;
 
 import com.epam.esm.controller.exception.ControllerException;
-import com.epam.esm.controller.exception.JwtAuthenticationException;
 import com.epam.esm.controller.json.entity.JsonError;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
