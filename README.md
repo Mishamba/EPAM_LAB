@@ -1,1 +1,1 @@
-Lab tasks repos
+Lab tasks repo
